@@ -5,9 +5,10 @@ using namespace std;
 
 int main(){
     long pop1 = 4654654, pop2 = 54654, pop3 = 456;
-    cout << setfill('.') << setw(2) << "Hello" << setfill('.') << setw(9) << "Bob" << endl
-	    << setfill('.') << setw(2) << "World" << setfill('.') << setw(9) << pop1 << endl
-	    << setfill('.') << setw(2) << "Bob.." << setfill('.') << setw(9) << pop2 << endl
-	    << setfill('.') << setw(2) << "Job.." << setfill('.') << setw(9) << pop3 << endl;
+    cout << setfill('.')
+		 << left << setw(7) << "Hello" << setfill('.') << right << setw(9) << "Bob" << endl
+	     << left << setw(7) << "World" << setfill('.') << right << setw(9) <<  pop1 << endl
+	     << left << setw(7) << "Bob"   << setfill('.') << right << setw(9) <<  pop2 << endl
+	     << left << setw(7) << "Job"   << setfill('.') << right << setw(9) <<  pop3 << endl;
     return 0;
 }

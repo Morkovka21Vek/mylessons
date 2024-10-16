@@ -11,14 +11,20 @@ int main() {
 
     x = a*d + b*c;
     y = b*d;
-	//std::cout << "x = " << x << "; y = " << y;
 
-	//common_divi = static_cast<int>(y/x);
-	//common_divi += !common_divi;
-	//x /= common_divi*y;
-	//y /= common_divi*y;
+	int minNum, j;
+	do {
+		minNum = (x < y) ? x : y;
+		for	(j = minNum; j > 0; j--) {
+			if (!(x % j) && !(y % j)) {
+				x /= j;
+				y /= j;
+				break;
+			}
+		}
+	} while (j != 1);
 
-    std::cout << "Сумма равна: >>" << x << "/" << y << std::endl;
+    std::cout << "Сумма равна: >> " << x << "/" << y << std::endl;
 
     return 0;
 }

@@ -108,12 +108,12 @@ git push
 ```
 git log
 ```
-Показывает историю коммитов:
-![2024-11-12_20-38](https://github.com/user-attachments/assets/93e03b31-9133-428d-8428-67923875eca7)
+Показывает историю коммитов:  
+![2024-11-12_20-38](https://github.com/user-attachments/assets/93e03b31-9133-428d-8428-67923875eca7)  
 Для красивого вывода нужно написать команду:
 ```sh
 %C(auto,magenta)%h%C(auto,reset) %ad %C(auto,green)[%an]%C(auto,reset) | %s%C(auto,red)%d%C(auto,reset)
 ```
-Это только мой конфиг, есть много других по типу [этого](https://stackoverflow.com/questions/1057564/pretty-git-branch-graphs)(можно и свой создать)
+Это только мой конфиг, есть много других по типу [этого](https://stackoverflow.com/questions/1057564/pretty-git-branch-graphs)(можно и свой создать)  
 
 ### Ну вроде базу я дал, могу порекомендовать этот [курс по git](https://githowto.com/ru)(он не самый лучший, но достойный)

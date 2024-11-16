@@ -22,7 +22,8 @@
 #include "assets.h"
 //========================== Импорт заголовочных файлов ==========================//
 
-char backgroundChar = ' ';
+const char backgroundChar = '-';
+const bool DEBUG = 0;
 
 //========================== Объявление структур ==========================//
 struct square {
@@ -32,6 +33,7 @@ struct square {
   int speedY;
   int sizeX;
   int sizeY;
+  //void movePl
 };
 
 struct player {
@@ -48,113 +50,10 @@ struct prediction {
 //========================== Объявление структур ==========================//
 
 
-bool drawChar (char ch, int posX, int posY, int x, int y, int width, int height) {
-  char outCh = ' ';
-  if (x >= posX && x < posX + width && y >= posY && y < posY + height) {
-    outCh = getSymbolCh (ch, x - posX, y - posY);
-    if (outCh != ' ') std::cout << outCh;
-  }
-  return (outCh != ' ');
-}
-
-
-prediction calcPred(square sqr, int leftMargin, int rightMargin, winsize w) {
-  int predTime = 0;
-  square sqrPred = sqr;
-
-  while (1) {
-    if (sqrPred.posX + sqrPred.sizeX >= w.ws_col - rightMargin - 1 && sqrPred.speedX > 0) break;
-    else if (sqrPred.posX - sqrPred.sizeX <= leftMargin && sqrPred.speedX < 0) break;
-
-    predTime++;
-
-    sqrPred.posX += sqrPred.speedX;
-    sqrPred.posY += sqrPred.speedY;
-
-    if (sqrPred.posY - sqrPred.sizeY <= 0)sqrPred.speedY *= -1;
-    else if (sqrPred.posY + sqrPred.sizeY >= w.ws_row-1)sqrPred.speedY *= -1;
-
-    //if (sqrPred.posX + sqrPred.sizeX >= w.ws_col - rightMargin - 1) break;
-    //else if (sqrPred.posX - sqrPred.sizeX <= leftMargin) break;
-  }  
-
-  prediction pred = {sqrPred.posY, predTime};
-  return pred;
-}
-
-void newPointPlayer(int player, winsize w) {
-  using namespace std::this_thread; // sleep_for, sleep_until
-  using namespace std::chrono; // nanoseconds, system_clock, seconds
-  
-  system("clear");
-  sleep_for(nanoseconds(500*1000000));
-
-  int centerScrX = static_cast<int>(w.ws_col / 2);
-  int centerScrY = static_cast<int>(w.ws_row / 2) - 3;
-
-  for (int y = 0; y < w.ws_row; y++){    
-      for (int x = 0; x < w.ws_col; x++){
-        if (drawChar('P', centerScrX-35, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('L', centerScrX-30, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('A', centerScrX-25, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('Y', centerScrX-20, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('E', centerScrX-15, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('R', centerScrX-10, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar(player + '0', centerScrX-2, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('+', centerScrX+8, centerScrY, x, y, 6, 6)) {}
-        else if (drawChar('1', centerScrX+15, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('P', centerScrX+25, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('O', centerScrX+30, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('I', centerScrX+35, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('N', centerScrX+40, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('T', centerScrX+45, centerScrY, x, y, 4, 6)) {}
-        else std::cout << backgroundChar;
-      }
-      std::cout << std::endl;
-  }
-  sleep_for(nanoseconds(2000*1000000));
-  //getchar();
-}
-
-void playerWinScreen (int player, winsize w) {
-  using namespace std::this_thread; // sleep_for, sleep_until
-  using namespace std::chrono; // nanoseconds, system_clock, seconds
-                               
-  //w.ws_row--;
-  
-  system("clear");
-  sleep_for(nanoseconds(500*1000000));
-
-  int centerScrX = static_cast<int>(w.ws_col / 2);
-  int centerScrY = static_cast<int>(w.ws_row / 2) - 3;
-
-  for (int y = 0; y < w.ws_row; y++){    
-      for (int x = 0; x < w.ws_col; x++){
-        if (drawChar('P', centerScrX-32, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('L', centerScrX-27, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('A', centerScrX-22, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('Y', centerScrX-17, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('E', centerScrX-12, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('R', centerScrX-7, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar(player + '0', centerScrX+2, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('W', centerScrX+10, centerScrY+1, x, y, 5, 5)) {}
-        else if (drawChar('I', centerScrX+16, centerScrY, x, y, 4, 6)) {}
-        else if (drawChar('N', centerScrX+21, centerScrY, x, y, 4, 6)) {}
-        else std::cout << backgroundChar;
-      }
-      std::cout << std::endl;
-  }
-  sleep_for(nanoseconds(2000*1000000));
-  exit(0);
-
-}
-
-int timeToFps (int time) {
-  if (time == 0)
-    return 0;
-  else
-    return static_cast<int>(1000/time);
-}
+prediction calcPred(square sqrPred, int leftMargin, int rightMargin, winsize w);
+void playerWinScreen (int player, winsize w);
+void newPointPlayer (int player, winsize w);
+bool drawChar (char ch, int posX, int posY, int x, int y, int width, int height);
 
 int main() {
   using namespace std::this_thread; // sleep_for, sleep_until
@@ -173,7 +72,6 @@ int main() {
   auto fpsStartTime = std::chrono::high_resolution_clock::now(), fpsEndTime = std::chrono::high_resolution_clock::now();
   auto fpsFrameTime = duration_cast<std::chrono::milliseconds> (fpsStartTime - fpsEndTime);
 
-  char ch;
   bool plWin;
   const square defaultSqr = {static_cast<int>(w.ws_col/2), static_cast<int>(w.ws_row/2), 3, 2, 4, 2};
   square sqr = defaultSqr;
@@ -182,7 +80,6 @@ int main() {
   player rightPl = {10, 0, 4, 10};
   
   prediction pred;
-  //fpsEndTime = fpsStartTime = std::chrono::high_resolution_clock::now();
   //========================== Инциализация переменных ==========================//
 
   auto movePlRand = std::bind(std::uniform_int_distribution<>(-3,3),std::default_random_engine());
@@ -263,9 +160,10 @@ int main() {
 
     //========================== Отрисовка ==========================//
     
-    system("clear");
-     
-    std::cout << std::setfill(backgroundChar) << std::setw(7) << "\x1B[92m" << timeToFps(fpsFrameTime.count()) << "FPS\033[0m";
+    if (!DEBUG) system("clear");
+ 
+    int fpsCount = (fpsFrameTime.count() == 0) ? 0 : static_cast<int>(1000/fpsFrameTime.count());
+    std::cout << std::setfill(backgroundChar) << std::setw(7) << "\x1B[92m" << fpsCount << "FPS\033[0m";
 
     for (int y = 0; y < w.ws_row; y++){
       for (int x = 0; x < w.ws_col; x++){
@@ -297,11 +195,111 @@ int main() {
     fpsEndTime = std::chrono::high_resolution_clock::now();
     fpsFrameTime = duration_cast<std::chrono::milliseconds> (fpsEndTime - fpsStartTime );
 
-    //ch = getchar();
-    //if (ch == 'q') return 0;
-    //else if (ch == 'c') system("clear");
+    if (DEBUG) {
+      // ОТЛАДОЧНУЮ ИНОРМАЦИЮ ПОМЕЩАТЬ СЮДА!
+      
+      char ch = getchar();
+      if (ch == 'q') return 0;
+      else if (ch == 'c') system("clear");
+    }
 
   }
   return 0;
+}
+
+void playerWinScreen (int player, winsize w) {
+  using namespace std::this_thread; // sleep_for, sleep_until
+  using namespace std::chrono; // nanoseconds, system_clock, seconds
+                               
+  system("clear");
+  sleep_for(nanoseconds(500*1000000));
+
+  int centerScrX = static_cast<int>(w.ws_col / 2);
+  int centerScrY = static_cast<int>(w.ws_row / 2) - 3;
+
+  for (int y = 0; y < w.ws_row; y++){    
+      for (int x = 0; x < w.ws_col; x++){
+        if (drawChar('P', centerScrX-32, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('L', centerScrX-27, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('A', centerScrX-22, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('Y', centerScrX-17, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('E', centerScrX-12, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('R', centerScrX-7, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar(player + '0', centerScrX+2, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('W', centerScrX+10, centerScrY+1, x, y, 5, 5)) {}
+        else if (drawChar('I', centerScrX+16, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('N', centerScrX+21, centerScrY, x, y, 4, 6)) {}
+        else std::cout << backgroundChar;
+      }
+      std::cout << std::endl;
+  }
+  sleep_for(nanoseconds(2000*1000000));
+  exit(0);
+}
+
+void newPointPlayer(int player, winsize w) {
+  using namespace std::this_thread; // sleep_for, sleep_until
+  using namespace std::chrono; // nanoseconds, system_clock, seconds
+  
+  system("clear");
+  sleep_for(nanoseconds(500*1000000));
+
+  int centerScrX = static_cast<int>(w.ws_col / 2);
+  int centerScrY = static_cast<int>(w.ws_row / 2) - 3;
+
+  for (int y = 0; y < w.ws_row; y++){    
+      for (int x = 0; x < w.ws_col; x++){
+        if (drawChar('P', centerScrX-35, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('L', centerScrX-30, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('A', centerScrX-25, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('Y', centerScrX-20, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('E', centerScrX-15, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('R', centerScrX-10, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar(player + '0', centerScrX-2, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('+', centerScrX+8, centerScrY, x, y, 6, 6)) {}
+        else if (drawChar('1', centerScrX+15, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('P', centerScrX+25, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('O', centerScrX+30, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('I', centerScrX+35, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('N', centerScrX+40, centerScrY, x, y, 4, 6)) {}
+        else if (drawChar('T', centerScrX+45, centerScrY, x, y, 4, 6)) {}
+        else std::cout << backgroundChar;
+      }
+      std::cout << std::endl;
+  }
+  sleep_for(nanoseconds(2000*1000000));
+  //getchar();
+}
+
+bool drawChar (char ch, int posX, int posY, int x, int y, int width, int height) {
+  char outCh = ' ';
+  if (x >= posX && x < posX + width && y >= posY && y < posY + height) {
+    outCh = getSymbolCh (ch, x - posX, y - posY);
+    if (outCh != ' ') {
+      std::cout << outCh;
+      return true;
+    }
+  }
+  return false;
+}
+
+prediction calcPred(square sqrPred, int leftMargin, int rightMargin, winsize w) {
+  int predTime = 0;
+
+  while (1) {
+    if (sqrPred.posX + sqrPred.sizeX >= w.ws_col - rightMargin - 1 && sqrPred.speedX > 0) break;
+    else if (sqrPred.posX - sqrPred.sizeX <= leftMargin && sqrPred.speedX < 0) break;
+
+    predTime++;
+
+    sqrPred.posX += sqrPred.speedX;
+    sqrPred.posY += sqrPred.speedY;
+
+    if (sqrPred.posY - sqrPred.sizeY <= 0)sqrPred.speedY *= -1;
+    else if (sqrPred.posY + sqrPred.sizeY >= w.ws_row-1)sqrPred.speedY *= -1;
+  }  
+
+  prediction pred = {sqrPred.posY, predTime};
+  return pred;
 }
 

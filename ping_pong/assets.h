@@ -21,3 +21,19 @@ enum charsEnum {
 char getSymbolCh (enum charsEnum ch, int, int);
 void getSizeCh (enum charsEnum ch, int& xSize, int& ySize);
 
+struct square {
+  float posX;
+  float posY;
+  float speedX;
+  float speedY;
+  int sizeX;
+  int sizeY;
+};
+
+struct player {
+  int pos;
+  int score;
+  const int width;
+  const int height;
+};
+

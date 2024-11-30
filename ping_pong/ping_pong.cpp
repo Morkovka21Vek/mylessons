@@ -1,9 +1,10 @@
-//    _             __  __            _              _         ____  ___     __   _    
-//   | |__  _   _  |  \/  | ___  _ __| | _______   _| | ____ _|___ \/ \ \   / /__| | __
-//   | '_ \| | | | | |\/| |/ _ \| '__| |/ / _ \ \ / / |/ / _` | __) | |\ \ / / _ \ |/ /
-//   | |_) | |_| | | |  | | (_) | |  |   < (_) \ V /|   < (_| |/ __/| | \ V /  __/   < 
-//   |_.__/ \__, | |_|  |_|\___/|_|  |_|\_\___/ \_/ |_|\_\__,_|_____|_|  \_/ \___|_|\_\
-//          |___/                                                                      
+/*    _             __  __            _              _         ____  ___     __   _    
+ *   | |__  _   _  |  \/  | ___  _ __| | _______   _| | ____ _|___ \/ \ \   / /__| | __
+ *   | '_ \| | | | | |\/| |/ _ \| '__| |/ / _ \ \ / / |/ / _` | __) | |\ \ / / _ \ |/ /
+ *   | |_) | |_| | | |  | | (_) | |  |   < (_) \ V /|   < (_| |/ __/| | \ V /  __/   < 
+ *   |_.__/ \__, | |_|  |_|\___/|_|  |_|\_\___/ \_/ |_|\_\__,_|_____|_|  \_/ \___|_|\_\
+ *          |___/                                                                      
+ */
 
 //========================== Импорт заголовочных файлов ==========================//
 #include <sys/ioctl.h>
@@ -19,10 +20,17 @@
 
 #include <random>
 #include <functional>
-#include "assets.h"
 #include <vector>
 #include <algorithm>
-//========================== Импорт заголовочных файлов ==========================//
+
+#include "assets.h"
+#include "bot.h"
+
+#ifdef KEYBOARD
+  #include "keyInp.h"
+#elif STD
+  #include "serial_std.h"
+#endif
 
 #ifndef BACKCHAR
   #define BACKGROUND_CHAR '-'
@@ -36,33 +44,6 @@
   #define DEBUG 1
 #endif
 
-//========================== Объявление структур ==========================//
-struct square {
-  float posX;
-  float posY;
-  float speedX;
-  float speedY;
-  int sizeX;
-  int sizeY;
-};
-
-struct player {
-  int pos;
-  int score;
-  const int width;
-  const int height;
-};
-
-struct prediction {
-  float pred;
-  int predTime;
-  std::vector<int> pathX;
-  std::vector<int> pathY;
-};
-//========================== Объявление структур ==========================//
-
-
-prediction calcPred(square sqrPred, int leftMargin, int rightMargin, winsize);
 void playerWinScreen (int player, winsize);
 void newPointPlayer (int player, winsize);
 bool drawChar (enum charsEnum chEn, int posX, int posY, int x, int y);
@@ -86,7 +67,6 @@ int main() {
   auto fpsFrameTime = duration_cast<std::chrono::milliseconds> (fpsStartTime - fpsEndTime);
   std::vector<int> fps_vector = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-  bool plWin;
   const square defaultSqr = {static_cast<float>(windowSize.ws_col/2), static_cast<float>(windowSize.ws_row/2), 1, 0.5F, 4, 2};
   square sqr = defaultSqr;
 
@@ -97,10 +77,10 @@ int main() {
 
   //========================== Инциализация переменных ==========================//
 
-  auto movePlRand = std::bind(std::uniform_int_distribution<>(-3,3),std::default_random_engine());
-  auto winPlRand = std::bind(std::uniform_int_distribution<>(0,2),std::default_random_engine());
+  //auto movePlRand = std::bind(std::uniform_int_distribution<>(-3,3),std::default_random_engine());
+  //auto winPlRand = std::bind(std::uniform_int_distribution<>(0,2),std::default_random_engine());
   
-  pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize);
+  pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
 
   while(1){
 
@@ -124,8 +104,8 @@ int main() {
         sqr = defaultSqr;
       }
 
-      pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize);
-      plWin = winPlRand();
+      pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
+      //plWin = winPlRand();
     }
     else if (sqr.posX + sqr.sizeX >= windowSize.ws_col - rightPl.width - 1) {
       sqr.speedX *= -1;
@@ -135,8 +115,8 @@ int main() {
         sqr = defaultSqr;
       }
 
-      pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize);
-      plWin = winPlRand();
+      pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
+      //plWin = winPlRand();
     }
   
     //========================== Проверка на столкновения ==========================//
@@ -146,6 +126,18 @@ int main() {
 
 
     //========================== Изменение положения и проверка игрока ==========================//
+    #ifdef BOT
+      botTick(leftPl, sqr, windowSize.ws_col, windowSize.ws_row);
+      botTick(rightPl, sqr, windowSize.ws_col, windowSize.ws_row);
+    #elif KEYBOARD
+      keyInpTick (leftPl, 'a', 'z', rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
+    #elif STD
+      serial_stdTick (leftPl, 'a', 'z', rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
+    #else
+      #error use -D[BOT/KEYBOARD/STD]
+    #endif
+
+    /*
     int randomVar = movePlRand();
     int randomVarModule = (randomVar < 0) ? -randomVar : randomVar;
     if (!plWin)
@@ -160,14 +152,12 @@ int main() {
     else
       rightPl.pos = rightPl.pos + (pred.pred - rightPl.pos - static_cast<int>(rightPl.height/2)) / (pred.predTime) + randomVar;
 
-    //leftPl.pos = leftPl.pos + (pred.pred - leftPl.pos - static_cast<int>(leftPl.height/2)) / (pred.predTime);
-    //rightPl.pos = rightPl.pos + (pred.pred - rightPl.pos - static_cast<int>(rightPl.height/2)) / (pred.predTime);
+      */
+//    if (leftPl.pos < 0) leftPl.pos = 0;
+//    else if (leftPl.pos + leftPl.height > windowSize.ws_row) leftPl.pos = windowSize.ws_row - leftPl.height;
 
-    if (leftPl.pos < 0) leftPl.pos = 0;
-    else if (leftPl.pos + leftPl.height > windowSize.ws_row) leftPl.pos = windowSize.ws_row - leftPl.height;
-
-    if (rightPl.pos < 0) rightPl.pos = 0;
-    else if (rightPl.pos + rightPl.height > windowSize.ws_row) rightPl.pos = windowSize.ws_row - rightPl.height;
+//    if (rightPl.pos < 0) rightPl.pos = 0;
+//    else if (rightPl.pos + rightPl.height > windowSize.ws_row) rightPl.pos = windowSize.ws_row - rightPl.height;
 
     pred.predTime--;
     //========================== Изменение и проверка игрока ==========================//
@@ -200,7 +190,6 @@ int main() {
         else if (drawChar(static_cast<charsEnum>(leftPl.score + 1), static_cast<int>(windowSize.ws_col/2) - 6, 1, x, y)) {}
         else if (drawChar(static_cast<charsEnum>(rightPl.score + 1), static_cast<int>(windowSize.ws_col/2) + 2, 1, x, y)) {}
 
-        //else if (std::find(pred.pathX.begin(), pred.pathX.end(), x) != pred.pathX.end() && std::find(pred.pathY.begin(), pred.pathY.end(), y) != pred.pathY.end()) 
         else if (pathFind(pred, x, y)) 
           std::cout << "\033[0;33mx\033[0m";
 
@@ -229,7 +218,7 @@ int main() {
 }
 
 inline bool pathFind(prediction pred, int x, int y) {
-  for (int i=0; i < pred.pathX.size(); i++) {
+  for (int i=0; i < static_cast<int>(pred.pathX.size()); i++) {
     if (pred.pathX[i] == x && pred.pathY[i] == y) return 1;
   }
   return 0;
@@ -301,9 +290,10 @@ void newPointPlayer(int player, winsize windowSize) {
 
 bool drawChar (enum charsEnum chEn, int posX, int posY, int x, int y) {
   char outCh = ' ';
+
   int width=0, height=0;
   getSizeCh(chEn, width, height);
-  //std::cerr << chEn << ' ' << width << ' ' << height << std::endl;
+
   if (x >= posX && x < posX + width && y >= posY && y < posY + height) {
     outCh = getSymbolCh (chEn, x - posX, y - posY);
     if (outCh != ' ') {
@@ -314,25 +304,4 @@ bool drawChar (enum charsEnum chEn, int posX, int posY, int x, int y) {
   return false;
 }
 
-prediction calcPred(square sqrPred, int leftMargin, int rightMargin, winsize windowSize) {
-  prediction pred = {0, 0};
-
-  while (1) {
-    if (sqrPred.posX + sqrPred.sizeX >= windowSize.ws_col - rightMargin - 1 && sqrPred.speedX > 0) break;
-    else if (sqrPred.posX - sqrPred.sizeX <= leftMargin && sqrPred.speedX < 0) break;
-
-    pred.predTime++;
-    pred.pathX.push_back(static_cast<int>(sqrPred.posX));
-    pred.pathY.push_back(static_cast<int>(sqrPred.posY));
-
-    sqrPred.posX += sqrPred.speedX;
-    sqrPred.posY += sqrPred.speedY;
-
-    if (sqrPred.posY - sqrPred.sizeY <= 0)sqrPred.speedY *= -1;
-    else if (sqrPred.posY + sqrPred.sizeY >= windowSize.ws_row-1)sqrPred.speedY *= -1;
-  }  
-
-  pred.pred = sqrPred.posY;
-  return pred;
-}
 

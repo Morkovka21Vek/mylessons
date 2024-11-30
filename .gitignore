@@ -1,5 +1,6 @@
 *.out
 *.o
 bak/
-build
+build/
+*.bak
 

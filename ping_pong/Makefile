@@ -3,7 +3,6 @@ KEYBOARD = ping_pong_pl2.out
 STD = ping_pong_pl2_std.out
 
 COMP_FLAGS := -Wall -pedantic
-COMP_MODE = 
 #CPP_FILES  := $(patsubst %.cpp, %.o, $(wildcard *.cpp))
 
 help:
@@ -16,19 +15,19 @@ help:
 	$(info )
 
 
-bot_comp: $(BOT)
+bot: $(BOT)  
+#Эта строчка вызывает ошибку.
+#Для обхода можно вызвать make ping_pong_bot.out
+#Или переименовать bot например в bbot
 keyboard: $(KEYBOARD)
 std: $(STD)
 
-$(BOT): COMP_MODE = -DBOT
 $(BOT): ping_pong_bot.o assets.o bot.o
 	g++ $^ -o $@
 
-$(KEYBOARD): COMP_MODE = -DKEYBOARD
 $(KEYBOARD): ping_pong_pl2.o assets.o bot.o keyInp.o
 	g++ $^ -o $@
 
-$(STD): COMP_MODE = -DSTD
 $(STD): ping_pong_pl2_std.o assets.o bot.o serial_std.o
 	g++ $^ -o $@
 
@@ -43,8 +42,17 @@ ping_pong_pl2.o: ping_pong.cpp
 ping_pong_pl2_std.o: ping_pong.cpp
 	g++ -c $(COMP_FLAGS) $< -DSTD -o ping_pong_pl2_std.o
 
+#assets.o: assets.cpp
+#	g++ -c $(COMP_FLAGS) $< -DSTD -o assets.o
+
+#bot.o: bot.cpp
+#	g++ -c $(COMP_FLAGS) $< -DSTD -o bot.o
+
+#serial_std.o: serial_std.cpp
+#	g++ -c $(COMP_FLAGS) $< -DSTD -o serial_std.o
+
 %.o: %.cpp
-	g++ -c $(COMP_FLAGS) $< $(COMP_MODE)
+	g++ -c $(COMP_FLAGS) $<
 
 clean:
 	@rm *.o 2> /dev/null

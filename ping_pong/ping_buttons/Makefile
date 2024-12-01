@@ -1,3 +1,3 @@
 start:
-	idf.py monitor | ../ping_pong_pl2.out
+	idf.py monitor | ../ping_pong_pl2_std.out
 

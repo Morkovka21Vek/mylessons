@@ -1,26 +1,43 @@
 import os
 import sys
+import argparse
 
-filesList = []
+def init_parser():
+    parser = argparse.ArgumentParser(description='Pretty code')
+    parser.add_argument('-t', '--tabs', type=int, default=0, help='Fix tabs')
+    parser.add_argument('-e', '--end', help='Fix end spaces', action='store_true')
+    parser.add_argument('-f', '--file', type=str, help='Input files')
+    return parser.parse_args()
 
-if sys.argv[-1].lower() in ["all", "-a", "--all"]:
-    filesList = [os.path.join(os.getcwd(), path) for path in os.listdir(os.getcwd()) if not os.path.isdir(path)]
-elif sys.argv[-1].lower() in ["ex", "-e", "--ex"]:
-    filesList = [os.path.join(os.getcwd(), path) for path in os.listdir(os.getcwd()) if not os.path.isdir(path) and sys.argv[-2] in path]
-elif sys.argv[-1].lower() in ["help", "-h", "--help"]:
-    print("Эта программа предназначена для замены табуляций на пробелы, доступные команды:\n\t-a --all\tПреабразует все файлы в текущем каталоге\n\t<искать в названии> -e --ex\tПреабразует только файлы в названии которых есть некоторые заданные символы\n\t<Путь к файлу>\tПреобразует 1 файл по заданному пути")
+def main(args):
+    if os.path.isdir(args.file):
+        filesList = [os.path.join(args.file, path) for path in os.listdir(args.file) if os.path.isfile(path)]
+        #filesList = [os.listdir(args.file)]
+    elif os.path.isfile(args.file):
+        filesList = [args.file]
+    else:
+        print("Error")
+        exit(1)
 
-else:
-    filesList = [os.path.join(os.getcwd(), sys.argv[-1])]
-    #filesList = [sys.argv[-1]]
+    for file in filesList:
+        print("Преобразование файла: ", file)
+        if input("Можно преобразовать?[Y/n]") != "n":
+            with open(file, 'r+') as f:
+                text = f.read()
+                if args.tabs:
+                    text = text.replace("\t", "".join([' ' for _ in range(args.tabs)]))
+                if args.end:
+                    split_text = text.split("\n")
+                    new_text = []
+                    for line in split_text:
+                        new_text.append(line.rstrip(" "))
+                    text = "\n".join(new_text)
+                f.seek(0)
+                f.write(text)
+                f.truncate()
 
-for file in filesList:
-    print("Преобразование файла: ", file)
-    if input("Можно преобразовать?[Y/n]") != "n":
-        with open(file, 'r+') as f:
-            text = f.read()
-            text = text.replace("\t", "  ")
-            f.seek(0)
-            f.write(text)
-            f.truncate()
+if __name__ == "__main__":
+    args = init_parser()
+    main(args)
+
 

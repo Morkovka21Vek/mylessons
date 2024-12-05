@@ -7,6 +7,6 @@ struct prediction {
   std::vector<int> pathY;
 };
 
-prediction calcPred(struct square sqrPred, int leftMargin, int rightMargin, int width, int height); 
+prediction calcPred(struct square sqrPred, int leftMargin, int rightMargin, int width, int height);
 void botTick(struct player& pl, square, int windowWidth, int windowHeight);
 

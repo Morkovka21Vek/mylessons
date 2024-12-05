@@ -4,7 +4,7 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 
-bool isStartNums; 
+bool isStartNums;
 
 bool kbhit_std() {
     struct termios oldt, newt;
@@ -23,9 +23,9 @@ void serial_stdTick (player& pl1, char up_key1, char down_key1, player& pl2, cha
   while (!isStartNums) {
     std::cin >> InpChar;
     //std::cout << InpChar;
-    if (InpChar == '$') 
+    if (InpChar == '$')
       isStartNums = true;
-  } 
+  }
 
   while(kbhit_std()){
     std::cin >> InpChar;

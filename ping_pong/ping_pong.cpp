@@ -1,9 +1,9 @@
-/*    _             __  __            _              _         ____  ___     __   _    
+/*    _             __  __            _              _         ____  ___     __   _
  *   | |__  _   _  |  \/  | ___  _ __| | _______   _| | ____ _|___ \/ \ \   / /__| | __
  *   | '_ \| | | | | |\/| |/ _ \| '__| |/ / _ \ \ / / |/ / _` | __) | |\ \ / / _ \ |/ /
- *   | |_) | |_| | | |  | | (_) | |  |   < (_) \ V /|   < (_| |/ __/| | \ V /  __/   < 
+ *   | |_) | |_| | | |  | | (_) | |  |   < (_) \ V /|   < (_| |/ __/| | \ V /  __/   <
  *   |_.__/ \__, | |_|  |_|\___/|_|  |_|\_\___/ \_/ |_|\_\__,_|_____|_|  \_/ \___|_|\_\
- *          |___/                                                                      
+ *          |___/
  */
 
 //========================== Импорт заголовочных файлов ==========================//
@@ -79,7 +79,7 @@ int main() {
 
   //auto movePlRand = std::bind(std::uniform_int_distribution<>(-3,3),std::default_random_engine());
   //auto winPlRand = std::bind(std::uniform_int_distribution<>(0,2),std::default_random_engine());
-  
+
   pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
 
   while(1){
@@ -95,7 +95,7 @@ int main() {
     if (sqr.posY - sqr.sizeY <= 0) sqr.speedY *= -1;
     else if (sqr.posY + sqr.sizeY >= windowSize.ws_row-1) sqr.speedY *= -1;
 
-    
+
     if (sqr.posX - sqr.sizeX <= leftPl.width) {
       sqr.speedX *= -1;
       if (!(sqr.posY + sqr.sizeY >= leftPl.pos && sqr.posY - sqr.sizeY < leftPl.pos + leftPl.height)) {
@@ -118,7 +118,7 @@ int main() {
       pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
       //plWin = winPlRand();
     }
-  
+
     //========================== Проверка на столкновения ==========================//
 
     if (leftPl.score >= 3) playerWinScreen (1, windowSize);
@@ -163,9 +163,9 @@ int main() {
     //========================== Изменение и проверка игрока ==========================//
 
     //========================== Отрисовка ==========================//
-    
+
     system("clear");
- 
+
     int fpsCount = (fpsFrameTime.count() == 0) ? 0 : static_cast<int>(1000/fpsFrameTime.count());
     fps_vector.push_back(fpsCount);
     fps_vector.erase(fps_vector.begin());
@@ -179,10 +179,10 @@ int main() {
         if (y == 0 && x <= 6) {}
         else if (drawChar(Char_ball, static_cast<int>(sqr.posX-sqr.sizeX), static_cast<int>(sqr.posY-sqr.sizeY), x, y)) {}
 
-        else if ((sqr.speedX > 0 && x >= windowSize.ws_col - rightPl.width && y == pred.pred) || (sqr.speedX < 0 && x < leftPl.width && y == pred.pred)) 
+        else if ((sqr.speedX > 0 && x >= windowSize.ws_col - rightPl.width && y == pred.pred) || (sqr.speedX < 0 && x < leftPl.width && y == pred.pred))
           std::cout << "\x1B[36mX\033[0m";
 
-        else if ((x < leftPl.width && (y >= leftPl.pos && y < leftPl.pos + leftPl.height)) || 
+        else if ((x < leftPl.width && (y >= leftPl.pos && y < leftPl.pos + leftPl.height)) ||
             (x >= windowSize.ws_col - rightPl.width && (y >= rightPl.pos && y < rightPl.pos + rightPl.height)))
           std::cout << '@';
 
@@ -190,7 +190,7 @@ int main() {
         else if (drawChar(static_cast<charsEnum>(leftPl.score + 1), static_cast<int>(windowSize.ws_col/2) - 6, 1, x, y)) {}
         else if (drawChar(static_cast<charsEnum>(rightPl.score + 1), static_cast<int>(windowSize.ws_col/2) + 2, 1, x, y)) {}
 
-        else if (pathFind(pred, x, y)) 
+        else if (pathFind(pred, x, y))
           std::cout << "\033[0;33mx\033[0m";
 
         else std::cout << BACKGROUND_CHAR;
@@ -207,7 +207,7 @@ int main() {
 
     if (DEBUG) {
       // ОТЛАДОЧНУЮ ИНОРМАЦИЮ ПОМЕЩАТЬ СЮДА!
-      
+
       char ch = getchar();
       if (ch == 'q') return 0;
       else if (ch == 'c') system("clear");
@@ -227,14 +227,14 @@ inline bool pathFind(prediction pred, int x, int y) {
 void playerWinScreen (int player, winsize windowSize) {
   using namespace std::this_thread; // sleep_for, sleep_until
   using namespace std::chrono; // nanoseconds, system_clock, seconds
-                               
+
   system("clear");
   sleep_for(nanoseconds(500*1000000));
 
   int centerScrX = static_cast<int>(windowSize.ws_col / 2);
   int centerScrY = static_cast<int>(windowSize.ws_row / 2) - 3;
 
-  for (int y = 0; y < windowSize.ws_row; y++){    
+  for (int y = 0; y < windowSize.ws_row; y++){
       for (int x = 0; x < windowSize.ws_col; x++){
              if (drawChar(Char_P, centerScrX-32, centerScrY, x, y)) {}
         else if (drawChar(Char_L, centerScrX-27, centerScrY, x, y)) {}
@@ -257,14 +257,14 @@ void playerWinScreen (int player, winsize windowSize) {
 void newPointPlayer(int player, winsize windowSize) {
   using namespace std::this_thread; // sleep_for, sleep_until
   using namespace std::chrono; // nanoseconds, system_clock, seconds
-  
+
   system("clear");
   sleep_for(nanoseconds(500*1000000));
 
   int centerScrX = static_cast<int>(windowSize.ws_col / 2);
   int centerScrY = static_cast<int>(windowSize.ws_row / 2) - 3;
 
-  for (int y = 0; y < windowSize.ws_row; y++){    
+  for (int y = 0; y < windowSize.ws_row; y++){
       for (int x = 0; x < windowSize.ws_col; x++){
              if (drawChar(Char_P, centerScrX-35, centerScrY, x, y)) {}
         else if (drawChar(Char_L, centerScrX-30, centerScrY, x, y)) {}

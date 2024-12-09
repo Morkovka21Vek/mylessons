@@ -1,6 +1,7 @@
 BOT = ping_pong_bot.out
 KEYBOARD = ping_pong_pl2.out
 STD = ping_pong_pl2_std.out
+HTTP = ping_pong_pl2_http.out
 
 COMP_FLAGS := -Wall -pedantic
 #CPP_FILES  := $(patsubst %.cpp, %.o, $(wildcard *.cpp))
@@ -21,6 +22,8 @@ bot: $(BOT)
 #Или переименовать bot например в bbot
 keyboard: $(KEYBOARD)
 std: $(STD)
+http:
+	g++ -o ping_pong_pl2_http.out ping_pong.cpp assets.cpp bot.cpp http.cpp -Wall -pedantic -DHTTP -lcpr -lcurl -lssl -lcrypto
 
 $(BOT): ping_pong_bot.o assets.o bot.o
 	g++ $^ -o $@
@@ -31,7 +34,10 @@ $(KEYBOARD): ping_pong_pl2.o assets.o bot.o keyInp.o
 $(STD): ping_pong_pl2_std.o assets.o bot.o serial_std.o
 	g++ $^ -o $@
 
-all: $(BOT) $(KEYBOARD) $(STD)
+$(HTTP): ping_pong_pl2_http.o assets.o bot.o http.o
+	g++ $^ -o $@ -lcpr -lcurl -lssl -lcrypto
+
+all: $(BOT) $(KEYBOARD) $(STD) $(HTTP)
 
 ping_pong_bot.o: ping_pong.cpp
 	g++ -c $(COMP_FLAGS) $< -DBOT -o ping_pong_bot.o
@@ -42,14 +48,9 @@ ping_pong_pl2.o: ping_pong.cpp
 ping_pong_pl2_std.o: ping_pong.cpp
 	g++ -c $(COMP_FLAGS) $< -DSTD -o ping_pong_pl2_std.o
 
-#assets.o: assets.cpp
-#	g++ -c $(COMP_FLAGS) $< -DSTD -o assets.o
+ping_pong_pl2_http.o: ping_pong.cpp
+	g++ -c $(COMP_FLAGS) $< -DHTTP -lcpr -lcurl -lssl -lcrypto -o ping_pong_pl2_http.o
 
-#bot.o: bot.cpp
-#	g++ -c $(COMP_FLAGS) $< -DSTD -o bot.o
-
-#serial_std.o: serial_std.cpp
-#	g++ -c $(COMP_FLAGS) $< -DSTD -o serial_std.o
 
 %.o: %.cpp
 	g++ -c $(COMP_FLAGS) $<

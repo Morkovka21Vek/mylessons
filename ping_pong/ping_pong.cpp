@@ -30,6 +30,8 @@
   #include "keyInp.h"
 #elif STD
   #include "serial_std.h"
+#elif HTTP
+  #include "http.h"
 #endif
 
 #ifndef BACKCHAR
@@ -133,8 +135,10 @@ int main() {
       keyInpTick (leftPl, 'a', 'z', rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
     #elif STD
       serial_stdTick (leftPl, 'a', 'z', rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
+    #elif HTTP
+      getHttpBtnCout(leftPl, rightPl, windowSize.ws_col, windowSize.ws_row);
     #else
-      #error use -D[BOT/KEYBOARD/STD]
+      #error use -D[BOT/KEYBOARD/STD/HTTP]
     #endif
 
     /*

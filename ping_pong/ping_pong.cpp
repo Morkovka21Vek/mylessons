@@ -24,15 +24,7 @@
 #include <algorithm>
 
 #include "assets.h"
-#include "bot.h"
-
-#ifdef KEYBOARD
-  #include "keyInp.h"
-#elif STD
-  #include "serial_std.h"
-#elif HTTP
-  #include "http.h"
-#endif
+#include "inputs.h"
 
 #ifndef BACKCHAR
   #define BACKGROUND_CHAR '-'

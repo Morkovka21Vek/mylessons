@@ -1,4 +1,4 @@
-#include "bot.h"
+#include "inputs.h"
 #include "assets.h"
 
 prediction calcPred(square sqrPred, int leftMargin, int rightMargin, int windowWidth, int windowHeight) {

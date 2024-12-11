@@ -3,4 +3,5 @@
 bak/
 build/
 *.bak
+*.log
 

@@ -16,14 +16,13 @@ help:
 	$(info )
 
 
-bot: $(BOT)  
+bbot: $(BOT)  
 #Эта строчка вызывает ошибку.
 #Для обхода можно вызвать make ping_pong_bot.out
 #Или переименовать bot например в bbot
 keyboard: $(KEYBOARD)
 std: $(STD)
-http:
-	g++ -o ping_pong_pl2_http.out ping_pong.cpp assets.cpp bot.cpp http.cpp -Wall -pedantic -DHTTP -lcpr -lcurl -lssl -lcrypto
+hhttp: $(HTTP)
 
 $(BOT): ping_pong_bot.o assets.o bot.o
 	g++ $^ -o $@
@@ -35,7 +34,7 @@ $(STD): ping_pong_pl2_std.o assets.o bot.o serial_std.o
 	g++ $^ -o $@
 
 $(HTTP): ping_pong_pl2_http.o assets.o bot.o http.o
-	g++ $^ -o $@ -lcpr -lcurl -lssl -lcrypto
+	g++ $^ -o $@
 
 all: $(BOT) $(KEYBOARD) $(STD) $(HTTP)
 
@@ -49,7 +48,7 @@ ping_pong_pl2_std.o: ping_pong.cpp
 	g++ -c $(COMP_FLAGS) $< -DSTD -o ping_pong_pl2_std.o
 
 ping_pong_pl2_http.o: ping_pong.cpp
-	g++ -c $(COMP_FLAGS) $< -DHTTP -lcpr -lcurl -lssl -lcrypto -o ping_pong_pl2_http.o
+	g++ -c $(COMP_FLAGS) $< -DHTTP -o ping_pong_pl2_http.o
 
 
 %.o: %.cpp
@@ -58,9 +57,6 @@ ping_pong_pl2_http.o: ping_pong.cpp
 clean:
 	@rm *.o 2> /dev/null
 	@rm *.out 2> /dev/null
-
-pretty:
-	@rm *.o 2> /dev/null
 
 debug:
 	$(info )

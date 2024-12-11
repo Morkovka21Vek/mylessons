@@ -1,17 +1,17 @@
-BOT = ping_pong_bot.out
-KEYBOARD = ping_pong_pl2.out
-STD = ping_pong_pl2_std.out
-HTTP = ping_pong_pl2_http.out
-
 COMP_FLAGS := -Wall -pedantic
-#CPP_FILES  := $(patsubst %.cpp, %.o, $(wildcard *.cpp))
+
+BOT = $(COMP_DIR)ping_pong_bot.out
+KEYBOARD = $(COMP_DIR)ping_pong_pl2.out
+STD = $(COMP_DIR)ping_pong_pl2_std.out
+HTTP = $(COMP_DIR)ping_pong_pl2_http.out
 
 help:
 	$(info )
 	$(info ==========HELP==========)
-	$(info use  make bot       for compiling bot version)
+	$(info use  make bbot      for compiling bot version)
 	$(info use  make keyboard  for compiling keyboard version)
 	$(info use  make std       for compiling idf-monitor version)
+	$(info use  make hhttp     for compiling http-socket version)
 	$(info ==========HELP==========)
 	$(info )
 
@@ -61,7 +61,7 @@ clean:
 debug:
 	$(info )
 	$(info =========================)
-	$(info CPP_FILES = $(CPP_FILES))
+	$(info NONE)
 	$(info =========================)
 	$(info )
 

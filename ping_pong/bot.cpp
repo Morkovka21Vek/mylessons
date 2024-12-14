@@ -33,3 +33,25 @@ void botTick(player& pl, square sqr, int windowWidth, int windowHeight) {
     else if (pl.pos + pl.height > windowHeight) pl.pos = windowHeight - pl.height;
 
 }
+
+/*
+  int randomVar = movePlRand();
+  int randomVarModule = (randomVar < 0) ? -randomVar : randomVar;
+  if (!plWin)
+    leftPl.pos = leftPl.pos + (pred.pred - randomVar - leftPl.pos - leftPl.height) / (pred.predTime + randomVarModule) + randomVar;
+  else
+    leftPl.pos = leftPl.pos + (pred.pred - leftPl.pos - static_cast<int>(leftPl.height/2)) / (pred.predTime) + randomVar;
+  
+  randomVar = movePlRand();
+  randomVarModule = (randomVar < 0) ? -randomVar : randomVar;
+  if (!plWin)
+    rightPl.pos = rightPl.pos + (pred.pred - randomVar - rightPl.pos - rightPl.height) / (pred.predTime + randomVarModule) + randomVar;
+  else
+    rightPl.pos = rightPl.pos + (pred.pred - rightPl.pos - static_cast<int>(rightPl.height/2)) / (pred.predTime) + randomVar;
+*/
+//if (leftPl.pos < 0) leftPl.pos = 0;
+//else if (leftPl.pos + leftPl.height > windowSize.ws_row) leftPl.pos = windowSize.ws_row - leftPl.height;
+
+//if (rightPl.pos < 0) rightPl.pos = 0;
+//else if (rightPl.pos + rightPl.height > windowSize.ws_row) rightPl.pos = windowSize.ws_row - rightPl.height;
+

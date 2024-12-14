@@ -1,9 +1,12 @@
 COMP_FLAGS := -Wall -pedantic
 
-BOT = $(COMP_DIR)ping_pong_bot.out
-KEYBOARD = $(COMP_DIR)ping_pong_pl2.out
-STD = $(COMP_DIR)ping_pong_pl2_std.out
-HTTP = $(COMP_DIR)ping_pong_pl2_http.out
+BOT      = ping_pong_bot.out
+KEYBOARD = ping_pong_pl2.out
+STD      = ping_pong_pl2_std.out
+HTTP     = ping_pong_pl2_http.out
+
+OBG_FILES := assets.o draw.o bot.o
+#OBG_FILES := $(patsubst %.cpp, %.o, $(wildcard *.cpp))
 
 help:
 	$(info )
@@ -24,16 +27,16 @@ keyboard: $(KEYBOARD)
 std: $(STD)
 hhttp: $(HTTP)
 
-$(BOT): ping_pong_bot.o assets.o bot.o
+$(BOT): ping_pong_bot.o $(OBG_FILES)
 	g++ $^ -o $@
 
-$(KEYBOARD): ping_pong_pl2.o assets.o bot.o keyInp.o
+$(KEYBOARD): ping_pong_pl2.o $(OBG_FILES) keyInp.o
 	g++ $^ -o $@
 
-$(STD): ping_pong_pl2_std.o assets.o bot.o serial_std.o
+$(STD): ping_pong_pl2_std.o $(OBG_FILES) serial_std.o
 	g++ $^ -o $@
 
-$(HTTP): ping_pong_pl2_http.o assets.o bot.o http.o
+$(HTTP): ping_pong_pl2_http.o $(OBG_FILES) http.o
 	g++ $^ -o $@
 
 all: $(BOT) $(KEYBOARD) $(STD) $(HTTP)
@@ -61,14 +64,10 @@ clean:
 debug:
 	$(info )
 	$(info =========================)
-	$(info NONE)
+	$(info OBG_FILES = $(OBG_FILES))
 	$(info =========================)
 	$(info )
 
 diff:
 	@git diff --name-only HEAD .
-
-run_std_pl2:
-	idf.py monitor | ./ping_pong_pl2.out
-
 

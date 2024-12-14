@@ -6,7 +6,6 @@
  *          |___/
  */
 
-//========================== Импорт заголовочных файлов ==========================//
 #include <sys/ioctl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -25,6 +24,7 @@
 
 #include "assets.h"
 #include "inputs.h"
+#include "draw.h"
 
 #ifndef BACKCHAR
   #define BACKGROUND_CHAR '-'
@@ -38,9 +38,6 @@
   #define DEBUG 1
 #endif
 
-void playerWinScreen (int player, winsize);
-void newPointPlayer (int player, winsize);
-bool drawChar (enum charsEnum chEn, int posX, int posY, int x, int y);
 inline bool pathFind(prediction pred, int x, int y);
 
 int main() {
@@ -93,7 +90,8 @@ int main() {
     if (sqr.posX - sqr.sizeX <= leftPl.width) {
       sqr.speedX *= -1;
       if (!(sqr.posY + sqr.sizeY >= leftPl.pos && sqr.posY - sqr.sizeY < leftPl.pos + leftPl.height)) {
-        newPointPlayer(2, windowSize);
+        newPointPlayer(2, windowSize.ws_col, windowSize.ws_row, BACKGROUND_CHAR);
+        sleep_for(nanoseconds(2000*1000000));
         rightPl.score++;
         sqr = defaultSqr;
       }
@@ -104,7 +102,8 @@ int main() {
     else if (sqr.posX + sqr.sizeX >= windowSize.ws_col - rightPl.width - 1) {
       sqr.speedX *= -1;
       if (!(sqr.posY + sqr.sizeY >= rightPl.pos && sqr.posY - sqr.sizeY < rightPl.pos + rightPl.height)) {
-        newPointPlayer(1, windowSize);
+        newPointPlayer(1, windowSize.ws_col, windowSize.ws_row, BACKGROUND_CHAR);
+        sleep_for(nanoseconds(2000*1000000));
         leftPl.score++;
         sqr = defaultSqr;
       }
@@ -115,8 +114,15 @@ int main() {
 
     //========================== Проверка на столкновения ==========================//
 
-    if (leftPl.score >= 3) playerWinScreen (1, windowSize);
-    else if (rightPl.score >= 3) playerWinScreen (2, windowSize);
+    if (leftPl.score >= 3) {
+      playerWinScreen (1, windowSize.ws_col, windowSize.ws_row, BACKGROUND_CHAR);
+      sleep_for(nanoseconds(2000*1000000));
+      exit(0);
+    } else if (rightPl.score >= 3) {
+      playerWinScreen (2, windowSize.ws_col, windowSize.ws_row, BACKGROUND_CHAR);
+      sleep_for(nanoseconds(2000*1000000));
+      exit(0);
+    }
 
 
     //========================== Изменение положения и проверка игрока ==========================//
@@ -132,28 +138,6 @@ int main() {
     #else
       #error use -D[BOT/KEYBOARD/STD/HTTP]
     #endif
-
-    /*
-    int randomVar = movePlRand();
-    int randomVarModule = (randomVar < 0) ? -randomVar : randomVar;
-    if (!plWin)
-      leftPl.pos = leftPl.pos + (pred.pred - randomVar - leftPl.pos - leftPl.height) / (pred.predTime + randomVarModule) + randomVar;
-    else
-      leftPl.pos = leftPl.pos + (pred.pred - leftPl.pos - static_cast<int>(leftPl.height/2)) / (pred.predTime) + randomVar;
-
-    randomVar = movePlRand();
-    randomVarModule = (randomVar < 0) ? -randomVar : randomVar;
-    if (!plWin)
-      rightPl.pos = rightPl.pos + (pred.pred - randomVar - rightPl.pos - rightPl.height) / (pred.predTime + randomVarModule) + randomVar;
-    else
-      rightPl.pos = rightPl.pos + (pred.pred - rightPl.pos - static_cast<int>(rightPl.height/2)) / (pred.predTime) + randomVar;
-
-      */
-//    if (leftPl.pos < 0) leftPl.pos = 0;
-//    else if (leftPl.pos + leftPl.height > windowSize.ws_row) leftPl.pos = windowSize.ws_row - leftPl.height;
-
-//    if (rightPl.pos < 0) rightPl.pos = 0;
-//    else if (rightPl.pos + rightPl.height > windowSize.ws_row) rightPl.pos = windowSize.ws_row - rightPl.height;
 
     pred.predTime--;
     //========================== Изменение и проверка игрока ==========================//
@@ -202,8 +186,6 @@ int main() {
     fpsFrameTime = duration_cast<std::chrono::milliseconds> (fpsEndTime - fpsStartTime );
 
     if (DEBUG) {
-      // ОТЛАДОЧНУЮ ИНОРМАЦИЮ ПОМЕЩАТЬ СЮДА!
-
       char ch = getchar();
       if (ch == 'q') return 0;
       else if (ch == 'c') system("clear");
@@ -219,85 +201,4 @@ inline bool pathFind(prediction pred, int x, int y) {
   }
   return 0;
 }
-
-void playerWinScreen (int player, winsize windowSize) {
-  using namespace std::this_thread; // sleep_for, sleep_until
-  using namespace std::chrono; // nanoseconds, system_clock, seconds
-
-  system("clear");
-  sleep_for(nanoseconds(500*1000000));
-
-  int centerScrX = static_cast<int>(windowSize.ws_col / 2);
-  int centerScrY = static_cast<int>(windowSize.ws_row / 2) - 3;
-
-  for (int y = 0; y < windowSize.ws_row; y++){
-      for (int x = 0; x < windowSize.ws_col; x++){
-             if (drawChar(Char_P, centerScrX-32, centerScrY, x, y)) {}
-        else if (drawChar(Char_L, centerScrX-27, centerScrY, x, y)) {}
-        else if (drawChar(Char_A, centerScrX-22, centerScrY, x, y)) {}
-        else if (drawChar(Char_Y, centerScrX-17, centerScrY, x, y)) {}
-        else if (drawChar(Char_E, centerScrX-12, centerScrY, x, y)) {}
-        else if (drawChar(Char_R, centerScrX-7, centerScrY, x, y)) {}
-        else if (drawChar(static_cast<charsEnum>(player + 1), centerScrX+2, centerScrY, x, y)) {}
-        else if (drawChar(Char_W, centerScrX+10, centerScrY+1, x, y)) {}
-        else if (drawChar(Char_I, centerScrX+16, centerScrY, x, y)) {}
-        else if (drawChar(Char_N, centerScrX+21, centerScrY, x, y)) {}
-        else std::cout << BACKGROUND_CHAR;
-      }
-      std::cout << std::endl;
-  }
-  sleep_for(nanoseconds(2000*1000000));
-  exit(0);
-}
-
-void newPointPlayer(int player, winsize windowSize) {
-  using namespace std::this_thread; // sleep_for, sleep_until
-  using namespace std::chrono; // nanoseconds, system_clock, seconds
-
-  system("clear");
-  sleep_for(nanoseconds(500*1000000));
-
-  int centerScrX = static_cast<int>(windowSize.ws_col / 2);
-  int centerScrY = static_cast<int>(windowSize.ws_row / 2) - 3;
-
-  for (int y = 0; y < windowSize.ws_row; y++){
-      for (int x = 0; x < windowSize.ws_col; x++){
-             if (drawChar(Char_P, centerScrX-35, centerScrY, x, y)) {}
-        else if (drawChar(Char_L, centerScrX-30, centerScrY, x, y)) {}
-        else if (drawChar(Char_A, centerScrX-25, centerScrY, x, y)) {}
-        else if (drawChar(Char_Y, centerScrX-20, centerScrY, x, y)) {}
-        else if (drawChar(Char_E, centerScrX-15, centerScrY, x, y)) {}
-        else if (drawChar(Char_R, centerScrX-10, centerScrY, x, y)) {}
-        else if (drawChar(static_cast<charsEnum>(player + 1), centerScrX-2, centerScrY, x, y)) {}
-        else if (drawChar(Char_plus, centerScrX+8, centerScrY, x, y)) {}
-        else if (drawChar(Char_1, centerScrX+15, centerScrY, x, y)) {}
-        else if (drawChar(Char_P, centerScrX+25, centerScrY, x, y)) {}
-        else if (drawChar(Char_O, centerScrX+30, centerScrY, x, y)) {}
-        else if (drawChar(Char_I, centerScrX+35, centerScrY, x, y)) {}
-        else if (drawChar(Char_N, centerScrX+40, centerScrY, x, y)) {}
-        else if (drawChar(Char_T, centerScrX+45, centerScrY, x, y)) {}
-        else std::cout << BACKGROUND_CHAR;
-      }
-      std::cout << std::endl;
-  }
-  sleep_for(nanoseconds(2000*1000000));
-  //getchar();
-}
-
-bool drawChar (enum charsEnum chEn, int posX, int posY, int x, int y) {
-  char outCh = ' ';
-
-  int width=0, height=0;
-  getSizeCh(chEn, width, height);
-
-  if (x >= posX && x < posX + width && y >= posY && y < posY + height) {
-    outCh = getSymbolCh (chEn, x - posX, y - posY);
-    if (outCh != ' ') {
-      std::cout << outCh;
-      return true;
-    }
-  }
-  return false;
-}
-
 

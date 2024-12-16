@@ -1,4 +1,4 @@
-#include "assets.h"
+#include "include/assets.h"
 #include <iostream>
 #include <unistd.h>
 #include <termios.h>

@@ -1,5 +1,5 @@
-#include "inputs.h"
-#include "assets.h"
+#include "include/inputs.h"
+#include "include/assets.h"
 
 prediction calcPred(square sqrPred, int leftMargin, int rightMargin, int windowWidth, int windowHeight) {
   prediction pred = {0, 0};
@@ -25,9 +25,10 @@ prediction calcPred(square sqrPred, int leftMargin, int rightMargin, int windowW
 
 //bool plWin;
 //prediction pred;
-void botTick(player& pl, square sqr, int windowWidth, int windowHeight) {
+void botTick(player& pl, square sqr, prediction pred, int windowWidth, int windowHeight) {
 
-    pl.pos = sqr.posY - static_cast<int>(pl.height/2);
+    //pl.pos = sqr.posY - static_cast<int>(pl.height/2);
+    pl.pos -= (pred.pred - sqr.posY - static_cast<int>(pl.height/2)) / pred.predTime + (static_cast<int>(windowHeight/2) - sqr.posY) / 20 * pred.predTime;
 
     if (pl.pos < 0) pl.pos = 0;
     else if (pl.pos + pl.height > windowHeight) pl.pos = windowHeight - pl.height;

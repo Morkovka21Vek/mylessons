@@ -22,9 +22,9 @@
 #include <vector>
 #include <algorithm>
 
-#include "assets.h"
-#include "inputs.h"
-#include "draw.h"
+#include "include/assets.h"
+#include "include/inputs.h"
+#include "include/draw.h"
 
 #ifndef BACKCHAR
   #define BACKGROUND_CHAR '-'
@@ -53,6 +53,9 @@ int main() {
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &windowSize);
   windowSize.ws_row -= 1;
 
+#ifdef HTTP
+  initSocket();
+#endif
 
   auto fpsStartTime = std::chrono::high_resolution_clock::now(), fpsEndTime = std::chrono::high_resolution_clock::now();
   auto fpsFrameTime = duration_cast<std::chrono::milliseconds> (fpsStartTime - fpsEndTime);
@@ -127,14 +130,15 @@ int main() {
 
     //========================== Изменение положения и проверка игрока ==========================//
     #ifdef BOT
-      botTick(leftPl, sqr, windowSize.ws_col, windowSize.ws_row);
-      botTick(rightPl, sqr, windowSize.ws_col, windowSize.ws_row);
+      botTick(leftPl,  sqr, pred, windowSize.ws_col, windowSize.ws_row);
+      botTick(rightPl, sqr, pred, windowSize.ws_col, windowSize.ws_row);
     #elif KEYBOARD
       keyInpTick (leftPl, 'a', 'z', rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
     #elif STD
       serial_stdTick (leftPl, 'a', 'z', rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
     #elif HTTP
       getHttpBtnCout(leftPl, rightPl, windowSize.ws_col, windowSize.ws_row);
+      botTick(rightPl, sqr, pred, windowSize.ws_col, windowSize.ws_row);
     #else
       #error use -D[BOT/KEYBOARD/STD/HTTP]
     #endif

@@ -1,4 +1,4 @@
-#include "assets.h"
+#include "include/assets.h"
 
 const char zeroChar[6][4] = {
   {'0', '0', '0', '0'},

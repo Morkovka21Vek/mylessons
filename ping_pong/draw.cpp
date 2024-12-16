@@ -1,6 +1,6 @@
 #include <iostream>
-#include "assets.h"
-#include "draw.h"
+#include "include/assets.h"
+#include "include/draw.h"
 
 void playerWinScreen (int player, int windowWidth, int windowHeight, char background_char) {
   system("clear");

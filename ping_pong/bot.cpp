@@ -27,8 +27,8 @@ prediction calcPred(square sqrPred, int leftMargin, int rightMargin, int windowW
 //prediction pred;
 void botTick(player& pl, square sqr, prediction pred, int windowWidth, int windowHeight) {
 
-    //pl.pos = sqr.posY - static_cast<int>(pl.height/2);
-    pl.pos -= (pred.pred - sqr.posY - static_cast<int>(pl.height/2)) / pred.predTime + (static_cast<int>(windowHeight/2) - sqr.posY) / 20 * pred.predTime;
+    pl.pos = sqr.posY - static_cast<int>(pl.height/2);
+    //pl.pos -= (pred.pred - sqr.posY - static_cast<int>(pl.height/2)) / pred.predTime + (static_cast<int>(windowHeight/2) - sqr.posY) / 20 * pred.predTime;
 
     if (pl.pos < 0) pl.pos = 0;
     else if (pl.pos + pl.height > windowHeight) pl.pos = windowHeight - pl.height;

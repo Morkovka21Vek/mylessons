@@ -4,9 +4,9 @@
 #include "include/draw.h"
 #include "include/inputs.h"
 
-inline bool pathFind(prediction pred, int x, int y);
+inline bool pathFind(const prediction&, int x, int y);
 
-void drawScreen(square sqr, player rightPl, player leftPl, int windowWidth, int windowHeight, int fps, char BACKGROUND_CHAR, prediction pred) {
+void drawScreen(const square& sqr, const player& rightPl, const player& leftPl, int windowWidth, int windowHeight, int fps, const char BACKGROUND_CHAR, const prediction& pred) {
   system("clear");
   std::cout << std::setfill(BACKGROUND_CHAR) << std::setw(7) << "\x1B[92m" << fps << "FPS\033[0m";
 
@@ -91,13 +91,11 @@ void newPointPlayer(int player, int windowWidth, int windowHeight, char backgrou
 }
 
 bool drawChar (enum charsEnum chEn, int posX, int posY, int x, int y) {
-  char outCh = ' ';
-
   int width=0, height=0;
   getSizeCh(chEn, width, height);
 
   if (x >= posX && x < posX + width && y >= posY && y < posY + height) {
-    outCh = getSymbolCh (chEn, x - posX, y - posY);
+    char outCh = getSymbolCh (chEn, x - posX, y - posY);
     if (outCh != ' ') {
       std::cout << outCh;
       return true;
@@ -106,7 +104,7 @@ bool drawChar (enum charsEnum chEn, int posX, int posY, int x, int y) {
   return false;
 }
 
-inline bool pathFind(prediction pred, int x, int y) {
+inline bool pathFind(const prediction& pred, int x, int y) {
   for (int i=0; i < static_cast<int>(pred.pathX.size()); i++) {
     if (pred.pathX[i] == x && pred.pathY[i] == y) return 1;
   }

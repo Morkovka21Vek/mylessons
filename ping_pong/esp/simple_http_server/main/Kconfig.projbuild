@@ -26,4 +26,11 @@ menu "Example Configuration"
         help
             The client's password which used for basic authenticate.
 
+    config FROM_MORKOVKA_WI_FI_TYPE
+        bool "wi-fi type"
+        default y
+        help
+          yes - Creating an access point
+          no - Connect to access point
+
 endmenu

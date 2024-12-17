@@ -8,7 +8,7 @@ struct prediction {
 };
 
 prediction calcPred(struct square sqrPred, int leftMargin, int rightMargin, int width, int height);
-void botTick(struct player& pl, square, prediction, int windowWidth, int windowHeight);
+void botTick(struct player& pl, const square&, const prediction&, int windowWidth, int windowHeight);
 
 
 void keyInpTick (player& pl, char up_key, char down_key, int windowWidth, int windowHeight);

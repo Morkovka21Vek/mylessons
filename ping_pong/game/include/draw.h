@@ -4,5 +4,5 @@ bool drawChar (enum charsEnum chEn, int posX, int posY, int x, int y);
 
 struct prediction;
 
-void drawScreen(square sqr, player rightPl, player leftPl, int windowWidth, int windowHeight, int fps, char BACKGROUND_CHAR, prediction pred);
+void drawScreen(const square& sqr, const player& rightPl, const player& leftPl, int windowWidth, int windowHeight, int fps, const char BACKGROUND_CHAR, const prediction&);
 

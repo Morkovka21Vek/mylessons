@@ -38,9 +38,8 @@
   #define DEBUG 1
 #endif
 
-inline bool pathFind(prediction pred, int x, int y);
 
-int main() {
+int main(int argc, char const *argv[]) {
   using namespace std::this_thread; // sleep_for, sleep_until
   using namespace std::chrono; // nanoseconds, system_clock, seconds
 
@@ -100,7 +99,6 @@ int main() {
       }
 
       pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
-      //plWin = winPlRand();
     }
     else if (sqr.posX + sqr.sizeX >= windowSize.ws_col - rightPl.width - 1) {
       sqr.speedX *= -1;
@@ -112,7 +110,6 @@ int main() {
       }
 
       pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
-      //plWin = winPlRand();
     }
 
     //========================== Проверка на столкновения ==========================//
@@ -133,9 +130,11 @@ int main() {
       botTick(leftPl,  sqr, pred, windowSize.ws_col, windowSize.ws_row);
       botTick(rightPl, sqr, pred, windowSize.ws_col, windowSize.ws_row);
     #elif KEYBOARD
-      keyInpTick (leftPl, 'a', 'z', rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
+      keyInpTick (leftPl,  'a',  'z', windowSize.ws_col, windowSize.ws_row);
+      keyInpTick (rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
     #elif STD
-      serial_stdTick (leftPl, 'a', 'z', rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
+      serial_stdTick (leftPl,  'a',  'z', windowSize.ws_col, windowSize.ws_row);
+      serial_stdTick (rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
     #elif HTTP
       getHttpBtnCout(leftPl, rightPl, windowSize.ws_col, windowSize.ws_row);
       botTick(rightPl, sqr, pred, windowSize.ws_col, windowSize.ws_row);
@@ -147,41 +146,11 @@ int main() {
     //========================== Изменение и проверка игрока ==========================//
 
     //========================== Отрисовка ==========================//
-
-    system("clear");
-
     int fpsCount = (fpsFrameTime.count() == 0) ? 0 : static_cast<int>(1000/fpsFrameTime.count());
     fps_vector.push_back(fpsCount);
     fps_vector.erase(fps_vector.begin());
     int meanFps = static_cast<int> (accumulate(fps_vector.begin(), fps_vector.end(), 0) / fps_vector.size());
-    std::cout << std::setfill(BACKGROUND_CHAR) << std::setw(7) << "\x1B[92m" << meanFps << "FPS\033[0m";
-
-    for (int y = 0; y < windowSize.ws_row; y++){
-      for (int x = 0; x < windowSize.ws_col; x++){
-        //if ((x >= sqr.posX-sqr.sizeX && x <= sqr.posX+sqr.sizeX) && (y >= sqr.posY-sqr.sizeY && y <= sqr.posY+sqr.sizeY))
-        //  std::cout << '#';
-        if (y == 0 && x <= 6) {}
-        else if (drawChar(Char_ball, static_cast<int>(sqr.posX-sqr.sizeX), static_cast<int>(sqr.posY-sqr.sizeY), x, y)) {}
-
-        else if ((sqr.speedX > 0 && x >= windowSize.ws_col - rightPl.width && y == pred.pred) || (sqr.speedX < 0 && x < leftPl.width && y == pred.pred))
-          std::cout << "\x1B[36mX\033[0m";
-
-        else if ((x < leftPl.width && (y >= leftPl.pos && y < leftPl.pos + leftPl.height)) ||
-            (x >= windowSize.ws_col - rightPl.width && (y >= rightPl.pos && y < rightPl.pos + rightPl.height)))
-          std::cout << '@';
-
-        else if (drawChar(Char_colon, static_cast<int>(windowSize.ws_col/2) - 2, 1, x, y)) {}
-        else if (drawChar(static_cast<charsEnum>(leftPl.score + 1), static_cast<int>(windowSize.ws_col/2) - 6, 1, x, y)) {}
-        else if (drawChar(static_cast<charsEnum>(rightPl.score + 1), static_cast<int>(windowSize.ws_col/2) + 2, 1, x, y)) {}
-
-        else if (pathFind(pred, x, y))
-          std::cout << "\033[0;33mx\033[0m";
-
-        else std::cout << BACKGROUND_CHAR;
-
-      }
-      std::cout << std::endl;
-    }
+    drawScreen(sqr, rightPl, leftPl, windowSize.ws_col, windowSize.ws_row, meanFps, BACKGROUND_CHAR, pred);
     //========================== Отрисовка ==========================//
 
     sleep_for(nanoseconds(30*1000000));
@@ -189,19 +158,12 @@ int main() {
     fpsEndTime = std::chrono::high_resolution_clock::now();
     fpsFrameTime = duration_cast<std::chrono::milliseconds> (fpsEndTime - fpsStartTime );
 
-    if (DEBUG) {
-      char ch = getchar();
-      if (ch == 'q') return 0;
-      else if (ch == 'c') system("clear");
-    }
+#if DEBUG
+    char ch = getchar();
+    if (ch == 'q') return 0;
+    else if (ch == 'c') system("clear");
+#endif
 
-  }
-  return 0;
-}
-
-inline bool pathFind(prediction pred, int x, int y) {
-  for (int i=0; i < static_cast<int>(pred.pathX.size()); i++) {
-    if (pred.pathX[i] == x && pred.pathY[i] == y) return 1;
   }
   return 0;
 }

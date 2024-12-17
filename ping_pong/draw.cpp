@@ -1,6 +1,42 @@
 #include <iostream>
+#include <iomanip>
 #include "include/assets.h"
 #include "include/draw.h"
+#include "include/inputs.h"
+
+inline bool pathFind(prediction pred, int x, int y);
+
+void drawScreen(square sqr, player rightPl, player leftPl, int windowWidth, int windowHeight, int fps, char BACKGROUND_CHAR, prediction pred) {
+  system("clear");
+  std::cout << std::setfill(BACKGROUND_CHAR) << std::setw(7) << "\x1B[92m" << fps << "FPS\033[0m";
+
+  for (int y = 0; y < windowHeight; y++){
+    for (int x = 0; x < windowWidth; x++){
+      if (y == 0 && x <= 6) {}
+      else if (drawChar(Char_ball, static_cast<int>(sqr.posX-sqr.sizeX), static_cast<int>(sqr.posY-sqr.sizeY), x, y)) {}
+
+      else if ((sqr.speedX > 0 && x >= windowWidth - rightPl.width && y == pred.pred) || (sqr.speedX < 0 && x < leftPl.width && y == pred.pred))
+        std::cout << "\x1B[36mX\033[0m";
+
+      else if ((x < leftPl.width && (y >= leftPl.pos && y < leftPl.pos + leftPl.height)) ||
+          (x >= windowWidth - rightPl.width && (y >= rightPl.pos && y < rightPl.pos + rightPl.height)))
+        std::cout << '@';
+
+      else if (drawChar(Char_colon, static_cast<int>(windowWidth/2) - 2, 1, x, y)) {}
+      else if (drawChar(static_cast<charsEnum>(leftPl.score + 1), static_cast<int>(windowWidth/2) - 6, 1, x, y)) {}
+      else if (drawChar(static_cast<charsEnum>(rightPl.score + 1), static_cast<int>(windowWidth/2) + 2, 1, x, y)) {}
+
+      else if (pathFind(pred, x, y))
+        std::cout << "\033[0;33mx\033[0m";
+
+      else std::cout << BACKGROUND_CHAR;
+
+    }
+    std::cout << std::endl;
+  }
+}
+
+
 
 void playerWinScreen (int player, int windowWidth, int windowHeight, char background_char) {
   system("clear");
@@ -68,4 +104,11 @@ bool drawChar (enum charsEnum chEn, int posX, int posY, int x, int y) {
     }
   }
   return false;
+}
+
+inline bool pathFind(prediction pred, int x, int y) {
+  for (int i=0; i < static_cast<int>(pred.pathX.size()); i++) {
+    if (pred.pathX[i] == x && pred.pathY[i] == y) return 1;
+  }
+  return 0;
 }

@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <iostream>
 #include <unistd.h>
+#include <vector>
 
 
 std::pair<bool,char> kbhit() {
@@ -31,21 +32,25 @@ std::pair<bool,char> kbhit() {
     return (result);
 }
 
-void keyInpTick (player& pl1, char up_key1, char down_key1, player& pl2, char up_key2, char down_key2, int windowWidth, int windowHeight) {
+void keyInpTick (player& pl, char up_key, char down_key, int windowWidth, int windowHeight) {
+  std::vector<char> buffer;
+
   std::pair<bool,char> p;
+
   do{
     p = kbhit();
     if (p.first){
-      if (p.second == up_key1) pl1.pos--;
-      else if (p.second == down_key1) pl1.pos++;
-      else if (p.second == up_key2) pl2.pos--;
-      else if (p.second == down_key2) pl2.pos++;
+      if (p.second == up_key) pl.pos--;
+      else if (p.second == down_key) pl.pos++;
+      else buffer.push_back(p.second);
     }
   } while(p.first);
-  if (pl1.pos < 0) pl1.pos = 0;
-  else if (pl1.pos + pl1.height > windowHeight) pl1.pos = windowHeight - pl1.height;
 
-  if (pl2.pos < 0) pl2.pos = 0;
-  else if (pl2.pos + pl2.height > windowHeight) pl2.pos = windowHeight - pl2.height;
+  for (int i=0; i < static_cast<int>(buffer.size()); i++) {
+    ungetc(buffer[i], stdin);
+  }
+
+  if (pl.pos < 0) pl.pos = 0;
+  else if (pl.pos + pl.height > windowHeight) pl.pos = windowHeight - pl.height;
 }
 

@@ -3,8 +3,7 @@
 #include <unistd.h>
 #include <termios.h>
 #include <sys/ioctl.h>
-
-bool isStartNums;
+#include <vector>
 
 bool kbhit_std() {
     struct termios oldt, newt;
@@ -18,27 +17,31 @@ bool kbhit_std() {
     return bytesWaiting > 0;
 }
 
-void serial_stdTick (player& pl1, char up_key1, char down_key1, player& pl2, char up_key2, char down_key2, int windowWidth, int windowHeight) {
+void serial_stdTick (player& pl, char up_key, char down_key, int windowWidth, int windowHeight) {
+  static bool isStartNums;
+
   char InpChar;
   while (!isStartNums) {
     std::cin >> InpChar;
-    //std::cout << InpChar;
     if (InpChar == '$')
       isStartNums = true;
   }
 
+  std::vector<char> buffer;
+
   while(kbhit_std()){
     std::cin >> InpChar;
-    if (InpChar == up_key1) pl1.pos--;
-    else if (InpChar == down_key1) pl1.pos++;
-    else if (InpChar == up_key2) pl2.pos--;
-    else if (InpChar == down_key2) pl2.pos++;
+
+    if (InpChar == up_key) pl.pos--;
+    else if (InpChar == down_key) pl.pos++;
+    else buffer.push_back(InpChar);
   }
 
-  if (pl1.pos < 0) pl1.pos = 0;
-  else if (pl1.pos + pl1.height > windowHeight) pl1.pos = windowHeight - pl1.height;
+  for (int i=0; i < static_cast<int>(buffer.size()); i++) {
+    ungetc(buffer[i], stdin);
+  }
 
-  if (pl2.pos < 0) pl2.pos = 0;
-  else if (pl2.pos + pl2.height > windowHeight) pl2.pos = windowHeight - pl2.height;
+  if (pl.pos < 0) pl.pos = 0;
+  else if (pl.pos + pl.height > windowHeight) pl.pos = windowHeight - pl.height;
 }
 

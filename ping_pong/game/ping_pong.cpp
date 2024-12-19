@@ -43,11 +43,6 @@ int main(int argc, char const *argv[]) {
   using namespace std::this_thread; // sleep_for, sleep_until
   using namespace std::chrono; // nanoseconds, system_clock, seconds
 
-  using std::chrono::high_resolution_clock;
-  using std::chrono::duration_cast;
-  using std::chrono::duration;
-  using std::chrono::milliseconds;
-  //========================== Инциализация переменных ==========================//
   struct winsize windowSize;
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &windowSize);
   windowSize.ws_row -= 1;
@@ -68,11 +63,6 @@ int main(int argc, char const *argv[]) {
 
   prediction pred;
 
-  //========================== Инциализация переменных ==========================//
-
-  //auto movePlRand = std::bind(std::uniform_int_distribution<>(-3,3),std::default_random_engine());
-  //auto winPlRand = std::bind(std::uniform_int_distribution<>(0,2),std::default_random_engine());
-
   pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
 
   while(1){
@@ -84,7 +74,8 @@ int main(int argc, char const *argv[]) {
 
     pred.pathX.erase(pred.pathX.begin());
     pred.pathY.erase(pred.pathY.begin());
-    //========================== Проверка на столкновения ==========================//
+
+
     if (sqr.posY - sqr.sizeY <= 0) sqr.speedY *= -1;
     else if (sqr.posY + sqr.sizeY >= windowSize.ws_row-1) sqr.speedY *= -1;
 
@@ -112,7 +103,6 @@ int main(int argc, char const *argv[]) {
       pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
     }
 
-    //========================== Проверка на столкновения ==========================//
 
     if (leftPl.score >= 3) {
       playerWinScreen (1, windowSize.ws_col, windowSize.ws_row, BACKGROUND_CHAR);
@@ -125,35 +115,48 @@ int main(int argc, char const *argv[]) {
     }
 
 
-    //========================== Изменение положения и проверка игрока ==========================//
-    #ifdef BOT
+    #ifdef PL1_BOT
+      leftPl.showPred = true;
       botTick(leftPl,  sqr, pred, windowSize.ws_col, windowSize.ws_row);
-      botTick(rightPl, sqr, pred, windowSize.ws_col, windowSize.ws_row);
-    #elif KEYBOARD
+    #elif PL1_KEYBOARD
+      leftPl.showPred = false;
       keyInpTick (leftPl,  'a',  'z', windowSize.ws_col, windowSize.ws_row);
-      keyInpTick (rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
-    #elif STD
+    #elif Pl1_STD
+      leftPl.showPred = false;
       serial_stdTick (leftPl,  'a',  'z', windowSize.ws_col, windowSize.ws_row);
-      serial_stdTick (rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
-    #elif HTTP
-      getHttpBtnCout(leftPl, rightPl, windowSize.ws_col, windowSize.ws_row);
-      botTick(rightPl, sqr, pred, windowSize.ws_col, windowSize.ws_row);
+    #elif PL1_HTTP
+      leftPl.showPred = false;
+      getHttpBtnCout(leftPl, windowSize.ws_col, windowSize.ws_row);
     #else
-      #error use -D[BOT/KEYBOARD/STD/HTTP]
+      #error use -DPL1_[BOT/KEYBOARD/STD/HTTP]
+    #endif
+
+    #ifdef PL2_BOT
+      rightPl.showPred = true;
+      botTick(rightPl, sqr, pred, windowSize.ws_col, windowSize.ws_row);
+    #elif PL2_KEYBOARD
+      rightPl.showPred = false;
+      keyInpTick (rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
+    #elif Pl2_STD
+      rightPl.showPred = false;
+      serial_stdTick (rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
+    #elif PL2_HTTP
+      rightPl.showPred = false;
+      getHttpBtnCout(rightPl, windowSize.ws_col, windowSize.ws_row);
+    #else
+      #error use -DPL2_[BOT/KEYBOARD/STD/HTTP]
     #endif
 
     pred.predTime--;
-    //========================== Изменение и проверка игрока ==========================//
 
-    //========================== Отрисовка ==========================//
     int fpsCount = (fpsFrameTime.count() == 0) ? 0 : static_cast<int>(1000/fpsFrameTime.count());
     fps_vector.push_back(fpsCount);
     fps_vector.erase(fps_vector.begin());
     int meanFps = static_cast<int> (accumulate(fps_vector.begin(), fps_vector.end(), 0) / fps_vector.size());
-    drawScreen(sqr, rightPl, leftPl, windowSize.ws_col, windowSize.ws_row, meanFps, BACKGROUND_CHAR, pred);
-    //========================== Отрисовка ==========================//
 
-    sleep_for(nanoseconds(30*1000000));
+    drawScreen(sqr, rightPl, leftPl, windowSize.ws_col, windowSize.ws_row, meanFps, BACKGROUND_CHAR, pred);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(30));
 
     fpsEndTime = std::chrono::high_resolution_clock::now();
     fpsFrameTime = duration_cast<std::chrono::milliseconds> (fpsEndTime - fpsStartTime );

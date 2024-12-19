@@ -35,5 +35,6 @@ struct player {
   int score;
   const int width;
   const int height;
+  bool showPred;
 };
 

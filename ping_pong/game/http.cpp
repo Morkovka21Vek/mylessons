@@ -26,9 +26,7 @@ void initSocket() {
     throw std::runtime_error("\nConnection Failed \n");
 }
 
-void getHttpBtnCout(player& pl1, player& pl2, int windowWidth, int windowHeight) {
-  //std::cout << sock << std::endl;
-
+void getHttpBtnCout(player& pl, int windowWidth, int windowHeight) {
   const std::string req_s = "GET /api/get_buttons_count HTTP/1.1\r\nHost: 192.168.4.1\r\nUser-Agent: curl/8.5.0\r\nAccept: */*\r\n\r\n";
 
   int val1 = 0, val2 = 0;
@@ -83,13 +81,10 @@ void getHttpBtnCout(player& pl1, player& pl2, int windowWidth, int windowHeight)
     }
   }
 
-  pl1.pos += val1;
-  pl1.pos -= val2;
+  pl.pos += val1;
+  pl.pos -= val2;
 
-  if (pl1.pos < 0) pl1.pos = 0;
-  else if (pl1.pos + pl1.height > windowHeight) pl1.pos = windowHeight - pl1.height;
-
-  if (pl2.pos < 0) pl2.pos = 0;
-  else if (pl2.pos + pl2.height > windowHeight) pl2.pos = windowHeight - pl2.height;
+  if (pl.pos < 0) pl.pos = 0;
+  else if (pl.pos + pl.height > windowHeight) pl.pos = windowHeight - pl.height;
   
 }

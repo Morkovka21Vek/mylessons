@@ -15,8 +15,9 @@ void drawScreen(const square& sqr, const player& rightPl, const player& leftPl, 
       if (y == 0 && x <= 6) {}
       else if (drawChar(Char_ball, static_cast<int>(sqr.posX-sqr.sizeX), static_cast<int>(sqr.posY-sqr.sizeY), x, y)) {}
 
-      else if ((sqr.speedX > 0 && x >= windowWidth - rightPl.width && y == pred.pred) || (sqr.speedX < 0 && x < leftPl.width && y == pred.pred))
-        std::cout << "\x1B[36mX\033[0m";
+      else if ((sqr.speedX > 0 && x >= windowWidth - rightPl.width && y == pred.pred && rightPl.showPred)
+          || (sqr.speedX < 0 && x < leftPl.width && y == pred.pred && leftPl.showPred))
+            std::cout << "\x1B[36mX\033[0m";
 
       else if ((x < leftPl.width && (y >= leftPl.pos && y < leftPl.pos + leftPl.height)) ||
           (x >= windowWidth - rightPl.width && (y >= rightPl.pos && y < rightPl.pos + rightPl.height)))
@@ -26,8 +27,9 @@ void drawScreen(const square& sqr, const player& rightPl, const player& leftPl, 
       else if (drawChar(static_cast<charsEnum>(leftPl.score + 1), static_cast<int>(windowWidth/2) - 6, 1, x, y)) {}
       else if (drawChar(static_cast<charsEnum>(rightPl.score + 1), static_cast<int>(windowWidth/2) + 2, 1, x, y)) {}
 
-      else if (pathFind(pred, x, y))
-        std::cout << "\033[0;33mx\033[0m";
+      else if (pathFind(pred, x, y) 
+        && ((sqr.speedX > 0 && rightPl.showPred) || (sqr.speedX < 0 && leftPl.showPred)))
+          std::cout << "\033[0;33mx\033[0m";
 
       else std::cout << BACKGROUND_CHAR;
 

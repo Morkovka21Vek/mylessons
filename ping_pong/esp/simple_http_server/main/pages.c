@@ -60,7 +60,6 @@ static const httpd_uri_t home_struct = {
     .uri       = "/",
     .method    = HTTP_GET,
     .handler   = home_get_handler,
-    .user_ctx  = "Ok!"
 };
 
 esp_err_t http_404_error_handler(httpd_req_t *req, httpd_err_code_t err)

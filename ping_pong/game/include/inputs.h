@@ -17,6 +17,6 @@ void keyInpTick (player& pl, char up_key, char down_key, int windowWidth, int wi
 void serial_stdTick (player& pl, char up_key, char down_key, int windowWidth, int windowHeight);
 
 
-void getHttpBtnCout(player& pl1, player& pl2, int windowWidth, int windowHeight);
-void initSocket();
+void getHttpBtnCout(int& sock, player& pl, int windowWidth, int windowHeight);
+void initSocket(int& sock);
 

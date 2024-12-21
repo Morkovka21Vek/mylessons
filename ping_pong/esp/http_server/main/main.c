@@ -51,48 +51,10 @@ static int button_count2 = 0;
 static volatile uint32_t last_interrupt_time1 = 0;
 static volatile uint32_t last_interrupt_time2 = 0;
 
+
 #include "pages.c"
+#include "pages.h"
 #include "wifi.c"
-
-static esp_err_t ctrl_put_handler(httpd_req_t *req)
-{
-    char buf;
-    int ret;
-
-    if ((ret = httpd_req_recv(req, &buf, 1)) <= 0) {
-        if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
-            httpd_resp_send_408(req);
-        }
-        return ESP_FAIL;
-    }
-
-    if (buf == '0') {
-        /* URI handlers can be unregistered using the uri string */
-        httpd_unregister_uri(req->handle, "/");
-        httpd_unregister_uri(req->handle, "/api/get_buttons_status");
-        httpd_unregister_uri(req->handle, "/api/get_buttons_count");
-        /* Register the custom error handler */
-        httpd_register_err_handler(req->handle, HTTPD_404_NOT_FOUND, http_404_error_handler);
-    }
-    else {
-        httpd_register_uri_handler(req->handle, &home_struct);
-        httpd_register_uri_handler(req->handle, &api_get_status_buttons_struct);
-        httpd_register_uri_handler(req->handle, &api_get_count_buttons_struct);
-        /* Unregister custom error handler */
-        httpd_register_err_handler(req->handle, HTTPD_404_NOT_FOUND, NULL);
-    }
-
-    /* Respond with empty body */
-    httpd_resp_send(req, NULL, 0);
-    return ESP_OK;
-}
-
-static const httpd_uri_t ctrl = {
-    .uri       = "/ctrl",
-    .method    = HTTP_PUT,
-    .handler   = ctrl_put_handler,
-    .user_ctx  = NULL
-};
 
 static httpd_handle_t start_webserver(void)
 {
@@ -108,13 +70,8 @@ static httpd_handle_t start_webserver(void)
     if (httpd_start(&server, &config) == ESP_OK) {
         // Set URI handlers
         ESP_LOGD(TAG, "Registering URI handlers");
-        httpd_register_uri_handler(server, &ctrl);
-        httpd_register_uri_handler(server, &home_struct);
-        httpd_register_uri_handler(server, &api_get_status_buttons_struct);
-        httpd_register_uri_handler(server, &api_get_count_buttons_struct);
-        #if CONFIG_EXAMPLE_BASIC_AUTH
-        httpd_register_basic_auth(server);
-        #endif
+        for(int i = 0; i < sizeof(pages_list)/sizeof(httpd_uri_t); i++)
+          httpd_register_uri_handler(server, &pages_list[i]);
         return server;
     }
 
@@ -207,7 +164,6 @@ void app_main(void)
 #endif // CONFIG_EXAMPLE_CONNECT_ETHERNET
 #endif // !CONFIG_IDF_TARGET_LINUX
 
-    /* Start the server for the first time */
     server = start_webserver();
 
     while (server) {

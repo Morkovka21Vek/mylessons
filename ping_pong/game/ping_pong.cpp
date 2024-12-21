@@ -47,8 +47,9 @@ int main(int argc, char const *argv[]) {
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &windowSize);
   windowSize.ws_row -= 1;
 
-#ifdef HTTP
-  initSocket();
+#if defined(PL1_HTTP) || defined(PL2_HTTP)
+  int sock;
+  initSocket(sock);
 #endif
 
   auto fpsStartTime = std::chrono::high_resolution_clock::now(), fpsEndTime = std::chrono::high_resolution_clock::now();
@@ -126,7 +127,7 @@ int main(int argc, char const *argv[]) {
       serial_stdTick (leftPl,  'a',  'z', windowSize.ws_col, windowSize.ws_row);
     #elif PL1_HTTP
       leftPl.showPred = false;
-      getHttpBtnCout(leftPl, windowSize.ws_col, windowSize.ws_row);
+      getHttpBtnCout(sock, leftPl, windowSize.ws_col, windowSize.ws_row);
     #else
       #error use -DPL1_[BOT/KEYBOARD/STD/HTTP]
     #endif
@@ -142,7 +143,7 @@ int main(int argc, char const *argv[]) {
       serial_stdTick (rightPl, '\'', '/', windowSize.ws_col, windowSize.ws_row);
     #elif PL2_HTTP
       rightPl.showPred = false;
-      getHttpBtnCout(rightPl, windowSize.ws_col, windowSize.ws_row);
+      getHttpBtnCout(sock, rightPl, windowSize.ws_col, windowSize.ws_row);
     #else
       #error use -DPL2_[BOT/KEYBOARD/STD/HTTP]
     #endif

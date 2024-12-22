@@ -38,3 +38,4 @@ struct player {
   bool showPred;
 };
 
+enum player_mode {bot_pl_mode, keyboard_pl_mode, std_pl_mode, http_pl_mode};

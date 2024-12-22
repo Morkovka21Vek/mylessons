@@ -3,23 +3,10 @@ COMP_FLAGS := -Wall -pedantic
 
 OBG_FILES := $(patsubst %.cpp, %.o, $(wildcard *.cpp))
 
-PL1_LOWER_CASE := $(shell echo $(PL1) | tr A-Z a-z)
-PL2_LOWER_CASE := $(shell echo $(PL2) | tr A-Z a-z)
+make: ping_pong.out
 
-generate: ping_pong_$(PL1_LOWER_CASE)_$(PL2_LOWER_CASE).out
-
-help:
-	$(info ========HELP========)
-	$(info Use "make generate PL1=[BOT/KEYBOARD/STD/HTTP] PL2=[BOT/KEYBOARD/STD/HTTP]")
-	$(info OR)
-	$(info Use "make PL1=[BOT/KEYBOARD/STD/HTTP] PL2=[BOT/KEYBOARD/STD/HTTP]")
-	$(info ========HELP========)
-
-ping_pong_$(PL1_LOWER_CASE)_$(PL2_LOWER_CASE).out: $(OBG_FILES)
+ping_pong.out: $(OBG_FILES)
 	g++ $^ -o $@
-	@rm ping_pong.o 2> /dev/null
-
-	$(info OUTPUT FILE: $@)
 
 #all: $(BOT) $(KEYBOARD) $(STD) $(HTTP)
 

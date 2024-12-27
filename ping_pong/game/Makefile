@@ -11,9 +11,7 @@ ping_pong.out: $(OBG_FILES)
 #all: $(BOT) $(KEYBOARD) $(STD) $(HTTP)
 
 %.o: %.cpp
-	g++ -c $(COMP_FLAGS) \
-		-DPL1_$(shell echo $(PL1) | tr a-z A-Z) \
-		-DPL2_$(shell echo $(PL2) | tr a-z A-Z) $<
+	g++ -c $(COMP_FLAGS) $<
 
 clean:
 	@rm *.o 2> /dev/null

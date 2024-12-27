@@ -99,11 +99,11 @@ void start_menu(int& pl1_var, int& pl2_var) {
       case 'q': 
         tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // Restore old terminal settings
         fcntl(STDIN_FILENO, F_SETFL, oldf); // Restore old flags
-        std::cout << "\033[" << contentYsize + 3+5 << ';' << 0 << 'H' << std::endl;
+        std::cout << "\033[" << contentYsize + 3+6 << ';' << 0 << 'H' << std::endl;
         exit(0); break;
 
       default:
-        std::cout << "\033[" << contentYsize + 3+4 << ';' << 0 << 'H' << "Command \'" << ch << "\' not found"
+        std::cout << "\033[" << contentYsize + 3+5 << ';' << 0 << 'H' << "Command \'" << ch << "\' not found"
                   << "\033[" << y+3 << ';' << x*20+2 << 'H'; break;
     }
   }
@@ -112,6 +112,11 @@ void start_menu(int& pl1_var, int& pl2_var) {
 }
 
 int main(int argc, char const *argv[]) {
+  //struct termios newt;
+  //tcgetattr(STDIN_FILENO, &newt);
+  //newt.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
+  //tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
   int pl1_mode=0, pl2_mode=0;
   start_menu(pl1_mode, pl2_mode);
 

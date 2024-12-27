@@ -6,38 +6,58 @@
 
 inline bool pathFind(const prediction&, int x, int y);
 
-void drawScreen(const square& sqr, const player& rightPl, const player& leftPl, int windowWidth, int windowHeight, int fps, const char BACKGROUND_CHAR, const prediction& pred) {
-  system("clear");
-  std::cout << std::setfill(BACKGROUND_CHAR) << std::setw(7) << "\x1B[92m" << fps << "FPS\033[0m";
+void drawScreen(const square& sqr, const player& rightPl, const player& leftPl,int windowWidth, int windowHeight,
+    int fps, const char BACKGROUND_CHAR, const prediction& pred) {
+  int cursorX = 0;
+  int cursorY = 0;
+  //static char screen_arr     [windowHeight][windowWidth];
+  //static char screen_arr_old [windowHeight][windowWidth];
+  static std::vector<std::vector<char>> screen_arr     (windowHeight, std::vector<char>(windowWidth, 0));
+  static std::vector<std::vector<char>> screen_arr_old (windowHeight, std::vector<char>(windowWidth, 0));
 
   for (int y = 0; y < windowHeight; y++){
     for (int x = 0; x < windowWidth; x++){
-      if (y == 0 && x <= 6) {}
-      else if (drawChar(Char_ball, static_cast<int>(sqr.posX-sqr.sizeX), static_cast<int>(sqr.posY-sqr.sizeY), x, y)) {}
 
-      else if ((sqr.speedX > 0 && x >= windowWidth - rightPl.width && y == pred.pred && rightPl.showPred)
-          || (sqr.speedX < 0 && x < leftPl.width && y == pred.pred && leftPl.showPred))
-            std::cout << "\x1B[36mX\033[0m";
+      if ((screen_arr[y][x] = getChar(Char_ball, static_cast<int>(sqr.posX-sqr.sizeX), static_cast<int>(sqr.posY-sqr.sizeY), x, y)) != ' ') continue;
 
-      else if ((x < leftPl.width && (y >= leftPl.pos && y < leftPl.pos + leftPl.height)) ||
-          (x >= windowWidth - rightPl.width && (y >= rightPl.pos && y < rightPl.pos + rightPl.height)))
-        std::cout << '@';
+      if ((x < leftPl.width && (y >= leftPl.pos && y < leftPl.pos + leftPl.height)) ||
+          (x >= windowWidth - rightPl.width && (y >= rightPl.pos && y < rightPl.pos + rightPl.height))) {
+        screen_arr[y][x] = '@';
+        continue;
+      }
 
-      else if (drawChar(Char_colon, static_cast<int>(windowWidth/2) - 2, 1, x, y)) {}
-      else if (drawChar(static_cast<charsEnum>(leftPl.score + 1), static_cast<int>(windowWidth/2) - 6, 1, x, y)) {}
-      else if (drawChar(static_cast<charsEnum>(rightPl.score + 1), static_cast<int>(windowWidth/2) + 2, 1, x, y)) {}
+      if ((screen_arr[y][x] = getChar(Char_colon, static_cast<int>(windowWidth/2) - 2, 1, x, y)) != ' ') continue;
+      if ((screen_arr[y][x] = getChar(static_cast<charsEnum>(leftPl.score + 1), static_cast<int>(windowWidth/2) - 6, 1, x, y)) != ' ')  continue;
+      if ((screen_arr[y][x] = getChar(static_cast<charsEnum>(rightPl.score + 1), static_cast<int>(windowWidth/2) + 2, 1, x, y)) != ' ') continue;
 
-      else if (pathFind(pred, x, y) 
-        && ((sqr.speedX > 0 && rightPl.showPred) || (sqr.speedX < 0 && leftPl.showPred)))
-          std::cout << "\033[0;33mx\033[0m";
+      if (pathFind(pred, x, y)
+        && ((sqr.speedX > 0 && rightPl.showPred) || (sqr.speedX < 0 && leftPl.showPred))) {
+          screen_arr[y][x] = 'X';
+          continue;
+      }
 
-      else std::cout << BACKGROUND_CHAR;
-
+      screen_arr[y][x] = BACKGROUND_CHAR;
     }
-    std::cout << std::endl;
   }
-}
 
+  for (int y = 0; y < windowHeight; y++){
+    for (int x = 0; x < windowWidth; x++){
+      if(screen_arr[y][x] != screen_arr_old[y][x]) {
+        if(cursorY == y && !(cursorY == 0 && cursorX == 0) && x == cursorX+1) {
+          std::cout << screen_arr[y][x];
+          cursorX++;
+        } else {
+          std::cout << "\033[" << y+1 << ';' << x+1 << 'H' << screen_arr[y][x];
+          cursorX = x+1;
+          cursorY = y;
+        }
+      }
+      screen_arr_old[y][x] = screen_arr[y][x];
+    }
+  }
+  std::cout << "\033[0;1H\x1B[92m" << fps << "FPS\033[0m";
+  std::cout << "\033[" << windowHeight+1 << ";1H";
+}
 
 
 void playerWinScreen (int player, int windowWidth, int windowHeight, char background_char) {
@@ -104,6 +124,16 @@ bool drawChar (enum charsEnum chEn, int posX, int posY, int x, int y) {
     }
   }
   return false;
+}
+
+char getChar (enum charsEnum chEn, int posX, int posY, int x, int y) {
+  int width=0, height=0;
+  getSizeCh(chEn, width, height);
+
+  if (x >= posX && x < posX + width && y >= posY && y < posY + height) {
+    return getSymbolCh(chEn, x - posX, y - posY);
+  }
+  return ' ';
 }
 
 inline bool pathFind(const prediction& pred, int x, int y) {

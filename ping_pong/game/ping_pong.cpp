@@ -42,7 +42,7 @@
 #endif
 
 
-void start_menu(int& pl1_var, int& pl2_var) {
+void start_menu(player& leftPl, player& rightPl) {
   struct termios oldt, newt;
   tcgetattr(STDIN_FILENO, &oldt);
   newt = oldt;
@@ -61,50 +61,47 @@ void start_menu(int& pl1_var, int& pl2_var) {
   std::cout << std::endl <<  "Используйте h(<) j(v) k(^) l(>) для перемещения\n\tи _ (пробел) для выбора пункта" << std::endl;
   std::cout << "Для выхода из меню используйте Enter,\n\tа для выхода из игры - q" << std::endl;
 
-  //int pl1_var=0, pl2_var=0;
-  pl1_var=0; pl2_var=0;
-
   int x=0, y=0;
   std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H';
 
   char ch;
   while ((ch = getchar()) != '\n') {
     switch(ch) {
-      case 'h': 
+      case 'D':
+      case 'h':
         if (--x < 0) x = 0;
         std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H'; break;
-      case 'j': 
+      case 'B':
+      case 'j':
         if (++y > contentYsize - 1) y = contentYsize - 1;
         std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H'; break;
-      case 'k': 
+      case 'A':
+      case 'k':
         if (--y < 0) y = 0;
         std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H'; break;
-      case 'l': 
+      case 'C':
+      case 'l':
         if (++x > 1) x = 1;
         std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H'; break;
       case ' ':
         if (x == 0) {
-          std::cout << "\033[" << pl1_var+3 << ';' << 2 << 'H' << ' ';
-          pl1_var = y;
+          std::cout << "\033[" << leftPl.mode+3 << ';' << 2 << 'H' << ' ';
+          leftPl.mode = y;
           std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H' << '*'
             << "\033[" << y+3 << ';' << x*20+2 << 'H';
         } else {
-          std::cout << "\033[" << pl2_var+3 << ';' << 22 << 'H' << ' ';
-          pl2_var = y;
+          std::cout << "\033[" << rightPl.mode+3 << ';' << 22 << 'H' << ' ';
+          rightPl.mode = y;
           std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H' << '*'
             << "\033[" << y+3 << ';' << x*20+2 << 'H';
         }
         break;
 
-      case 'q': 
+      case 'q':
         tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // Restore old terminal settings
         fcntl(STDIN_FILENO, F_SETFL, oldf); // Restore old flags
         std::cout << "\033[" << contentYsize + 3+6 << ';' << 0 << 'H' << std::endl;
         exit(0); break;
-
-      default:
-        std::cout << "\033[" << contentYsize + 3+5 << ';' << 0 << 'H' << "Command \'" << ch << "\' not found"
-                  << "\033[" << y+3 << ';' << x*20+2 << 'H'; break;
     }
   }
   tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // Restore old terminal settings
@@ -112,23 +109,21 @@ void start_menu(int& pl1_var, int& pl2_var) {
 }
 
 int main(int argc, char const *argv[]) {
-  //struct termios newt;
-  //tcgetattr(STDIN_FILENO, &newt);
-  //newt.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
-  //tcsetattr(STDIN_FILENO, TCSANOW, &newt);
 
-  int pl1_mode=0, pl2_mode=0;
-  start_menu(pl1_mode, pl2_mode);
-
-  using namespace std::this_thread; // sleep_for, sleep_until
+  //using namespace std::this_thread; // sleep_for, sleep_until
   using namespace std::chrono; // nanoseconds, system_clock, seconds
 
   struct winsize windowSize;
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &windowSize);
   windowSize.ws_row -= 1;
 
+  player leftPl =  {static_cast<int>(windowSize.ws_row/2), 0, 4, 10, 0};
+  player rightPl = {static_cast<int>(windowSize.ws_row/2), 0, 4, 10, 0};
+
+  start_menu(leftPl, rightPl);
+
   int sock;
-  if (pl1_mode == http_pl_mode || pl2_mode == http_pl_mode) {
+  if (leftPl.mode == http_pl_mode || rightPl.mode == http_pl_mode) {
     initSocket(sock);
   }
 
@@ -136,11 +131,11 @@ int main(int argc, char const *argv[]) {
   auto fpsFrameTime = duration_cast<std::chrono::milliseconds> (fpsStartTime - fpsEndTime);
   std::vector<int> fps_vector = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
+  bool redrawing_screen = true;
+
   const square defaultSqr = {static_cast<float>(windowSize.ws_col/2), static_cast<float>(windowSize.ws_row/2), 1, 0.5F, 4, 2};
   square sqr = defaultSqr;
 
-  player leftPl = {static_cast<int>(windowSize.ws_row/2), 0, 4, 10};
-  player rightPl = {static_cast<int>(windowSize.ws_row/2), 0, 4, 10};
 
   prediction pred;
 
@@ -168,6 +163,7 @@ int main(int argc, char const *argv[]) {
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
         rightPl.score++;
         sqr = defaultSqr;
+        redrawing_screen = true;
       }
 
       pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
@@ -179,6 +175,7 @@ int main(int argc, char const *argv[]) {
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
         leftPl.score++;
         sqr = defaultSqr;
+        redrawing_screen = true;
       }
 
       pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
@@ -196,7 +193,7 @@ int main(int argc, char const *argv[]) {
     }
 
 
-    switch(pl1_mode){
+    switch(leftPl.mode){
       case bot_pl_mode:
         leftPl.showPred = true;
         botTick(leftPl, sqr, pred, windowSize.ws_col, windowSize.ws_row);
@@ -215,7 +212,7 @@ int main(int argc, char const *argv[]) {
         break;
     }
 
-    switch(pl2_mode){
+    switch(rightPl.mode){
       case bot_pl_mode:
         rightPl.showPred = true;
         botTick(rightPl, sqr, pred, windowSize.ws_col, windowSize.ws_row);
@@ -241,7 +238,7 @@ int main(int argc, char const *argv[]) {
     fps_vector.erase(fps_vector.begin());
     int meanFps = static_cast<int> (accumulate(fps_vector.begin(), fps_vector.end(), 0) / fps_vector.size());
 
-    drawScreen(sqr, rightPl, leftPl, windowSize.ws_col, windowSize.ws_row, meanFps, BACKGROUND_CHAR, pred);
+    drawScreen(sqr, rightPl, leftPl, windowSize.ws_col, windowSize.ws_row, meanFps, BACKGROUND_CHAR, pred, redrawing_screen);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(30));
 

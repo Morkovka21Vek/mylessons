@@ -7,7 +7,7 @@
 inline bool pathFind(const prediction&, int x, int y);
 
 void drawScreen(const square& sqr, const player& rightPl, const player& leftPl,int windowWidth, int windowHeight,
-    int fps, const char BACKGROUND_CHAR, const prediction& pred) {
+    int fps, const char BACKGROUND_CHAR, const prediction& pred, bool& redrawing) {
   int cursorX = 0;
   int cursorY = 0;
   //static char screen_arr     [windowHeight][windowWidth];
@@ -40,19 +40,33 @@ void drawScreen(const square& sqr, const player& rightPl, const player& leftPl,i
     }
   }
 
-  for (int y = 0; y < windowHeight; y++){
-    for (int x = 0; x < windowWidth; x++){
-      if(screen_arr[y][x] != screen_arr_old[y][x]) {
-        if(cursorY == y && !(cursorY == 0 && cursorX == 0) && x == cursorX+1) {
-          std::cout << screen_arr[y][x];
-          cursorX++;
-        } else {
-          std::cout << "\033[" << y+1 << ';' << x+1 << 'H' << screen_arr[y][x];
-          cursorX = x+1;
-          cursorY = y;
-        }
+  if (redrawing) {
+    for (int y = 0; y < windowHeight; y++){
+      std::cout << "\033[" << y+1 << ';' << 1 << 'H';
+      cursorY = y;
+      cursorX = 0;
+      for (int x = 0; x < windowWidth; x++){
+        std::cout << screen_arr[y][x];
+        cursorX++;
+        screen_arr_old[y][x] = screen_arr[y][x];
       }
-      screen_arr_old[y][x] = screen_arr[y][x];
+    }
+    redrawing = false;
+  } else {
+    for (int y = 0; y < windowHeight; y++){
+      for (int x = 0; x < windowWidth; x++){
+        if(screen_arr[y][x] != screen_arr_old[y][x]) {
+          if(cursorY == y && !(cursorY == 0 && cursorX == 0) && x == cursorX+1) {
+            std::cout << screen_arr[y][x];
+            cursorX++;
+          } else {
+            std::cout << "\033[" << y+1 << ';' << x+1 << 'H' << screen_arr[y][x];
+            cursorX = x+1;
+            cursorY = y;
+          }
+        }
+        screen_arr_old[y][x] = screen_arr[y][x];
+      }
     }
   }
   std::cout << "\033[0;1H\x1B[92m" << fps << "FPS\033[0m";

@@ -5,5 +5,5 @@ char getChar (enum charsEnum chEn, int posX, int posY, int x, int y);
 
 struct prediction;
 
-void drawScreen(const square& sqr, const player& rightPl, const player& leftPl, int windowWidth, int windowHeight, int fps, const char BACKGROUND_CHAR, const prediction&);
+void drawScreen(const square& sqr, const player& rightPl, const player& leftPl, int windowWidth, int windowHeight, int fps, const char BACKGROUND_CHAR, const prediction&, bool& redrawing);
 

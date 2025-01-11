@@ -17,7 +17,7 @@ bool kbhit_std() {
     return bytesWaiting > 0;
 }
 
-void serial_stdTick (player& pl, char up_key, char down_key, int windowWidth, int windowHeight) {
+void serial_stdTick (player& pl, int windowWidth, int windowHeight) {
   static bool isStartNums;
 
   char InpChar;
@@ -32,8 +32,8 @@ void serial_stdTick (player& pl, char up_key, char down_key, int windowWidth, in
   while(kbhit_std()){
     std::cin >> InpChar;
 
-    if (InpChar == up_key) pl.pos--;
-    else if (InpChar == down_key) pl.pos++;
+    if (InpChar == pl.up_key) pl.pos--;
+    else if (InpChar == pl.down_key) pl.pos++;
     else buffer.push_back(InpChar);
   }
 

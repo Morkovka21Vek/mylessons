@@ -32,16 +32,15 @@ std::pair<bool,char> kbhit() {
     return (result);
 }
 
-void keyInpTick (player& pl, char up_key, char down_key, int windowWidth, int windowHeight) {
+void keyInpTick (player& pl, int windowWidth, int windowHeight) {
   std::vector<char> buffer;
-
   std::pair<bool,char> p;
 
   do{
     p = kbhit();
     if (p.first){
-      if (p.second == up_key) pl.pos--;
-      else if (p.second == down_key) pl.pos++;
+      if (p.second == pl.up_key) pl.pos--;
+      else if (p.second == pl.down_key) pl.pos++;
       else buffer.push_back(p.second);
     }
   } while(p.first);

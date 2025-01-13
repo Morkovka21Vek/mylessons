@@ -27,7 +27,7 @@ void drawScreen(const square& sqr, const player& rightPl, const player& leftPl,i
         continue;
       }
 
-      if ((screen_arr[y][x] = getChar(':', static_cast<int>(windowWidth/2) - 2, 1, x, y)) != ' ') continue;
+      if ((screen_arr[y][x] = getChar(':', static_cast<int>(windowWidth/2) - 1, 1, x, y)) != ' ') continue;
       if ((screen_arr[y][x] = getChar(leftPl.score + '0', static_cast<int>(windowWidth/2) - 6, 1, x, y)) != ' ')  continue;
       if ((screen_arr[y][x] = getChar(rightPl.score + '0', static_cast<int>(windowWidth/2) + 2, 1, x, y)) != ' ') continue;
 
@@ -71,83 +71,54 @@ void drawScreen(const square& sqr, const player& rightPl, const player& leftPl,i
     }
   }
   std::cout << "\033[0;1H\x1B[92m" << fps << "FPS\033[0m";
-  std::cout << "\033[" << windowHeight+1 << ";1H";
+  std::cout << "\033[" << windowHeight+1 << ";1H" << std::flush;
 }
 
-//void drawText (std::string text) {
-//  int widthText = 0;
-//  int width=0, height=0;
-//
-//  for (int i = 0; i < ; i++) {
-//    getSizeCh(, width, height);
-//    widthText += width;
-//  }
-//}
+void drawText (const std::string text, const int spaceSize, const int windowWidth, const int windowHeight, const char background_char) {
+  int widthText = 0;
+
+  for (char ch : text) {
+    int width=0, height=0;
+    getSizeCh(ch, width, height);
+    widthText += width + spaceSize;
+  }
+
+  for (int y = 0; y < windowHeight; y++) {
+    std::cout << "\033[" << y+1 << ";1H";
+
+    for (int x = 0; x < windowWidth; x++) {
+      int drawPosX = static_cast<int> (windowWidth / 2 - widthText / 2);
+      char drawCh = background_char;
+
+      for (char ch : text) {
+        int width=0, height=0;
+        getSizeCh(ch, width, height);
+
+        char tempCh;
+        if ((tempCh = getChar(ch, drawPosX, static_cast<int> (windowHeight / 2 - height / 2), x, y)) != ' ') {
+          drawCh = tempCh;
+          break;
+        }
+        drawPosX += width + spaceSize;
+      }
+      std::cout << drawCh;
+    }
+  }
+  std::cout << std::endl;
+}
 
 void playerWinScreen (int player, int windowWidth, int windowHeight, char background_char) {
-  system("clear");
-
-  int centerScrX = static_cast<int>(windowWidth / 2);
-  int centerScrY = static_cast<int>(windowHeight / 2) - 3;
-
-  for (int y = 0; y < windowHeight; y++){
-      for (int x = 0; x < windowWidth; x++){
-             if (drawChar('P', centerScrX-32, centerScrY, x, y)) {}
-        else if (drawChar('L', centerScrX-27, centerScrY, x, y)) {}
-        else if (drawChar('A', centerScrX-22, centerScrY, x, y)) {}
-        else if (drawChar('Y', centerScrX-17, centerScrY, x, y)) {}
-        else if (drawChar('E', centerScrX-12, centerScrY, x, y)) {}
-        else if (drawChar('R', centerScrX-7, centerScrY, x, y)) {}
-        else if (drawChar(player + '0', centerScrX+2, centerScrY, x, y)) {}
-        else if (drawChar('W', centerScrX+10, centerScrY+1, x, y)) {}
-        else if (drawChar('I', centerScrX+16, centerScrY, x, y)) {}
-        else if (drawChar('N', centerScrX+21, centerScrY, x, y)) {}
-        else std::cout << background_char;
-      }
-      std::cout << std::endl;
-  }
+  std::string text = "PLAYER ";
+  text += std::to_string(player);
+  text += "  +1 WIN";
+  drawText (text, 2, windowWidth, windowHeight, background_char);
 }
 
 void newPointPlayer(int player, int windowWidth, int windowHeight, char background_char) {
-  system("clear");
-
-  int centerScrX = static_cast<int>(windowWidth / 2);
-  int centerScrY = static_cast<int>(windowHeight / 2) - 3;
-
-  for (int y = 0; y < windowHeight; y++){
-      for (int x = 0; x < windowWidth; x++){
-             if (drawChar('P', centerScrX-35, centerScrY, x, y)) {}
-        else if (drawChar('L', centerScrX-30, centerScrY, x, y)) {}
-        else if (drawChar('A', centerScrX-25, centerScrY, x, y)) {}
-        else if (drawChar('Y', centerScrX-20, centerScrY, x, y)) {}
-        else if (drawChar('E', centerScrX-15, centerScrY, x, y)) {}
-        else if (drawChar('R', centerScrX-10, centerScrY, x, y)) {}
-        else if (drawChar(player + '0', centerScrX-2, centerScrY, x, y)) {}
-        else if (drawChar('+', centerScrX+8, centerScrY, x, y)) {}
-        else if (drawChar('1', centerScrX+15, centerScrY, x, y)) {}
-        else if (drawChar('P', centerScrX+25, centerScrY, x, y)) {}
-        else if (drawChar('O', centerScrX+30, centerScrY, x, y)) {}
-        else if (drawChar('I', centerScrX+35, centerScrY, x, y)) {}
-        else if (drawChar('N', centerScrX+40, centerScrY, x, y)) {}
-        else if (drawChar('T', centerScrX+45, centerScrY, x, y)) {}
-        else std::cout << background_char;
-      }
-      std::cout << std::endl;
-  }
-}
-
-bool drawChar (char ch, int posX, int posY, int x, int y) {
-  int width=0, height=0;
-  getSizeCh(ch, width, height);
-
-  if (x >= posX && x < posX + width && y >= posY && y < posY + height) {
-    char outCh = getSymbolCh (ch, x - posX, y - posY);
-    if (outCh != ' ') {
-      std::cout << outCh;
-      return true;
-    }
-  }
-  return false;
+  std::string text = "PLAYER ";
+  text += std::to_string(player);
+  text += "  +1 POINT";
+  drawText (text, 2, windowWidth, windowHeight, background_char);
 }
 
 char getChar (char ch, int posX, int posY, int x, int y) {

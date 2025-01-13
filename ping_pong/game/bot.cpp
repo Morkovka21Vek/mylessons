@@ -1,6 +1,6 @@
 #include "include/inputs.h"
 #include "include/assets.h"
-#include <iostream>
+//#include <iostream>
 
 prediction calcPred(square sqrPred, int leftMargin, int rightMargin, int windowWidth, int windowHeight) {
   prediction pred = {0, 0};

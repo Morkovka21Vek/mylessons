@@ -1,5 +1,4 @@
 #include "include/assets.h"
-#include <iostream>
 
 #define char_size(ch, xsize, ysize)  xsize = sizeof(ch[0])/ sizeof(char);\
                        ysize = sizeof(ch)/ sizeof(ch[0]);
@@ -14,13 +13,13 @@ const char zeroChar[6][4] = {
   {'0', '0', '0', '0'}
 };
 
-const char oneChar[6][4] = {
-  {' ', '1', '1', ' '},
-  {' ', '1', '1', ' '},
-  {' ', '1', '1', ' '},
-  {' ', '1', '1', ' '},
-  {' ', '1', '1', ' '},
-  {' ', '1', '1', ' '}
+const char oneChar[6][2] = {
+  {'1', '1'},
+  {'1', '1'},
+  {'1', '1'},
+  {'1', '1'},
+  {'1', '1'},
+  {'1', '1'}
 };
 
 const char twoChar[6][4] = {
@@ -41,13 +40,13 @@ const char threeChar[6][4] = {
   {'3', '3', '3', '3'}
 };
 
-const char colonChar[6][4] = {
-  {' ', '#', '#', ' '},
-  {' ', '#', '#', ' '},
-  {' ', ' ', ' ', ' '},
-  {' ', ' ', ' ', ' '},
-  {' ', '#', '#', ' '},
-  {' ', '#', '#', ' '}
+const char colonChar[6][2] = {
+  {'#', '#'},
+  {'#', '#'},
+  {' ', ' '},
+  {' ', ' '},
+  {'#', '#'},
+  {'#', '#'}
 };
 
 const char ballChar[5][9] = {
@@ -188,6 +187,7 @@ char getSymbolCh (char ch, int x, int y) {
     case 'T': out = Tchar[y][x];     break;
     case 'W': out = Wchar[y][x];     break;
     case '+': out = plusChar[y][x];  break;
+    case ' ': out = ' ';             break;
   }
   return out;
 }
@@ -212,6 +212,7 @@ void getSizeCh (char ch, int& xSize, int& ySize) {
     case 'T': char_size (Tchar,     xSize, ySize); break;
     case 'W': char_size (Wchar,     xSize, ySize); break;
     case '+': char_size (plusChar,  xSize, ySize); break;
+    case ' ': xSize = 1; ySize = 1;                break;
   }
 }
 

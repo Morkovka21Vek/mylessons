@@ -31,13 +31,6 @@
   #define BACKGROUND_CHAR BACKCHAR
 #endif
 
-#ifndef DEBUG
-  #define DEBUG 0
-#else
-  #define DEBUG 1
-#endif
-
-
 void start_menu(player& leftPl, player& rightPl, int windowWidth, int windowHeight) {
   struct termios oldt, newt;
   tcgetattr(STDIN_FILENO, &oldt);
@@ -249,7 +242,6 @@ int main(int argc, char const *argv[]) {
     int meanFps = static_cast<int> (accumulate(fps_vector.begin(), fps_vector.end(), 0) / fps_vector.size());
 
     drawScreen(sqr, rightPl, leftPl, windowSize.ws_col, windowSize.ws_row, meanFps, BACKGROUND_CHAR, pred, redrawing_screen);
-
 
     std::vector<char> buffer_stdin;
     std::pair<bool,char> p;

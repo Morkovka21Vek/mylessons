@@ -11,14 +11,13 @@ void drawScreen(const square& sqr, const player& rightPl, const player& leftPl,i
     int fps, const char BACKGROUND_CHAR, const prediction& pred, bool& redrawing) {
   int cursorX = 0;
   int cursorY = 0;
-  //static char screen_arr     [windowHeight][windowWidth];
-  //static char screen_arr_old [windowHeight][windowWidth];
+  //const char *screen_arr      = new char[windowHeight][windowWidth];
+  //const char *screen_arr_old  = new char[windowHeight][windowWidth];
   static std::vector<std::vector<char>> screen_arr     (windowHeight, std::vector<char>(windowWidth, 0));
   static std::vector<std::vector<char>> screen_arr_old (windowHeight, std::vector<char>(windowWidth, 0));
 
   for (int y = 0; y < windowHeight; y++){
     for (int x = 0; x < windowWidth; x++){
-
       if ((screen_arr[y][x] = getChar(9, static_cast<int>(sqr.posX-sqr.sizeX), static_cast<int>(sqr.posY-sqr.sizeY), x, y)) != ' ') continue;
 
       if ((x < leftPl.width && (y >= leftPl.pos && y < leftPl.pos + leftPl.height)) ||
@@ -70,7 +69,14 @@ void drawScreen(const square& sqr, const player& rightPl, const player& leftPl,i
       }
     }
   }
-  std::cout << "\033[0;1H\x1B[92m" << fps << "FPS\033[0m";
+  std::string string_fps = std::to_string(fps) + "FPS";
+  std::cout << "\033[0;1H";
+  for (size_t i = 0; i < string_fps.length(); i++) {
+    if (screen_arr[0][i] != BACKGROUND_CHAR) std::cout << "\033[0;47m";
+    else std::cout << "\033[0;40m";
+    std::cout << "\x1B[92m" << string_fps[i];
+  }
+  std::cout << "\033[0m";
   std::cout << "\033[" << windowHeight+1 << ";1H" << std::flush;
 }
 
@@ -110,7 +116,7 @@ void drawText (const std::string text, const int spaceSize, const int windowWidt
 void playerWinScreen (int player, int windowWidth, int windowHeight, char background_char) {
   std::string text = "PLAYER ";
   text += std::to_string(player);
-  text += "  +1 WIN";
+  text += " WIN";
   drawText (text, 2, windowWidth, windowHeight, background_char);
 }
 

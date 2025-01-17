@@ -1,10 +1,10 @@
 #include "include/assets.h"
 
 #define char_size(ch, xsize, ysize)  xsize = sizeof(ch[0])/ sizeof(char);\
-                       ysize = sizeof(ch)/ sizeof(ch[0]);
+                                     ysize = sizeof(ch)/ sizeof(ch[0]);
 
 
-const char zeroChar[6][4] = {
+static const char zeroChar[6][4] = {
   {'0', '0', '0', '0'},
   {'0', ' ', ' ', '0'},
   {'0', ' ', ' ', '0'},
@@ -13,7 +13,7 @@ const char zeroChar[6][4] = {
   {'0', '0', '0', '0'}
 };
 
-const char oneChar[6][2] = {
+static const char oneChar[6][2] = {
   {'1', '1'},
   {'1', '1'},
   {'1', '1'},
@@ -22,7 +22,7 @@ const char oneChar[6][2] = {
   {'1', '1'}
 };
 
-const char twoChar[6][4] = {
+static const char twoChar[6][4] = {
   {'2', '2', '2', '2'},
   {' ', ' ', ' ', '2'},
   {'2', '2', '2', '2'},
@@ -31,7 +31,7 @@ const char twoChar[6][4] = {
   {'2', '2', '2', '2'}
 };
 
-const char threeChar[6][4] = {
+static const char threeChar[6][4] = {
   {'3', '3', '3', '3'},
   {' ', ' ', ' ', '3'},
   {'3', '3', '3', '3'},
@@ -40,7 +40,7 @@ const char threeChar[6][4] = {
   {'3', '3', '3', '3'}
 };
 
-const char colonChar[6][2] = {
+static const char colonChar[6][2] = {
   {'#', '#'},
   {'#', '#'},
   {' ', ' '},
@@ -49,7 +49,7 @@ const char colonChar[6][2] = {
   {'#', '#'}
 };
 
-const char ballChar[5][9] = {
+static const char ballChar[5][9] = {
   {' ', ' ', ' ', '#', '#', '#', ' ', ' ', ' '},
   {' ', '#', '#', '#', '#', '#', '#', '#', ' '},
   {'#', '#', '#', '#', '#', '#', '#', '#', '#'},
@@ -57,7 +57,7 @@ const char ballChar[5][9] = {
   {' ', ' ', ' ', '#', '#', '#', ' ', ' ', ' '},
 };
 
-const char Pchar[6][4] = {
+static const char Pchar[6][4] = {
   {'P', 'P', 'P', ' '},
   {'P', ' ', ' ', 'P'},
   {'P', 'P', 'P', ' '},
@@ -66,7 +66,7 @@ const char Pchar[6][4] = {
   {'P', ' ', ' ', ' '}
 };
 
-const char Lchar[6][4] = {
+static const char Lchar[6][4] = {
   {'L', ' ', ' ', ' '},
   {'L', ' ', ' ', ' '},
   {'L', ' ', ' ', ' '},
@@ -75,7 +75,7 @@ const char Lchar[6][4] = {
   {'L', 'L', 'L', 'L'}
 };
 
-const char Achar[6][4] = {
+static const char Achar[6][4] = {
   {' ', 'A', 'A', ' '},
   {'A', ' ', ' ', 'A'},
   {'A', ' ', ' ', 'A'},
@@ -84,7 +84,7 @@ const char Achar[6][4] = {
   {'A', ' ', ' ', 'A'}
 };
 
-const char Ychar[6][4] = {
+static const char Ychar[6][4] = {
   {'Y', ' ', ' ', 'Y'},
   {' ', 'Y', 'Y', ' '},
   {' ', 'Y', 'Y', ' '},
@@ -93,7 +93,7 @@ const char Ychar[6][4] = {
   {' ', 'Y', 'Y', ' '}
 };
 
-const char Echar[6][4] = {
+static const char Echar[6][4] = {
   {'E', 'E', 'E', 'E'},
   {'E', ' ', ' ', ' '},
   {'E', 'E', 'E', 'E'},
@@ -102,7 +102,7 @@ const char Echar[6][4] = {
   {'E', 'E', 'E', 'E'}
 };
 
-const char Rchar[6][4] = {
+static const char Rchar[6][4] = {
   {'R', 'R', 'R', ' '},
   {'R', ' ', ' ', 'R'},
   {'R', 'R', 'R', ' '},
@@ -111,7 +111,7 @@ const char Rchar[6][4] = {
   {'R', ' ', ' ', 'R'}
 };
 
-const char Ochar[6][4] = {
+static const char Ochar[6][4] = {
   {' ', 'O', 'O', ' '},
   {'O', ' ', ' ', 'O'},
   {'O', ' ', ' ', 'O'},
@@ -120,7 +120,7 @@ const char Ochar[6][4] = {
   {' ', 'O', 'O', ' '}
 };
 
-const char Ichar[6][4] = {
+static const char Ichar[6][4] = {
   {'I', 'I', 'I', 'I'},
   {' ', 'I', 'I', ' '},
   {' ', 'I', 'I', ' '},
@@ -129,7 +129,7 @@ const char Ichar[6][4] = {
   {'I', 'I', 'I', 'I'}
 };
 
-const char Nchar[6][4] = {
+static const char Nchar[6][4] = {
   {'N', ' ', ' ', 'N'},
   {'N', 'N', ' ', 'N'},
   {'N', 'N', ' ', 'N'},
@@ -138,7 +138,7 @@ const char Nchar[6][4] = {
   {'N', ' ', ' ', 'N'}
 };
 
-const char Tchar[6][4] = {
+static const char Tchar[6][4] = {
   {'T', 'T', 'T', 'T'},
   {' ', 'T', 'T', ' '},
   {' ', 'T', 'T', ' '},
@@ -147,7 +147,7 @@ const char Tchar[6][4] = {
   {' ', 'T', 'T', ' '}
 };
 
-const char Wchar[5][5] = {
+static const char Wchar[5][5] = {
   {'W', ' ', 'W', ' ', 'W'},
   {'W', ' ', 'W', ' ', 'W'},
   {'W', ' ', 'W', ' ', 'W'},
@@ -156,7 +156,7 @@ const char Wchar[5][5] = {
 };
 
 
-const char plusChar[6][6] = {
+static const char plusChar[6][6] = {
   {' ', ' ', '+', '+', ' ', ' '},
   {' ', ' ', '+', '+', ' ', ' '},
   {'+', '+', '+', '+', '+', '+'},

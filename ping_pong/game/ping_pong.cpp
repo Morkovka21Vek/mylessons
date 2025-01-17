@@ -187,11 +187,11 @@ int main(int argc, char const *argv[]) {
 
     if (leftPl.score >= 3) {
       playerWinScreen (1, windowSize.ws_col, windowSize.ws_row, BACKGROUND_CHAR);
-      std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
       exit(0);
     } else if (rightPl.score >= 3) {
       playerWinScreen (2, windowSize.ws_col, windowSize.ws_row, BACKGROUND_CHAR);
-      std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
       exit(0);
     }
 
@@ -249,6 +249,7 @@ int main(int argc, char const *argv[]) {
       p = kbhit();
       if (p.first){
         switch(p.second) {
+          case '\n':
           case 'c':
           case 'C':
             redrawing_screen = true;

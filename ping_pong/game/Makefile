@@ -1,20 +1,22 @@
 .PHONY: clean diff check debug help
 COMP_FLAGS := -Wall -pedantic
 
-OBG_FILES := $(patsubst %.cpp, %.o, $(wildcard *.cpp))
+BUILD_DIR = build
+OBG_FILES := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(wildcard *.cpp))
 
 make: ping_pong.out
 
 ping_pong.out: $(OBG_FILES)
 	g++ $^ -o $@
 
-#all: $(BOT) $(KEYBOARD) $(STD) $(HTTP)
+$(BUILD_DIR)/%.o: %.cpp | $(BUILD_DIR)
+	g++ -c $(COMP_FLAGS) -o $@ $<
 
-%.o: %.cpp
-	g++ -c $(COMP_FLAGS) $<
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
 clean:
-	@rm *.o 2> /dev/null
+	@rm -rf $(BUILD_DIR) 2> /dev/null
 	@rm *.out 2> /dev/null
 
 debug:

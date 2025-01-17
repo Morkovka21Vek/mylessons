@@ -1,0 +1,4 @@
+build/
+*.bak
+*.log
+dependencies.lock

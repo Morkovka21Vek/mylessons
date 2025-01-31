@@ -1,12 +1,15 @@
-.PHONY: clean diff check debug help
-COMP_FLAGS := -Wall -pedantic
+.PHONY: clean diff check debug
 
 BUILD_DIR = build
+OUT_FILE = ./ping_pong.out
+
 OBG_FILES := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(wildcard *.cpp))
+COMP_FLAGS := -Wall -pedantic
 
-make: ping_pong.out
 
-ping_pong.out: $(OBG_FILES)
+make: $(OUT_FILE)
+
+$(OUT_FILE): $(OBG_FILES)
 	g++ $^ -o $@
 
 $(BUILD_DIR)/%.o: %.cpp | $(BUILD_DIR)
@@ -16,13 +19,15 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 clean:
+	@rm $(OUT_FILE) 2> /dev/null
 	@rm -rf $(BUILD_DIR) 2> /dev/null
-	@rm *.out 2> /dev/null
 
 debug:
 	$(info )
 	$(info =========================)
-	$(info OBG_FILES = $(OBG_FILES))
+	$(info OBG_FILES  = $(OBG_FILES))
+	$(info COMP_FLAGS = $(COMP_FLAGS))
+	$(info BUILD_DIR  = $(BUILD_DIR))
 	$(info =========================)
 	$(info )
 

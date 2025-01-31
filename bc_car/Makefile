@@ -3,10 +3,10 @@
 OUT_FILE = ./car.out
 
 OBG_FILES := $(patsubst %.cpp, %.o, $(wildcard *.cpp))
-COMP_FLAGS := -Wall -pedantic -DDEBUG
+COMP_FLAGS := -Wall -pedantic# -DDEBUG
 
 
-make: $(OUT_FILE)
+all: $(OUT_FILE)
 
 $(OUT_FILE): $(OBG_FILES)
 	g++ $^ -o $@

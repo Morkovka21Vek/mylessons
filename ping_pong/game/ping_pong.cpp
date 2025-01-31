@@ -31,78 +31,7 @@
   #define BACKGROUND_CHAR BACKCHAR
 #endif
 
-void start_menu(player& leftPl, player& rightPl, int windowWidth, int windowHeight) {
-  struct termios oldt, newt;
-  tcgetattr(STDIN_FILENO, &oldt);
-  newt = oldt;
-  newt.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
-  int oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
-  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-
-  const unsigned short contentYsize_default = 4;
-  unsigned short contentYsize = contentYsize_default;
-
-  for (int i = 0; i < windowHeight * 2; i++)
-    std::cout << std::endl;
-  std::cout << "\033[1;1H";
-
-  std::cout << std::left << "Составьте конфигурацию:" << std::endl
-            << std::setw(20) << "Player 1(left)" << std::setw(20) << "Player 2(right)" << std::endl
-            << std::setw(20) << "[*] bot"        << std::setw(20) << "[*] bot"         << std::endl
-            << std::setw(20) << "[ ] keyboard"   << std::setw(20) << "[ ] keyboard"    << std::endl
-            << std::setw(20) << "[ ] std"        << std::setw(20) << "[ ] std"         << std::endl
-            << std::setw(20) << "[ ] http"       << std::setw(20) << "[ ] http"        << std::endl;
-
-  std::cout << std::endl <<  "Используйте стрелки или h(<) j(v) k(^) l(>) для перемещения\n\tи _ (пробел) для выбора пункта" << std::endl;
-  std::cout << "Для выхода из меню используйте Enter,\n\tа для выхода из игры - q" << std::endl;
-
-  int x=0, y=0;
-  std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H';
-
-  char ch;
-  while ((ch = getchar()) != '\n') {
-    switch (ch) {
-      case 'D':
-      case 'h':
-        if (--x < 0) x = 0;
-        std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H'; break;
-      case 'B':
-      case 'j':
-        if (++y > contentYsize - 1) y = contentYsize - 1;
-        std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H'; break;
-      case 'A':
-      case 'k':
-        if (--y < 0) y = 0;
-        std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H'; break;
-      case 'C':
-      case 'l':
-        if (++x > 1) x = 1;
-        std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H'; break;
-      case ' ':
-        if (x == 0) {
-          std::cout << "\033[" << leftPl.mode+3 << ';' << 2 << 'H' << ' ';
-          leftPl.mode = y;
-          std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H' << '*'
-            << "\033[" << y+3 << ';' << x*20+2 << 'H';
-        } else {
-          std::cout << "\033[" << rightPl.mode+3 << ';' << 22 << 'H' << ' ';
-          rightPl.mode = y;
-          std::cout << "\033[" << y+3 << ';' << x*20+2 << 'H' << '*'
-            << "\033[" << y+3 << ';' << x*20+2 << 'H';
-        }
-        break;
-
-      case 'q':
-      case 'Q':
-        tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // Restore old terminal settings
-        fcntl(STDIN_FILENO, F_SETFL, oldf); // Restore old flags
-        std::cout << "\033[" << contentYsize + 3+6 << ';' << 0 << 'H' << std::endl;
-        exit(0); break;
-    }
-  }
-  tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // Restore old terminal settings
-  fcntl(STDIN_FILENO, F_SETFL, oldf); // Restore old flags
-}
+void start_menu(player& leftPl, player& rightPl, int windowWidth, int windowHeight);
 
 int main(int argc, char const *argv[]) {
   using namespace std::chrono;
@@ -153,85 +82,65 @@ int main(int argc, char const *argv[]) {
       if (!(sqr.posY + sqr.sizeY >= leftPl.pos && sqr.posY - sqr.sizeY < leftPl.pos + leftPl.height)) {
         if (sqr.posX - sqr.sizeX <= 0) {
           newPointPlayer(2, windowSize.ws_col, windowSize.ws_row, BACKGROUND_CHAR);
-          std::this_thread::sleep_for(std::chrono::milliseconds(2000));
           rightPl.score++;
           rightPl.pos = static_cast<int>(windowSize.ws_row/2);
           leftPl.pos  = static_cast<int>(windowSize.ws_row/2);
           sqr = defaultSqr;
           redrawing_screen = true;
+
+          std::this_thread::sleep_for(std::chrono::milliseconds(2000));
         }
-      } else
+      }
+      else
+      {
         sqr.speedX = (sqr.speedX > 0) ? sqr.speedX : -sqr.speedX;
-
-
-      pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
+        pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
+      }
     }
     else if (sqr.posX + sqr.sizeX >= windowSize.ws_col - rightPl.width - 1) {
       if (!(sqr.posY + sqr.sizeY >= rightPl.pos && sqr.posY - sqr.sizeY < rightPl.pos + rightPl.height)) {
         if (sqr.posX + sqr.sizeX >= windowSize.ws_col - 1) {
           newPointPlayer(1, windowSize.ws_col, windowSize.ws_row, BACKGROUND_CHAR);
-          std::this_thread::sleep_for(std::chrono::milliseconds(2000));
           leftPl.score++;
           rightPl.pos = static_cast<int>(windowSize.ws_row/2);
           leftPl.pos  = static_cast<int>(windowSize.ws_row/2);
           sqr = defaultSqr;
           redrawing_screen = true;
+
+          std::this_thread::sleep_for(std::chrono::milliseconds(2000));
         }
       }
       else
+      {
         sqr.speedX = (sqr.speedX < 0) ? sqr.speedX : -sqr.speedX;
-
-      pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
+        pred = calcPred(sqr, leftPl.width, rightPl.width, windowSize.ws_col, windowSize.ws_row);
+      }
     }
 
 
     if (leftPl.score >= 3) {
       playerWinScreen (1, windowSize.ws_col, windowSize.ws_row, BACKGROUND_CHAR);
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+      //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
       exit(0);
     } else if (rightPl.score >= 3) {
       playerWinScreen (2, windowSize.ws_col, windowSize.ws_row, BACKGROUND_CHAR);
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+      //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
       exit(0);
     }
 
 
     switch(leftPl.mode){
-      case bot_pl_mode:
-        leftPl.showPred = true;
-        botTick(leftPl, sqr, pred, windowSize.ws_col, windowSize.ws_row);
-        break;
-      case keyboard_pl_mode:
-        leftPl.showPred = false;
-        keyInpTick (leftPl, windowSize.ws_col, windowSize.ws_row);
-        break;
-      case std_pl_mode:
-        leftPl.showPred = false;
-        serial_stdTick (leftPl, windowSize.ws_col, windowSize.ws_row);
-        break;
-      case http_pl_mode:
-        leftPl.showPred = false;
-        getHttpBtnCout(sock, leftPl, windowSize.ws_col, windowSize.ws_row);
-        break;
+      case bot_pl_mode:      botTick(leftPl, sqr, pred, windowSize.ws_col, windowSize.ws_row);   break;
+      case keyboard_pl_mode: keyInpTick (leftPl, windowSize.ws_col, windowSize.ws_row);          break;
+      case std_pl_mode:      serial_stdTick (leftPl, windowSize.ws_col, windowSize.ws_row);      break;
+      case http_pl_mode:     getHttpBtnCout(sock, leftPl, windowSize.ws_col, windowSize.ws_row); break;
     }
 
     switch(rightPl.mode){
-      case bot_pl_mode:
-        rightPl.showPred = true;
-        botTick(rightPl, sqr, pred, windowSize.ws_col, windowSize.ws_row);
-        break;
-      case keyboard_pl_mode:
-        rightPl.showPred = false;
-        keyInpTick (rightPl, windowSize.ws_col, windowSize.ws_row);
-        break;
-      case std_pl_mode:
-        rightPl.showPred = false;
-        serial_stdTick (rightPl, windowSize.ws_col, windowSize.ws_row);
-        break;
-      case http_pl_mode:
-        rightPl.showPred = false;
-        getHttpBtnCout(sock, rightPl, windowSize.ws_col, windowSize.ws_row);
-        break;
+      case bot_pl_mode:      botTick(rightPl, sqr, pred, windowSize.ws_col, windowSize.ws_row);   break;
+      case keyboard_pl_mode: keyInpTick (rightPl, windowSize.ws_col, windowSize.ws_row);          break;
+      case std_pl_mode:      serial_stdTick (rightPl, windowSize.ws_col, windowSize.ws_row);      break;
+      case http_pl_mode:     getHttpBtnCout(sock, rightPl, windowSize.ws_col, windowSize.ws_row); break;
     }
 
     pred.predTime--;
@@ -257,7 +166,6 @@ int main(int argc, char const *argv[]) {
           case 'q':
           case 'Q':
             return 0;
-            break;
           default:
             buffer_stdin.push_back(p.second);
             break;

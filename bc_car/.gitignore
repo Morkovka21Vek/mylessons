@@ -1,2 +1,8 @@
 *.o
 *.out
+*.stash
+bak/
+*.moc
+ui_*.h
+Makefile
+moc_*.h

@@ -28,7 +28,7 @@
      <string>joy_port</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menucar_port">
+   <widget class="QMenu" name="menucar">
     <property name="title">
      <string>car_port</string>
     </property>
@@ -46,7 +46,7 @@
    </widget>
    <addaction name="menusettings"/>
    <addaction name="menujoy"/>
-   <addaction name="menucar_port"/>
+   <addaction name="menucar"/>
    <addaction name="menuvideo_port"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

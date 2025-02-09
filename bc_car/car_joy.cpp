@@ -20,7 +20,7 @@
   #define debugf(y, str, ...)
 #endif
 
-int send_data(mode_joy joy_mode, const int joy_fd, const int car_serial_port) {
+int send_data(const mode_joy joy_mode, const int joy_fd, const int car_serial_port) {
 #ifdef DEBUG
     struct winsize windowSize;
 #endif

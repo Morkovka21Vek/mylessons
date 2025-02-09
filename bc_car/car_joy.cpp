@@ -8,13 +8,6 @@
 #include <sstream>
 #include "assets.h"
 
-#ifndef BAUDRATE
-  #define baud_rate 9600
-#else
-  #define baud_rate BAUDRATE
-#endif
-
-
 #ifdef DEBUG
   #define debugf(y, str, ...)\
           printf("\033[%d;1H", y);\
@@ -27,43 +20,10 @@
   #define debugf(y, str, ...)
 #endif
 
-int setting_car() {
-    const int car_serial_port = open("/dev/rfcomm0", O_RDWR| O_NOCTTY);
-    if (car_serial_port < 0) {
-        fprintf(stderr, "%s: Не удалось открыть устройство(машина)   (ERROR: %d; Line: %d): %s\n", __FILE__, errno, __LINE__, strerror(errno));
-        printf("\x1B[32musing:\033[0m\nsudo rfcomm bind /dev/rfcomm0 <BLUETOOTH MAC>\n");
-    }
-
-    //==========CONFIG_CAR==========//
-    struct termios options;
-    tcgetattr(car_serial_port, &options);
-    cfsetispeed(&options, baud_rate);
-    cfsetospeed(&options, baud_rate);
-    options.c_cflag |= (CLOCAL | CREAD); // Ignore modem control lines and enable receiver
-    options.c_cflag &= ~PARENB; // No parity
-    options.c_cflag &= ~CSTOPB; // 1 stop bit
-    options.c_cflag &= ~CSIZE; // Clear the current data size setting
-    options.c_cflag |= CS8; // 8 data bits
-    options.c_iflag &= ~(IXON | IXOFF | IXANY); // Disable software flow control
-    options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG); // Raw input
-    options.c_oflag &= ~OPOST; // Raw output
-    tcsetattr(car_serial_port, TCSANOW, &options);
-    //==========CONFIG_CAR==========//
-
-    return car_serial_port;
-}
-
-int setting_joy() {
-    const int joy_fd = open("/dev/input/js0", O_RDONLY);
-    if (joy_fd < 0) {
-        fprintf(stderr, "%s: Не удалось открыть устройство(джойстик) (ERROR: %d; Line: %d): %s\n", __FILE__, errno, __LINE__, strerror(errno));
-    }
-
-    return joy_fd;
-}
-
 int send_data(mode_joy joy_mode, const int joy_fd, const int car_serial_port) {
+#ifdef DEBUG
     struct winsize windowSize;
+#endif
 
     struct js_event e;
     static int x_axis=0, y_axis=0,
@@ -138,14 +98,18 @@ int send_data(mode_joy joy_mode, const int joy_fd, const int car_serial_port) {
       std::string dataToSend = oss.str();
 
       if (old_x_axis_map != x_axis_map || old_y_axis_map != y_axis_map) {
-        old_x_axis_map = x_axis_map;
-        old_y_axis_map = y_axis_map;
-
         ssize_t bytesWritten = write(car_serial_port, dataToSend.c_str(), dataToSend.size());
+
+        if (bytesWritten >= 0)
+        {
+          old_x_axis_map = x_axis_map;
+          old_y_axis_map = y_axis_map;
+        }
+
         debugf(3, "Send %ld bytes, str: %s\n", bytesWritten, dataToSend.c_str());
         return bytesWritten;
         }
       }
-    return 0;
+    return -1;
 }
 

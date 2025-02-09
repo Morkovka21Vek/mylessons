@@ -7,3 +7,4 @@ ui_*.h
 Makefile
 moc_*.h
 *.swp
+dev/

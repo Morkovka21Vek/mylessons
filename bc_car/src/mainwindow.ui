@@ -13,7 +13,13 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QVideoWidget" name="widget" native="true"/>
+    </item>
+   </layout>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
@@ -39,7 +45,7 @@
     </property>
     <addaction name="actionSettings"/>
    </widget>
-   <widget class="QMenu" name="menuvideo_port">
+   <widget class="QMenu" name="menuvideo">
     <property name="title">
      <string>video_port</string>
     </property>
@@ -47,7 +53,7 @@
    <addaction name="menusettings"/>
    <addaction name="menujoy"/>
    <addaction name="menucar"/>
-   <addaction name="menuvideo_port"/>
+   <addaction name="menuvideo"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionSettings">
@@ -56,6 +62,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QVideoWidget</class>
+   <extends>QWidget</extends>
+   <header>QVideoWidget</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

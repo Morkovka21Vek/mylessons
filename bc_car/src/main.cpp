@@ -10,20 +10,20 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QAction>
+#include <QActionGroup>
 #include <unistd.h>
+#include <QCameraInfo>
 #include "ui_mainwindow.h"
 #include <fcntl.h>
 #include <errno.h>
 #include <termios.h>
-#include <iostream>
 
-#include "assets.h"
+#include <iostream>
+#include "car_joy.h"
 
 #ifndef BAUDRATE
   #define BAUDRATE 9600
 #endif
-
-int joy_fd = -1, car_bt_fd = -1;
 
 class MainWindow : public QMainWindow
 {
@@ -37,6 +37,7 @@ private slots:
 
     void onMenuActionTriggered_menujoy();
     void onMenuActionTriggered_menucar();
+    void onMenuActionTriggered_menuvideo();
 
     void send_data_class();
 
@@ -44,8 +45,11 @@ private:
     Ui::MainWindow *ui;
     QThread thread;
     QTimer timer;
-    QActionGroup* group_joy;
-    QActionGroup* group_car;
+    QActionGroup* group_ports_joy;
+    QActionGroup* group_ports_car;
+    QActionGroup* group_ports_video;
+    QCamera* camera = nullptr;
+    ssize_t joy_fd = -1, car_bt_fd = -1;
 };
 
 MainWindow::~MainWindow()
@@ -59,13 +63,12 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::send_data_class() {
-  //if (joy_fd < 0 || car_bt_fd < 0)
   if (joy_fd >= 0 && car_bt_fd >= 0)
   {
-    int written = send_data(stick_joy, joy_fd, car_bt_fd);
+    ssize_t written = send_data(stick_joy, joy_fd, car_bt_fd);
     ui->statusbar->showMessage(QString::number(written));
   }
-  std::cout << "joy_fd: " << joy_fd << "; car_bt_fd: " << car_bt_fd << std::endl;
+  //std::cout << "joy_fd: " << joy_fd << "; car_bt_fd: " << car_bt_fd << std::endl;
 }
 
 MainWindow::MainWindow(QWidget *parent)
@@ -73,9 +76,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-
-    group_joy = new QActionGroup(this);
-    group_car = new QActionGroup(this);
+    group_ports_joy   = new QActionGroup(this);
+    group_ports_car   = new QActionGroup(this);
+    group_ports_video = new QActionGroup(this);
 
     connect(&thread, &QThread::started, this, &MainWindow::send_data_class);
     thread.start();
@@ -87,6 +90,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->menujoy, &QMenu::aboutToShow, this, &MainWindow::onMenuAboutToShow_port);
     connect(ui->menucar, &QMenu::aboutToShow, this, &MainWindow::onMenuAboutToShow_port);
+    connect(ui->menuvideo, &QMenu::aboutToShow, this, &MainWindow::onMenuAboutToShow_port);
 }
 
 void MainWindow::onMenuAboutToShow_port()
@@ -94,24 +98,28 @@ void MainWindow::onMenuAboutToShow_port()
     QMenu* curr_menu = qobject_cast<QMenu*>(sender());
     QStringList files;
 
-    //QActionGroup* curr_group = (curr_menu == ui->menujoy) ? group_joy : group_car;
-    QActionGroup* curr_group;
+    QActionGroup *curr_group;
 
     if (curr_menu == ui->menujoy)
     {
-      //QDir dir("/dev/input");
-      //files = dir.entryList(QStringList("js*"), QDir::System);
-      QDir dir("/home/morkovka21vek/lessons/bc_car/dev/input");
-      files = dir.entryList(QStringList("js*"));
-      curr_group = group_joy;
+      QDir dir("/dev/input");
+      files = dir.entryList(QStringList("js*"), QDir::System);
+      curr_group = group_ports_joy;
     }
+    else if (curr_menu == ui->menuvideo)
+    {
+      const QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
+      for (const QCameraInfo& cameraInfo : cameras) {
+        files << cameraInfo.deviceName();
+      }
+      curr_group = group_ports_video;
+    }
+    //else if (curr_menu == ui->menucar)
     else
     {
-      //QDir dir("/dev");
-      //files = dir.entryList(QStringList("rfcomm*"), QDir::System);
-      QDir dir("/home/morkovka21vek/lessons/bc_car/dev");
-      files = dir.entryList(QStringList("rfcomm*"));
-      curr_group = group_car;
+      QDir dir("/dev");
+      files = dir.entryList(QStringList("rfcomm*"), QDir::System);
+      curr_group = group_ports_car;
     }
 
     foreach (QAction* action, curr_group->actions()) {
@@ -123,25 +131,28 @@ void MainWindow::onMenuAboutToShow_port()
     }
 
     foreach (const QString& text, files) {
-        bool found = false;
+        bool found_flag = false;
         foreach (QAction* action, curr_group->actions()) {
-            if (action->text() == text) {
-                found = true;
-                break;
-            }
+          if (action->text() == text){
+            found_flag = true;
+            break;
+          }
         }
-        if (!found) {
-            QAction* action = new QAction(text, this);
-            action->setCheckable(true);
-            curr_group->addAction(action);
 
-            curr_menu->addAction(action);
+        if (!found_flag) {
+          QAction* action = new QAction(text, this);
+          action->setCheckable(true);
+
+          curr_group->addAction(action);
+          curr_menu->addAction(action);
 
 
-            if (curr_menu == ui->menujoy)
-              connect(action, &QAction::triggered, this, &MainWindow::onMenuActionTriggered_menujoy);
-            else
-              connect(action, &QAction::triggered, this, &MainWindow::onMenuActionTriggered_menucar);
+          if (curr_menu == ui->menujoy)
+            connect(action, &QAction::triggered, this, &MainWindow::onMenuActionTriggered_menujoy);
+          else if (curr_menu == ui->menuvideo)
+            connect(action, &QAction::triggered, this, &MainWindow::onMenuActionTriggered_menuvideo);
+          else if (curr_menu == ui->menucar)
+            connect(action, &QAction::triggered, this, &MainWindow::onMenuActionTriggered_menucar);
         }
     }
 }
@@ -155,12 +166,39 @@ void MainWindow::onMenuActionTriggered_menujoy()
         ui->statusbar->showMessage(file);
 
         if (joy_fd >= 0) ::close(joy_fd);
-        //joy_fd = open(("/dev/input/" + file.toStdString()).c_str(), O_RDONLY);
-        joy_fd = open(("/home/morkovka21vek/lessons/bc_car/dev/input/" + file.toStdString()).c_str(), O_RDONLY);
+        joy_fd = open(("/dev/input/" + file.toStdString()).c_str(), O_RDONLY);
 
         if (joy_fd < 0) {
             fprintf(stderr, "%s: Не удалось открыть устройство(джойстик) (ERROR: %d; Line: %d): %s\n", __FILE__, errno, __LINE__, strerror(errno));
         }
+    }
+}
+
+void MainWindow::onMenuActionTriggered_menuvideo()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+      if (camera && camera->state() == QCamera::ActiveState) {
+        std::cout << "Delete camera" << std::endl;
+        camera->stop();
+        delete camera;
+        camera = nullptr;
+      }
+      QString textCamera = action->text();
+      ui->statusbar->showMessage(textCamera);
+
+      const QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
+      for (const QCameraInfo &cameraInfo : cameras) {
+        if (cameraInfo.deviceName() == textCamera)
+          camera = new QCamera(cameraInfo);
+      }
+
+      QVideoWidget *videoWidget = ui->centralwidget->findChild<QVideoWidget*>();
+
+      if (videoWidget && camera) {
+        camera->setViewfinder(videoWidget);
+        camera->start();
+      }
     }
 }
 
@@ -171,12 +209,9 @@ void MainWindow::onMenuActionTriggered_menucar()
         QString file = action->text();
         ui->statusbar->showMessage(file);
 
-        //action->setChecked(false);
         if (car_bt_fd >= 0) ::close(car_bt_fd);
-
         //car_bt_fd = open(("/dev/" + file.toStdString()).c_str(), O_RDWR| O_NOCTTY);
-        //car_bt_fd = open(("/dev/" + file.toStdString()).c_str(), O_WRONLY | O_NOCTTY | O_NONBLOCK);
-        car_bt_fd = open(("/home/morkovka21vek/lessons/bc_car/dev/" + file.toStdString()).c_str(), O_WRONLY | O_NOCTTY | O_NONBLOCK);
+        car_bt_fd = open(("/dev/" + file.toStdString()).c_str(), O_WRONLY | O_NOCTTY | O_NONBLOCK);
 
         if (car_bt_fd < 0) {
           fprintf(stderr, "%s: Не удалось открыть устройство(машина)   (ERROR: %d; Line: %d): %s\n", __FILE__, errno, __LINE__, strerror(errno));

@@ -7,6 +7,9 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include <stdio.h>
+#include <errno.h>
+
+#include <sys/socket.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -16,8 +19,8 @@
 uint8_t xclkMhz = 20;
 
 #define UART_NUM UART_NUM_1 // Используемый UART
-#define TX_PIN 14
-#define RX_PIN 2
+#define TX_PIN 13
+#define RX_PIN 15
 
 // Определяем TAG для логов
 #define TAG "CAMERA"
@@ -108,7 +111,7 @@ esp_err_t mjpeg_httpd_handler(httpd_req_t *req) {
     char part_buf[64];  // Буфер для заголовков
 
     // Устанавливаем тип содержимого для MJPEG streaming
-    res = httpd_resp_set_type(req, "multipart/x-mixed-replace; boundary=frame");
+    res = httpd_resp_set_type(req, "multipart/x-mixed-replace; boundary=boundary");
     if (res != ESP_OK) {
         return res;
     }
@@ -123,7 +126,7 @@ esp_err_t mjpeg_httpd_handler(httpd_req_t *req) {
         }
 
         // Формируем boundary и заголовки
-        int part_len = sprintf(part_buf, "\r\n--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n", fb->len);
+        int part_len = sprintf(part_buf, "\r\n--boundary\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n", fb->len);
 
         // Отправляем boundary и заголовки
         if (httpd_resp_send_chunk(req, part_buf, part_len) != ESP_OK) {
@@ -142,44 +145,12 @@ esp_err_t mjpeg_httpd_handler(httpd_req_t *req) {
         // Возвращаем буфер камеры
         esp_camera_fb_return(fb);
 
-        // Уменьшаем задержку для увеличения FPS
         vTaskDelay(33 / portTICK_PERIOD_MS);  // ~30 FPS (1000ms / 30 = 33ms)
     }
 
     // Завершаем поток
-    httpd_resp_send_chunk(req, "\r\n--frame--\r\n", 14);
+    httpd_resp_send_chunk(req, "\r\n--boundary--\r\n", 14);
     return res;
-}
-
-esp_err_t uart_httpd_handler(httpd_req_t *req){
-    const size_t BUFF_SIZE = 100;
-    char buff[BUFF_SIZE];
-    ssize_t req_len = 0;
-    int remaining = req->content_len;
-
-    int min = (BUFF_SIZE < remaining) ? BUFF_SIZE : remaining;
-    if ((req_len  = httpd_req_recv(req, buff, min)) <= 0) {
-        goto ERROR;
-    }
-    if (req_len < BUFF_SIZE)
-        buff[req_len] = '\0';
-    else
-    {
-        ESP_LOGW(TAG, "LINE %d WARNING: req_len(%d) < BUFF_SIZE(%d)", __LINE__, req_len, BUFF_SIZE);
-        buff[BUFF_SIZE - 1] = '\0';
-    }
-
-    ESP_LOGI(TAG, "DATA: %s\n", buff);
-    if (uart_write_bytes(UART_NUM, buff, req_len) <= 0)
-    {
-        ESP_LOGW(TAG, "Failed to send data over UART");
-        httpd_resp_set_status(req, "500");
-    }
-    httpd_resp_send(req, NULL, 0);
-    return ESP_OK;
-
-ERROR:
-    return ESP_FAIL;
 }
 
 // Инициализация камеры
@@ -232,7 +203,6 @@ void init_nvs() {
 
 // Настройка Wi-Fi точки доступа
 void init_wifi_ap() {
-    // Инициализация Wi-Fi
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     esp_netif_create_default_wifi_ap();
@@ -240,7 +210,6 @@ void init_wifi_ap() {
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    // Настройка Wi-Fi точки доступа
     wifi_config_t wifi_config = {
         .ap = {
             .ssid = WIFI_SSID,
@@ -265,7 +234,7 @@ void init_wifi_ap() {
 
 void init_uart() {
     uart_config_t uart_config = {
-        .baud_rate = 9600,
+        .baud_rate = 115200,
         .data_bits = UART_DATA_8_BITS,
         .parity = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
@@ -301,26 +270,133 @@ void start_webserver() {
             .user_ctx  = NULL
         };
         httpd_register_uri_handler(server, &mjpeg_uri);
-
-        // Для обработки управления
-        httpd_uri_t uart_uri = {
-            .uri       = "/uart",
-            .method    = HTTP_POST,
-            .handler   = uart_httpd_handler,
-            .user_ctx  = NULL
-        };
-        httpd_register_uri_handler(server, &uart_uri);
     }
+}
+
+void uart_httpd_handler(int sockfd){
+    const size_t BUFF_SIZE = 32;
+    char buff[BUFF_SIZE];
+    memset(&buff, 0, BUFF_SIZE);
+
+    const size_t RECVBUFF_SIZE = 256;
+    char recvBuff[RECVBUFF_SIZE];
+    memset(&recvBuff, 0, RECVBUFF_SIZE);
+
+    int error_code = -1;
+
+    while(1) {
+        ssize_t n = read(sockfd, recvBuff + strlen(recvBuff), RECVBUFF_SIZE - strlen(recvBuff));
+        if (n == -1)
+        {
+            error_code = errno;
+            goto ERROR;
+        }
+
+        if (strstr(recvBuff, ";;") == NULL)
+        {
+            if (strlen(recvBuff) >= RECVBUFF_SIZE) {
+                ESP_LOGE(TAG, "Buffer overflow");
+                recvBuff[RECVBUFF_SIZE - 1] = 0;
+                error_code = -2;
+                goto ERROR;
+            }
+        }
+        else
+        {
+            const char* body_start = strstr(recvBuff, "\r\n\r\n") + 4;
+            size_t body_length = strlen(body_start);
+            memcpy(buff, body_start, body_length);
+            buff[body_length] = 0;
+
+            break;
+        }
+    }
+
+    ESP_LOGI(TAG, "DATA: %s", buff);
+    if (uart_write_bytes(UART_NUM, buff, strlen(buff)) <= 0)
+    {
+        ESP_LOGW(TAG, "Failed to send data over UART");
+        error_code = errno;
+        goto ERROR;
+    }
+
+    char* OK_RESP = "HTTP/1.1 200 OK\r\n\r\n";
+    write(sockfd, OK_RESP, strlen(OK_RESP));
+    return;
+
+ERROR:
+    ESP_LOGW(TAG, "Code: %d", error_code);
+
+    char FAIL_RESP_BUFF[50];
+    snprintf(FAIL_RESP_BUFF, 50, "HTTP/1.1 500 INTERNAL SERVER ERROR(%d)\r\n\r\n", error_code);
+
+    write(sockfd, FAIL_RESP_BUFF, strlen(FAIL_RESP_BUFF));
+}
+
+void start_uart_server(void *pvParameters)
+{
+    int listenfd = 0, connfd = 0;
+    int result = 1;
+    struct sockaddr_in serv_addr;
+    memset(&serv_addr, 0, sizeof(serv_addr));
+
+    const unsigned int sendBuffSize = 64;
+    char sendBuff[sendBuffSize];
+    memset(sendBuff, 0, sendBuffSize);
+
+    if((listenfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+    {
+        ESP_LOGE(TAG, "Error : Could not create socket");
+        result = 2;
+        goto ERROR;
+    }
+
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    serv_addr.sin_port = htons(81);
+
+
+    if (bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
+        ESP_LOGE(TAG, "\nError : Bind failed\n");
+        result = 3;
+        close(listenfd);
+        goto ERROR;
+    }
+
+    if (listen(listenfd, 10) < 0) {
+        ESP_LOGE(TAG, "Error : Listen failed");
+        result = 4;
+        close(listenfd);
+        goto ERROR;
+    }
+
+    ESP_LOGI(TAG, "portTICK_PERIOD_MS = %ld", portTICK_PERIOD_MS);
+    //while(1)
+    //{
+        connfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
+
+    while(1)
+    {
+        uart_httpd_handler(connfd);
+        //vTaskDelay(1 / portTICK_PERIOD_MS);
+        //vTaskDelay(1);
+        sleep(1);
+    }
+
+        close(connfd);
+    //}
+
+    result = 0;
+ERROR:
+    //return result;
 }
 
 void app_main() {
     init_nvs();
-
     init_uart();
-
     init_camera();
-
     init_wifi_ap();
-
     start_webserver();
+
+    xTaskCreate(start_uart_server, "uart_server_task", 4096, NULL, configMAX_PRIORITIES - 1, NULL);
 }

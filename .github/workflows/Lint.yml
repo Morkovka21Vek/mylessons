@@ -9,9 +9,15 @@ permissions:
   contents: read
 
 jobs:
-  lint:
-    # Super-linter workflow running in check only mode
-    # See https://github.com/super-linter/super-linter#get-started
+  build:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
+      # To report GitHub Actions status checks
+      statuses: write
 
   fix-lint-issues:
     permissions:

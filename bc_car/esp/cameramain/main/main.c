@@ -8,7 +8,7 @@
 #include "lwip/sys.h"
 #include <stdio.h>
 #include <errno.h>
-
+#include <fcntl.h>
 #include <sys/socket.h>
 
 #include "freertos/FreeRTOS.h"
@@ -18,11 +18,10 @@
 #define OneMHz 1000000
 uint8_t xclkMhz = 20;
 
-#define UART_NUM UART_NUM_1 // Используемый UART
+#define UART_NUM UART_NUM_1
 #define TX_PIN 13
 #define RX_PIN 15
 
-// Определяем TAG для логов
 #define TAG "CAMERA"
 
 // Определение GPIO-пинов для ESP32-CAM
@@ -45,18 +44,17 @@ uint8_t xclkMhz = 20;
 #define PCLK_GPIO_NUM     22
 
 // Настройки Wi-Fi точки доступа
-#define WIFI_SSID      "ESP32-CAM"       // Имя сети Wi-Fi
-#define WIFI_PASSWORD  "12345678"        // Пароль сети Wi-Fi
-#define WIFI_CHANNEL   1                 // Канал Wi-Fi
-#define MAX_STA_CONN   4                 // Максимальное количество подключенных устройств
+#define WIFI_SSID      "ESP32-CAM"
+#define WIFI_PASSWORD  "12345678"
+#define WIFI_CHANNEL   1
+#define MAX_STA_CONN   4
 
-// Определяем структуру для chunking
+// chunking
 typedef struct {
     httpd_req_t *req;
     size_t len;
 } jpg_chunking_t;
 
-// Функция для кодирования JPEG и отправки данных по частям
 static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len){
     jpg_chunking_t *j = (jpg_chunking_t *)arg;
     if(!index){
@@ -69,7 +67,6 @@ static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size
     return len;
 }
 
-// Обработчик HTTP-запроса для получения JPEG изображения
 esp_err_t jpg_httpd_handler(httpd_req_t *req){
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
@@ -104,20 +101,17 @@ esp_err_t jpg_httpd_handler(httpd_req_t *req){
     return res;
 }
 
-// Обработчик HTTP-запроса для MJPEG streaming
 esp_err_t mjpeg_httpd_handler(httpd_req_t *req) {
     camera_fb_t *fb = NULL;
     esp_err_t res = ESP_OK;
-    char part_buf[64];  // Буфер для заголовков
+    char part_buf[64];
 
-    // Устанавливаем тип содержимого для MJPEG streaming
     res = httpd_resp_set_type(req, "multipart/x-mixed-replace; boundary=boundary");
     if (res != ESP_OK) {
         return res;
     }
 
     while (true) {
-        // Получаем кадр с камеры
         fb = esp_camera_fb_get();
         if (!fb) {
             ESP_LOGE(TAG, "Camera capture failed");
@@ -125,30 +119,25 @@ esp_err_t mjpeg_httpd_handler(httpd_req_t *req) {
             break;
         }
 
-        // Формируем boundary и заголовки
         int part_len = sprintf(part_buf, "\r\n--boundary\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n", fb->len);
 
-        // Отправляем boundary и заголовки
         if (httpd_resp_send_chunk(req, part_buf, part_len) != ESP_OK) {
             ESP_LOGE(TAG, "Failed to send frame header");
             esp_camera_fb_return(fb);
             break;
         }
 
-        // Отправляем JPEG-изображение
         if (httpd_resp_send_chunk(req, (const char *)fb->buf, fb->len) != ESP_OK) {
             ESP_LOGE(TAG, "Failed to send frame data");
             esp_camera_fb_return(fb);
             break;
         }
 
-        // Возвращаем буфер камеры
         esp_camera_fb_return(fb);
 
         vTaskDelay(33 / portTICK_PERIOD_MS);  // ~30 FPS (1000ms / 30 = 33ms)
     }
 
-    // Завершаем поток
     httpd_resp_send_chunk(req, "\r\n--boundary--\r\n", 14);
     return res;
 }
@@ -183,7 +172,6 @@ void init_camera() {
     config.fb_count = 2;
     config.sccb_i2c_port = 0;// using I2C 0. to be sure what port we are using.
 
-    // Инициализация камеры
     esp_err_t err = esp_camera_init(&config);
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "Camera init failed with error 0x%x", err);
@@ -232,6 +220,7 @@ void init_wifi_ap() {
     ESP_LOGI(TAG, "Wi-Fi AP started. SSID: %s, Password: %s, Channel: %d", WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
 }
 
+// Инициализация UART
 void init_uart() {
     uart_config_t uart_config = {
         .baud_rate = 115200,
@@ -251,9 +240,7 @@ void start_webserver() {
     httpd_handle_t server = NULL;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
 
-    // Старт HTTP-сервера
     if (httpd_start(&server, &config) == ESP_OK) {
-        // Регистрация обработчика для получения JPEG изображения
         httpd_uri_t jpg_uri = {
             .uri       = "/jpg",
             .method    = HTTP_GET,
@@ -262,7 +249,6 @@ void start_webserver() {
         };
         httpd_register_uri_handler(server, &jpg_uri);
 
-        // Регистрация обработчика для MJPEG streaming
         httpd_uri_t mjpeg_uri = {
             .uri       = "/stream",
             .method    = HTTP_GET,
@@ -273,80 +259,105 @@ void start_webserver() {
     }
 }
 
-void uart_httpd_handler(int sockfd){
-    const size_t BUFF_SIZE = 32;
-    char buff[BUFF_SIZE];
-    memset(&buff, 0, BUFF_SIZE);
+//void uart_httpd_handler(int sockfd){
+void uart_httpd_handler(void *pvParameters){
+    int sockfd = (int)pvParameters;
 
+    int flags = fcntl(sockfd, F_GETFL, 0);
+    fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
+
+    const char* body;
     const size_t RECVBUFF_SIZE = 256;
     char recvBuff[RECVBUFF_SIZE];
     memset(&recvBuff, 0, RECVBUFF_SIZE);
 
     int error_code = -1;
 
-    while(1) {
-        ssize_t n = read(sockfd, recvBuff + strlen(recvBuff), RECVBUFF_SIZE - strlen(recvBuff));
-        if (n == -1)
-        {
-            error_code = errno;
-            goto ERROR;
-        }
+    while(1) {     //main while
+        while(1) { //full req while
+            ssize_t n = read(sockfd, recvBuff + strlen(recvBuff), RECVBUFF_SIZE - strlen(recvBuff) - 1);
+            if (n == -1)
+            {
+                if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                    vTaskDelay(10 / portTICK_PERIOD_MS);
+                    continue;
+                } else {
+                    error_code = errno;
+                    goto ERROR;
+                }
+            }
+            else if (n == 0)
+            {
+                ESP_LOGI(TAG, "Client closed connection");
+                goto CRITICAL_ERROR;
+            }
 
-        if (strstr(recvBuff, ";;") == NULL)
-        {
-            if (strlen(recvBuff) >= RECVBUFF_SIZE) {
-                ESP_LOGE(TAG, "Buffer overflow");
-                recvBuff[RECVBUFF_SIZE - 1] = 0;
-                error_code = -2;
-                goto ERROR;
+            if (strstr(recvBuff, ";;") == NULL)
+            {
+                if (strlen(recvBuff) >= RECVBUFF_SIZE) {
+                    ESP_LOGE(TAG, "Buffer overflow");
+                    error_code = -2;
+                    goto ERROR;
+                }
+                continue;
+            }
+            else
+            {
+                body = strstr(recvBuff, "\r\n\r\n");
+                if(body == NULL)
+                {
+                    error_code = -3;
+                    goto ERROR;
+                }
+                else
+                {
+                    body += 4;
+                    ESP_LOGI(TAG, "DATA: %s", body);
+                    if (uart_write_bytes(UART_NUM, body, strlen(body)) <= 0)
+                    {
+                        ESP_LOGW(TAG, "Failed to send data over UART");
+                        error_code = errno;
+                        goto ERROR;
+                    }
+
+                    const char* OK_RESP = "HTTP/1.1 200 OK\r\n\r\n";
+                    write(sockfd, OK_RESP, strlen(OK_RESP));
+                    break;
+                }
             }
         }
-        else
-        {
-            const char* body_start = strstr(recvBuff, "\r\n\r\n") + 4;
-            size_t body_length = strlen(body_start);
-            memcpy(buff, body_start, body_length);
-            buff[body_length] = 0;
+        memset(recvBuff, 0, RECVBUFF_SIZE);
+        continue;
+ERROR:
+        ESP_LOGW(TAG, "Code: %d", error_code);
 
-            break;
-        }
+        char FAIL_RESP_BUFF[50];
+        snprintf(FAIL_RESP_BUFF, 50, "HTTP/1.1 500 INTERNAL SERVER ERROR(%d)\r\n\r\n", error_code);
+
+        write(sockfd, FAIL_RESP_BUFF, strlen(FAIL_RESP_BUFF));
+        memset(recvBuff, 0, RECVBUFF_SIZE);
+        goto EXIT;
     }
 
-    ESP_LOGI(TAG, "DATA: %s", buff);
-    if (uart_write_bytes(UART_NUM, buff, strlen(buff)) <= 0)
-    {
-        ESP_LOGW(TAG, "Failed to send data over UART");
-        error_code = errno;
-        goto ERROR;
-    }
-
-    char* OK_RESP = "HTTP/1.1 200 OK\r\n\r\n";
-    write(sockfd, OK_RESP, strlen(OK_RESP));
+EXIT:
+    vTaskDelete(NULL);
     return;
 
-ERROR:
-    ESP_LOGW(TAG, "Code: %d", error_code);
-
-    char FAIL_RESP_BUFF[50];
-    snprintf(FAIL_RESP_BUFF, 50, "HTTP/1.1 500 INTERNAL SERVER ERROR(%d)\r\n\r\n", error_code);
-
-    write(sockfd, FAIL_RESP_BUFF, strlen(FAIL_RESP_BUFF));
+CRITICAL_ERROR:
+    close(sockfd);
+    goto EXIT;
 }
 
 void start_uart_server(void *pvParameters)
 {
-    int listenfd = 0, connfd = 0;
     int result = 1;
+    int listenfd = 0, connfd = 0;
     struct sockaddr_in serv_addr;
     memset(&serv_addr, 0, sizeof(serv_addr));
 
-    const unsigned int sendBuffSize = 64;
-    char sendBuff[sendBuffSize];
-    memset(sendBuff, 0, sendBuffSize);
-
     if((listenfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
     {
-        ESP_LOGE(TAG, "Error : Could not create socket");
+        ESP_LOGE(TAG, "Could not create socket");
         result = 2;
         goto ERROR;
     }
@@ -355,39 +366,40 @@ void start_uart_server(void *pvParameters)
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(81);
 
-
     if (bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
-        ESP_LOGE(TAG, "\nError : Bind failed\n");
+        ESP_LOGE(TAG, "Bind failed");
         result = 3;
         close(listenfd);
         goto ERROR;
     }
 
     if (listen(listenfd, 10) < 0) {
-        ESP_LOGE(TAG, "Error : Listen failed");
+        ESP_LOGE(TAG, "Listen failed");
         result = 4;
         close(listenfd);
         goto ERROR;
     }
 
-    ESP_LOGI(TAG, "portTICK_PERIOD_MS = %ld", portTICK_PERIOD_MS);
-    //while(1)
-    //{
-        connfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
+    ESP_LOGI(TAG, "UART server started on port 81");
 
     while(1)
     {
-        uart_httpd_handler(connfd);
-        //vTaskDelay(1 / portTICK_PERIOD_MS);
-        //vTaskDelay(1);
+        connfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
+        if (connfd < 0) {
+            ESP_LOGE(TAG, "Accept failed");
+            continue;
+        }
+
+        xTaskCreate(uart_httpd_handler, "uart_handler_task", 4096, (void*)connfd, configMAX_PRIORITIES - 1, NULL);
+
+        //uart_httpd_handler(connfd);
         sleep(1);
     }
 
-        close(connfd);
-    //}
-
     result = 0;
+    close(listenfd);
 ERROR:
+    return;
     //return result;
 }
 
@@ -398,5 +410,5 @@ void app_main() {
     init_wifi_ap();
     start_webserver();
 
-    xTaskCreate(start_uart_server, "uart_server_task", 4096, NULL, configMAX_PRIORITIES - 1, NULL);
+    xTaskCreate(start_uart_server, "uart_server_task", 4096, NULL, configMAX_PRIORITIES - 2, NULL);
 }

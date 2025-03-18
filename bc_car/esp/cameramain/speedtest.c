@@ -60,45 +60,29 @@ int init_sock(int* sockfd, int port, const char* serv_url){
     return result;
 }
 
-int main(int argc, char *argv[]) {
-    int return_result = -1;
-    int sockfd;
-
-    char *arg_device = parse_argument(argc, argv, "-d", "--device");
-    if (arg_device == NULL || strlen(arg_device) == 0) arg_device = "/dev/ttyUSB0";
-    char *arg_server = parse_argument(argc, argv, "-s", "--server");
-    if (arg_server == NULL || strlen(arg_server) == 0) arg_server = "192.168.4.1";
-    char *arg_server_port = parse_argument(argc, argv, "-p", "--port");
-    if (arg_server_port == NULL || strlen(arg_server_port) == 0) arg_server_port = "81";
-    //char *arg_baudrate = parse_argument(argc, argv, "-b", "--baudrate");
-    //if (arg_baudrate == NULL || strlen(arg_baudrate) == 0) arg_baudrate = "9600";
-    char *arg_only = parse_argument(argc, argv, "-o", "--only");
-    char *arg_count = parse_argument(argc, argv, "-c", "--count");
-    if (arg_count == NULL || strlen(arg_count) == 0) arg_count = "100";
-
-    printf("%s\n", arg_device);
-    printf("%s\n", arg_server);
-    printf("%s\n", arg_server_port);
-    //printf("%s\n", arg_baudrate);
-    printf("%s\n", arg_count);
-
-    const char* SEND_DATA = "\r\n\r\nHello World;;";
-
-    int device_fd = open(arg_device, O_RDWR | O_NOCTTY);
-    if (device_fd == -1) {
-        fprintf(stderr, "Ошибка открытия serial: %s\n", strerror(errno));
-        goto ERROR;
-    }
-
+int init_serial(int device_fd, int speed){
+    int return_code = -1;
     struct termios options;
     memset(&options, 0, sizeof(options));
 
     if (tcgetattr(device_fd, &options) == -1) {
         fprintf(stderr, "Ошибка получения настроек serial: %s\n", strerror(errno));
-        goto ERROR_CLOSE_DEV;
+        return_code = 1;
+        goto ERROR;
     }
-    cfsetispeed(&options, B115200);
-    cfsetospeed(&options, B115200);
+
+    speed_t baud_rate;
+    switch (speed) {
+        case 9600:   baud_rate = B9600;   break;
+        case 19200:  baud_rate = B19200;  break;
+        case 115200: baud_rate = B115200; break;
+        default:
+            perror("Скорость не поддерживается\n");
+            return_code = 2;
+            goto ERROR;
+    }
+    cfsetispeed(&options, baud_rate);
+    cfsetospeed(&options, baud_rate);
 
     options.c_cflag &= ~CSIZE;
     options.c_cflag |= CS8;
@@ -109,45 +93,85 @@ int main(int argc, char *argv[]) {
     options.c_iflag &= ~(IXON | IXOFF | IXANY);
     options.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL);
     options.c_oflag &= ~OPOST;
-    options.c_cc[VMIN] = strlen(SEND_DATA) - 4;
+    options.c_cc[VMIN] = 1;
     options.c_cc[VTIME] = 0;
 
     if (tcsetattr(device_fd, TCSANOW, &options) == -1) {
         fprintf(stderr, "Ошибка установки serial: %s\n", strerror(errno));
+        return_code = 3;
+        goto ERROR;
+    }
+
+    return_code = 0;
+ERROR:
+    return return_code;
+}
+
+int main(int argc, char *argv[]) {
+    int return_result = -1;
+    int sockfd;
+
+    char *arg_device = parse_argument(argc, argv, "-d", "--device");
+    if (arg_device == NULL || strlen(arg_device) == 0) arg_device = "/dev/ttyUSB0";
+    char *arg_server = parse_argument(argc, argv, "-s", "--server");
+    if (arg_server == NULL || strlen(arg_server) == 0) arg_server = "192.168.4.1";
+    char *arg_server_port = parse_argument(argc, argv, "-p", "--port");
+    if (arg_server_port == NULL || strlen(arg_server_port) == 0) arg_server_port = "81";
+    char *arg_baudrate = parse_argument(argc, argv, "-b", "--baudrate");
+    if (arg_baudrate == NULL || strlen(arg_baudrate) == 0) arg_baudrate = "115200";
+    char *arg_only = parse_argument(argc, argv, "-o", "--only");
+    char *arg_count = parse_argument(argc, argv, "-c", "--count");
+    if (arg_count == NULL || strlen(arg_count) == 0) arg_count = "100";
+
+    //printf("%s\n", arg_device);
+    //printf("%s\n", arg_server);
+    //printf("%s\n", arg_server_port);
+    //printf("%s\n", arg_baudrate);
+    //printf("%s\n", arg_count);
+
+    int device_fd = open(arg_device, O_RDWR | O_NOCTTY);
+    if (device_fd == -1) {
+        fprintf(stderr, "Ошибка открытия serial: %s\n", strerror(errno));
+        goto ERROR;
+    }
+    if (init_serial(device_fd, atoi(arg_baudrate)) != 0) {
         goto ERROR_CLOSE_DEV;
     }
 
-    int error_code = 0;
-    if ((error_code = init_sock(&sockfd, atoi(arg_server_port), arg_server)) != 0) {
-        fprintf(stderr, "Ошибка инициализации сокета: %d\n", error_code);
+    if (init_sock(&sockfd, atoi(arg_server_port), arg_server) != 0) {
         goto ERROR_CLOSE_DEV;
     }
 
     double time_sum = 0;
     unsigned int fail_count = 0;
-    short int *array = (short int *)malloc(atoi(arg_count) * sizeof(short int));
     for (int i = 0; i < atoi(arg_count); i++) {
-        const size_t BUFFSIZE = 64;
-        char buff[BUFFSIZE];
-        memset(&buff, 0, BUFFSIZE);
+        const size_t BUFF_SIZE = 64;
+        char buff[BUFF_SIZE];
+        memset(&buff, 0, BUFF_SIZE);
 
-        time_t time_start = time(0);
-        int write_len = write(sockfd, SEND_DATA, strlen(SEND_DATA));
+        const size_t DATABUFF_SIZE = 64;
+        char databuff[DATABUFF_SIZE];
+        memset(&databuff, 0, DATABUFF_SIZE);
+
+        snprintf(databuff, DATABUFF_SIZE, "\r\n\r\n%d,%d;;", i, i+1);
+
+        clock_t time_start = clock();
+        int write_len = write(sockfd, databuff, strlen(databuff));
         if (write_len == -1) {
             fprintf(stderr, "Ошибка записи в сокет: %s\n", strerror(errno));
-            goto ERROR_FREE_ARR;
+            goto ERROR_CLOSE_DEV;
         }
 
-        ssize_t read_len = read(device_fd, buff, BUFFSIZE - 1);
+        ssize_t read_len = read(device_fd, buff, BUFF_SIZE - 1);
         if (read_len == -1) {
             fprintf(stderr, "Ошибка чтения serial: %s\n", strerror(errno));
-            goto ERROR_FREE_ARR;
+            goto ERROR_CLOSE_DEV;
         }
         buff[read_len] = 0;
 
-        time_t time_end = time(0);
+        clock_t time_end = clock();
 
-        if(strcmp(buff, "Hello World;;") == 0) {
+        if(strcmp(buff, databuff+4) == 0) {
             if (arg_only == NULL)
                 printf("OK: %s\t", buff);
         } else {
@@ -156,12 +180,12 @@ int main(int argc, char *argv[]) {
             fail_count++;
         }
 
+        double time_diff = ((double) (time_end - time_start)) / CLOCKS_PER_SEC;
         if (arg_only != NULL)
-            printf("%f\n", difftime(time_end, time_start));
+            printf("%f\n", time_diff);
         else
-            printf("Time: %f\n\n", difftime(time_end, time_start));
-        array[i] = (short int)difftime(time_end, time_start);
-        time_sum += difftime(time_end, time_start);
+            printf("Time: %f\n\n", time_diff);
+        time_sum += time_diff;
     }
 
     if (arg_only == NULL) {
@@ -170,8 +194,6 @@ int main(int argc, char *argv[]) {
     }
 
     return_result = 0;
-ERROR_FREE_ARR:
-    free(array);
 ERROR_CLOSE_DEV:
     close(device_fd);
 ERROR:

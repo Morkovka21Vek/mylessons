@@ -155,7 +155,9 @@ int main(int argc, char *argv[]) {
 
         snprintf(databuff, DATABUFF_SIZE, "\r\n\r\n%d,%d;;", i, i+1);
 
-        clock_t time_start = clock();
+        struct timespec time_start, time_end;
+        clock_gettime(CLOCK_MONOTONIC, &time_start);
+
         int write_len = write(sockfd, databuff, strlen(databuff));
         if (write_len == -1) {
             fprintf(stderr, "Ошибка записи в сокет: %s\n", strerror(errno));
@@ -169,7 +171,7 @@ int main(int argc, char *argv[]) {
         }
         buff[read_len] = 0;
 
-        clock_t time_end = clock();
+        clock_gettime(CLOCK_MONOTONIC, &time_end);
 
         if(strcmp(buff, databuff+4) == 0) {
             if (arg_only == NULL)
@@ -180,7 +182,8 @@ int main(int argc, char *argv[]) {
             fail_count++;
         }
 
-        double time_diff = ((double) (time_end - time_start)) / CLOCKS_PER_SEC;
+        double time_diff = (time_end.tv_sec - time_start.tv_sec) * 1000.0
+                         + (time_end.tv_nsec - time_start.tv_nsec) / 1000000.0;
         if (arg_only != NULL)
             printf("%f\n", time_diff);
         else

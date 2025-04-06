@@ -1,4 +1,7 @@
 #pragma once
+
+#include <ostream>
+
 class Int {
     public:
         Int(int val);
@@ -13,6 +16,21 @@ class Int {
         bool operator>(const Int&) const;
         bool operator<(const Int&) const;
 
+        bool operator>=(const Int&) const;
+        bool operator<=(const Int&) const;
+
+        Int operator+(int val) const;
+        Int operator+(const Int&) const;
+
+        Int operator-(int val) const;
+        Int operator-(const Int&) const;
+
+        Int& operator+=(int val);
+        Int& operator+=(const Int& other);
+
+        Int& operator-=(int val);
+        Int& operator-=(const Int& other);
+
         int getValue() const;
         
     private:
@@ -21,12 +39,8 @@ class Int {
 
 bool operator>(int, const Int&);
 bool operator<(int, const Int&);
-//puplic:
-//    void set_zero()
-//        { num = 0; }
-//    void set_num(int inp)
-//        { num = inp; }
-//    //void print_num()
-//    //    { std::cout << ""}
-//    void sum_nums()
-//        {}
+
+bool operator>=(int, const Int&);
+bool operator<=(int, const Int&);
+
+std::ostream& operator<<(std::ostream& os, const Int& obj);

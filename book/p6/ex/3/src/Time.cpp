@@ -8,7 +8,21 @@ Time::Time(unsigned int hours,
            unsigned int min,
            unsigned int sec
           ): _hours(hours), _min(min), _sec(sec)
-{}
+{
+    this->_min += this->_sec / 60;
+    this->_sec %= 60;
+    this->_hours += this->_min / 60;
+    this->_min %= 60;
+
+    //while(_sec >= 60) {
+    //    _sec -= 60;
+    //    _min++;
+    //}
+    //while(_min >= 60) {
+    //    _min -= 60;
+    //    _hours++;
+    //}
+}
 
 void Time::getValues(
         unsigned int& hours,
@@ -33,17 +47,13 @@ Time Time::operator+(const Time& other) const {
     other.getValues( hours, min, sec );
 
     sec += this->_sec;
-    while(sec >= 60) {
-        sec -= 60;
-        min++;
-    }
-
     min += this->_min;
-    while(min >= 60) {
-        min -= 60;
-        hours++;
-    }
-
     hours += this->_hours;
+
+    min += this->_sec / 60;
+    sec %= 60;
+    hours += this->_min / 60;
+    min %= 60;
+
     return Time(hours, min, sec);
 }

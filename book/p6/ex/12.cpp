@@ -12,10 +12,7 @@ class fraction {
         void getData();
         void getValues(int& a, int& b) const;
 
-        fraction operator+(fraction) const;
-        fraction operator-(fraction) const;
         fraction operator*(fraction) const;
-        fraction operator/(fraction) const;
 
     private:
         void reducing();
@@ -47,51 +44,12 @@ void fraction::reducing() {
     } while (j != 1);
 }
 
-fraction fraction::operator+(fraction other) const {
-    int other_a, other_b;
-    other.getValues(other_a, other_b);
-
-    int out_a = this->a*other_b + this->b*other_a;
-    int out_b = this->b*other_b;
-
-    fraction out(out_a, out_b);
-    out.reducing();
-
-    return out;
-}
-
-fraction fraction::operator-(fraction other) const {
-    int other_a, other_b;
-    other.getValues(other_a, other_b);
-
-    int out_a = this->a*other_b - this->b*other_a;
-    int out_b = this->b*other_b;
-
-    fraction out(out_a, out_b);
-    out.reducing();
-
-    return out;
-}
-
 fraction fraction::operator*(fraction other) const {
     int other_a, other_b;
     other.getValues(other_a, other_b);
 
     int out_a = this->a*other_a;
     int out_b = this->b*other_b;
-
-    fraction out(out_a, out_b);
-    out.reducing();
-
-    return out;
-}
-
-fraction fraction::operator/(fraction other) const {
-    int other_a, other_b;
-    other.getValues(other_a, other_b);
-
-    int out_a = this->a*other_b;
-    int out_b = this->b*other_a;
 
     fraction out(out_a, out_b);
     out.reducing();
@@ -123,18 +81,18 @@ int main() {
     std::cout << "Введите знаменатель для создания таблицы умножения: "; std::cin >> denominator;
 
     if (denominator <= 0) {
-        std::cout << "Некорректный знаменатель!";
+        std::cout << "Некорректный знаменатель!" << std::endl;
         goto ERROR;
     }
 
-    do {
+    {
         int temp_denominator = denominator * denominator;
         while(temp_denominator >= 10)
         {
             temp_denominator /= 10;
             width += 2;
         }
-    } while(0);
+    }
 
     std::cout << std::left << std::setfill(' ');
 

@@ -58,6 +58,7 @@ void employee::putemploy() {
         case accountant: std::cout << "accountant"; break;
         case executive:  std::cout << "executive";  break;
         case researcher: std::cout << "researcher"; break;
+        default:         std::cout << "NONE";       break;
     }
 
     std::cout << std::endl << std::endl;

@@ -28,7 +28,6 @@ std::ostream& operator<<(std::ostream& os, const counter& obj) {
 }
 
 
-
 int main () {
     counter ct1, ct2, ct3;
 

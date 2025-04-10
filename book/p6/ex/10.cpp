@@ -4,7 +4,7 @@
 class ship {
     public:
         ship();
-        void answerData();
+        int answerData();
         void getValues(int& num, int& dec, float& min, char& orientaion) const;
 
     private:
@@ -23,9 +23,29 @@ ship::ship() {
     _count++;
 }
 
-void ship::answerData() {
-    std::cout << "Введите координаты в формате: \"d m orientaion\"\n>>> ";
+int ship::answerData() {
+    int result = 0;
     std::cin >> this->_dec >> this->_min >> this->_orientaion;
+
+
+    if (this->_min < 0 || this->_dec < 0)
+        result = 1;
+
+    switch (this->_orientaion) {
+        case 'W':
+        case 'E':
+            if (this->_min/60 + this->_dec > 180)
+                result = 1;
+            break;
+        case 'N':
+        case 'S':
+            if (this->_min/60 + this->_dec > 90)
+                result = 1;
+            break;
+        default:
+            result = 2;
+    }
+    return result;
 }
 
 void ship::getValues(int& num, int& dec, float& min, char& orientaion) const{
@@ -51,12 +71,25 @@ std::ostream& operator<<(std::ostream& os, const ship& obj) {
 int main () {
     ship sh1, sh2, sh3;
 
-    sh1.answerData();
-    sh2.answerData();
-    sh3.answerData();
+    std::cout << "Введите координаты в формате: \"d m orientaion\"\n>>> ";
+    if (sh1.answerData() != 0)
+        goto INPUT_ERROR;
+
+    std::cout << "Введите координаты в формате: \"d m orientaion\"\n>>> ";
+    if (sh2.answerData() != 0)
+        goto INPUT_ERROR;
+
+    std::cout << "Введите координаты в формате: \"d m orientaion\"\n>>> ";
+    if (sh3.answerData() != 0)
+        goto INPUT_ERROR;
+
     std::cout << sh1 << std::endl
               << sh2 << std::endl
               << sh3 << std::endl;
 
     return 0;
+
+INPUT_ERROR:
+    std::cerr << "Ошибка при вводе!" << std::endl;
+    return 1;
 }

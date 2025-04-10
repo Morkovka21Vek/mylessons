@@ -3,8 +3,7 @@
 
 class employee {
     public:
-        employee(int num): _num(num)
-        {}
+        employee(int num);
 
         void answerData();
         void getValues(int& num, int& id, float& salary) const;
@@ -14,6 +13,9 @@ class employee {
         float _salary;
         int _num;
 };
+
+employee::employee(int num): _num(num)
+{}
 
 void employee::getValues(int& num, int& id, float& salary) const{
     num =    this->_num;

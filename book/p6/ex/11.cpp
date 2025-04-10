@@ -1,14 +1,10 @@
 #include <iostream>
 #include <ostream>
-//#include <cstdlib>
 
 class fraction {
     public:
-        fraction(): a(0), b(0)
-        {}
-
-        fraction(int _a, int _b): a(_a), b(_b)
-        {}
+        fraction();
+        fraction(int a, int b);
 
         void getData();
         void getValues(int& a, int& b) const;
@@ -23,6 +19,12 @@ class fraction {
         int a;
         int b;
 };
+
+fraction::fraction(): a(0), b(0)
+{}
+
+fraction::fraction(int _a, int _b): a(_a), b(_b)
+{}
 
 void fraction::getData() {
     char space;

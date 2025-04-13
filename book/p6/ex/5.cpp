@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <stdexcept>
 
 class date {
     public:
@@ -64,38 +65,38 @@ bool date::checkDate(std::vector<int> input) {
         goto ERROR;
     }
 
-    switch (month) {
-        case 0:
-        case 2:
-        case 4:
-        case 6:
-        case 7:
-        case 9:
-        case 11:
-            if (day > 31) {
+    if (month == 1) {
+        if ((year % 400 == 0) || (year % 100 != 0 && year % 4 == 0)) {
+            if (day > 29) {
                 result = 3;
                 goto ERROR;
             }
-        case 3:
-        case 5:
-        case 8:
-        case 10:
-            if (day > 30) {
+        } else {
+            if (day > 28) {
                 result = 3;
                 goto ERROR;
             }
-        case 1:
-            if ((year % 400 == 0) || (year % 100 != 0 && year % 4 == 0)) {
-                if (day > 29) {
-                    result = 3;
-                    goto ERROR;
-                }
-            } else {
-                if (day > 28) {
-                    result = 3;
-                    goto ERROR;
-                }
-            }
+        }
+    }
+
+    else if (month == 3 ||
+             month == 5 ||
+             month == 8 ||
+             month == 10) {
+
+        if (day > 30) {
+            result = 3;
+            goto ERROR;
+        }
+
+    }
+
+    else
+    {
+        if (day > 31) {
+            result = 3;
+            goto ERROR;
+        }
     }
 
     result = 0;
@@ -123,7 +124,7 @@ int date::parseDate(std::string str, date& dt, char sep) {
 date::date(std::string str)
 {
     if (parseDate(str, *this) != 0) {
-        exit(1);
+        throw new std::invalid_argument("Date formate error");
     }
 }
 
@@ -141,14 +142,24 @@ std::ostream& operator<<(std::ostream& os, const date& obj) {
     return os;
 }
 
-int main () {
+void runCalendar() {
     std::string str;
-    std::cout << "Введите дату в формате dd/mm/yy:\n>> " << std::flush;
+    std::cout << "Введите дату в формате dd/mm/yyyy:\n>> " << std::flush;
     std::cin >> str;
 
     date dt(str);
 
     std::cout << dt << std::endl;
+}
 
+
+int main() {
+    try {
+        runCalendar();
+    }
+    catch(std::exception *e) {
+        std::cerr << e->what() << std::endl;
+        delete e;
+    }
     return 0;
 }

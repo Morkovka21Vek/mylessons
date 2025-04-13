@@ -1,6 +1,6 @@
 #include <iostream>
-
-enum etype {laborer, secretary, manager, accountant, executive, researcher};
+#include <map>
+#include <string>
 
 class employee {
     public:
@@ -17,7 +17,7 @@ class employee {
         float _salary;
         int _num;
 
-        etype _type;
+        std::string _type;
 };
 
 void employee::getemploy() {
@@ -33,36 +33,32 @@ void employee::getemploy() {
     char inp;
     std::cout << "\tПервая буква должности(laborer, secretary, manager, accountant, executive, researcher):\n>>> "; std::cin >> inp;
 
-    switch (inp){
-        case 'l': this->_type = laborer;    break;
-        case 's': this->_type = secretary;  break;
-        case 'm': this->_type = manager;    break;
-        case 'a': this->_type = accountant; break;
-        case 'e': this->_type = executive;  break;
-        case 'r': this->_type = researcher; break;
-        default:
-            std::cout << "Значит он паразит? У нас такой должности нет!" << std::endl;
-    }
+    std::map<char, std::string> types {
+        {'l', "laborer"   },
+        {'s', "secretary" },
+        {'m', "manager"   },
+        {'a', "accountant"},
+        {'e', "executive" },
+        {'r', "researcher"}
+    };
+
+    std::map<char, std::string>::iterator it;
+    it = types.find(inp);
+
+    if (it == types.end()) {
+        std::cout << "Значит он паразит? У нас такой должности нет!" << std::endl;
+        this->_type = "NONE";
+    } else
+        this->_type = it->second;
 }
 
 void employee::putemploy() {
     std::cout << "ID сотрудника " << this->_num << ": " << this->_id << std::endl
               << "Его зарплата составляет " << this->_salary << '$' << std::endl
               << "Дата приёма на работу: " << this->_day << '/' << this->_month << '/' << this->_year << std::endl
-              << "Его должность: ";
-
-    switch (this->_type) {
-        case laborer:    std::cout << "laborer";    break;
-        case secretary:  std::cout << "secretary";  break;
-        case manager:    std::cout << "manager";    break;
-        case accountant: std::cout << "accountant"; break;
-        case executive:  std::cout << "executive";  break;
-        case researcher: std::cout << "researcher"; break;
-        default:         std::cout << "NONE";       break;
-    }
+              << "Его должность: " << this->_type;
 
     std::cout << std::endl << std::endl;
-
 }
 
 

@@ -9,3 +9,4 @@ moc_*.h
 *.swp
 dev/
 build/
+*.bkp

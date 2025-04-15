@@ -1,7 +1,3 @@
-//#include "mock_stdio.h"
-//#include "../include/mocks/mock_unistd.h"
-#include "mock_unistd.h"
-
 //#include "car_joy.h"
 //#include <linux/joystick.h>
 //

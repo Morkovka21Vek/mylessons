@@ -1,4 +1,4 @@
-QT += core gui multimedia multimediawidgets
+QT += core gui multimedia multimediawidgets widgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,12 +10,15 @@ UI_DIR = build/ui
 
 QMAKE_BUNDLE_DATA = build
 
+HEADERS += src/mainwindow.hpp\
+           src/car_joy.h
 
 TARGET = car_joy.out
 TEMPLATE = app
 
 SOURCES += src/main.cpp\
-           src/car_joy.cpp
+           src/car_joy.cpp\
+           src/mainwindow.cpp
 
 FORMS += src/mainwindow.ui
 

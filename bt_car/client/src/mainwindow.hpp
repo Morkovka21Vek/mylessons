@@ -6,6 +6,7 @@
 #include <QActionGroup>
 #include <QCamera>
 #include <unistd.h>
+#include <functional>
 
 namespace Ui {
 class MainWindow;
@@ -17,31 +18,20 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    ssize_t getJoyFd();
     ~MainWindow();
 
 private slots:
-    void refreshPortsMenu();
     void handleJoyPortSelection();
-    void handleCarPortSelection();
-    void handleVideoPortSelection();
-    void sendControlData();
-    void updateMenuActions(QMenu* menu, QActionGroup* group, const QStringList& items);
+    void updateMenuActions(QMenu* menu, QActionGroup* group, const QStringList& items, const std::function<void()>& handler);
 
 private:
     void setupMenuConnections();
-    void setupDataSending();
-    void refreshJoyPorts(QMenu* menu);
-    void refreshVideoPorts(QMenu* menu);
-    void refreshCarPorts(QMenu* menu);
-    void configureBluetoothConnection();
+    void refreshJoyPorts();
 
+    ssize_t joyFd;
     Ui::MainWindow *ui;
     QThread workerThread;
     QTimer dataTimer;
     QActionGroup* joyPortsGroup;
-    QActionGroup* carPortsGroup;
-    QActionGroup* videoPortsGroup;
-    QCamera* camera = nullptr;
-    ssize_t joyFd = -1;
-    ssize_t carBtFd = -1;
 };

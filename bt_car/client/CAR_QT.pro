@@ -11,14 +11,16 @@ UI_DIR = build/ui
 QMAKE_BUNDLE_DATA = build
 
 HEADERS += src/mainwindow.hpp\
-           src/car_joy.h
+           src/car_joy.h\
+           src/camera.hpp
 
 TARGET = car_joy.out
 TEMPLATE = app
 
 SOURCES += src/main.cpp\
            src/car_joy.cpp\
-           src/mainwindow.cpp
+           src/mainwindow.cpp\
+           src/camera.cpp
 
 FORMS += src/mainwindow.ui
 

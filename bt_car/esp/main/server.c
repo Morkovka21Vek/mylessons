@@ -2,13 +2,213 @@
 #include "esp_log.h"
 #include "esp_http_server.h"
 #include "esp_timer.h"
+#include "driver/uart.h"
+#include "uart.h"
+#include <errno.h>
 
 #define TAG "SERVER.c"
+
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 typedef struct {
     httpd_req_t *req;
     size_t len;
 } jpg_chunking_t;
+
+esp_err_t setboundaries_httpd_handler(httpd_req_t *req) {
+    int result = -1;
+    const size_t CONTENT_BUF_SIZE = 7;
+    char content[CONTENT_BUF_SIZE];
+
+    const size_t UART_BUF_SIZE = CONTENT_BUF_SIZE+4;
+    char uart_buf[UART_BUF_SIZE];
+
+    const size_t RXBUFSIZE = 10;
+    char rx_buf[RXBUFSIZE];
+
+    int ret = httpd_req_recv(req, content, MIN(req->content_len, CONTENT_BUF_SIZE));
+    if (ret <= 0) {
+        if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
+            ESP_LOGW(TAG, "408");
+            httpd_resp_send_408(req);
+        }
+        goto ERROR;
+    }
+
+    snprintf(uart_buf, UART_BUF_SIZE, "&3)%s;", content);
+
+    if (uart_write_bytes(UART_NUM, uart_buf, UART_BUF_SIZE) <= 0) {
+        ESP_LOGW(TAG, "Failed to send data over UART");
+        httpd_resp_set_status(req, "500 UART write");
+        httpd_resp_send(req, NULL, 0);
+        result = errno;
+        goto ERROR;
+    }
+
+    if(uart_read_line(UART_NUM, rx_buf, RXBUFSIZE, 1000, ';') == -1) {
+        if (errno == ETIMEDOUT) {
+            ESP_LOGW(TAG, "Timeout read data over UART");
+            result = ETIMEDOUT;
+            httpd_resp_set_status(req, "504 UART Timeout");
+            httpd_resp_send(req, NULL, 0);
+        } else {
+            ESP_LOGW(TAG, "Failed to read data over UART");
+            result = -2;
+            httpd_resp_set_status(req, "500 UART read");
+            httpd_resp_send(req, NULL, 0);
+        }
+        goto ERROR;
+    }
+
+    int status;
+    sscanf(rx_buf, "&3)%d", &status);
+    httpd_resp_set_status(req,
+            (status==200) ? HTTPD_200 : "503 change the jumper");
+
+    httpd_resp_send(req, NULL, 0);
+    result = ESP_OK;
+ERROR:
+    return result;
+}
+
+esp_err_t absoluteturn_httpd_handler(httpd_req_t *req) {
+    int result = -1;
+    const size_t CONTENT_BUF_SIZE = 3;
+    char content[CONTENT_BUF_SIZE];
+
+    const size_t UART_BUF_SIZE = CONTENT_BUF_SIZE+4;
+    char uart_buf[UART_BUF_SIZE];
+
+    int ret = httpd_req_recv(req, content, MIN(req->content_len, CONTENT_BUF_SIZE));
+    if (ret <= 0) {
+        if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
+            ESP_LOGW(TAG, "408");
+            httpd_resp_send_408(req);
+        }
+        goto ERROR;
+    }
+    snprintf(uart_buf, UART_BUF_SIZE, "&2)%s;", content);
+
+    if (uart_write_bytes(UART_NUM, uart_buf, UART_BUF_SIZE) <= 0) {
+        ESP_LOGW(TAG, "Failed to send data over UART");
+        httpd_resp_set_status(req, "500 UART write");
+        httpd_resp_send(req, NULL, 0);
+        result = errno;
+        goto ERROR;
+    }
+
+    httpd_resp_send(req, NULL, 0);
+    result = ESP_OK;
+ERROR:
+    return result;
+}
+esp_err_t getstatus_httpd_handler(httpd_req_t *req) {
+    const size_t BUF_SIZE = 100;
+    char resp_json[BUF_SIZE];
+
+    const size_t RXBUFSIZE = 20;
+    char rx_buf[RXBUFSIZE];
+
+    int result = -1;
+
+    const char* uart_body = "&4);";
+    if (uart_write_bytes(UART_NUM, uart_body, strlen(uart_body)) <= 0) {
+        ESP_LOGW(TAG, "Failed to send data over UART");
+        result = errno;
+        httpd_resp_set_status(req, "500 UART write");
+        httpd_resp_send(req, NULL, 0);
+        goto ERROR;
+    }
+
+    if(uart_read_line(UART_NUM, rx_buf, RXBUFSIZE, 1000, ';') == -1) {
+        if (errno == ETIMEDOUT) {
+            ESP_LOGW(TAG, "Timeout read data over UART");
+            result = ETIMEDOUT;
+            httpd_resp_set_status(req, "504 UART Timeout");
+            httpd_resp_send(req, NULL, 0);
+        } else {
+            ESP_LOGW(TAG, "Failed to read data over UART");
+            result = -2;
+            httpd_resp_set_status(req, "500 UART read");
+            httpd_resp_send(req, NULL, 0);
+        }
+        goto ERROR;
+    }
+
+    float pct, vol;
+    sscanf(rx_buf, "&1)%f,%f", &pct, &vol);
+
+    snprintf(resp_json, BUF_SIZE,
+        "{"
+        "\"battery\": {"
+        "\"pct\": %f,"
+        "\"vol\": %f"
+        "}"
+        "}",
+        pct, vol);
+
+    httpd_resp_set_type(req, HTTPD_TYPE_JSON);
+    httpd_resp_send(req, resp_json, HTTPD_RESP_USE_STRLEN);
+
+    result = ESP_OK;
+ERROR:
+    return result;
+}
+esp_err_t getsettings_httpd_handler(httpd_req_t *req) {
+    const size_t BUF_SIZE = 100;
+    char resp_json[BUF_SIZE];
+
+    const size_t RXBUFSIZE = 20;
+    char rx_buf[RXBUFSIZE];
+
+    int result = -1;
+
+    const char* uart_body = "&1);";
+    if (uart_write_bytes(UART_NUM, uart_body, strlen(uart_body)) <= 0) {
+        ESP_LOGW(TAG, "Failed to send data over UART");
+        result = errno;
+        httpd_resp_set_status(req, "500 UART write");
+        httpd_resp_send(req, NULL, 0);
+        goto ERROR;
+    }
+
+    if(uart_read_line(UART_NUM, rx_buf, RXBUFSIZE, 1000, ';') == -1) {
+        if (errno == ETIMEDOUT) {
+            ESP_LOGW(TAG, "Timeout read data over UART");
+            result = ETIMEDOUT;
+            httpd_resp_set_status(req, "504 UART Timeout");
+            httpd_resp_send(req, NULL, 0);
+        } else {
+            ESP_LOGW(TAG, "Failed to read data over UART");
+            result = -2;
+            httpd_resp_set_status(req, "500 UART read");
+            httpd_resp_send(req, NULL, 0);
+        }
+        goto ERROR;
+    }
+
+    int baudrate, logs, reverse, servo;
+    sscanf(rx_buf, "&1)%d,%d,%d,%d", &baudrate, &logs, &reverse, &servo);
+
+    snprintf(resp_json, BUF_SIZE,
+        "{"
+        "\"baudrate\": %s,"
+        "\"logs\": %s,"
+        "\"reverse\": %s,"
+        "\"servo\": %s"
+        "}",
+        baudrate?"true":"false",
+        logs    ?"true":"false",
+        reverse ?"true":"false",
+        servo   ?"true":"false");
+
+    httpd_resp_set_type(req, HTTPD_TYPE_JSON);
+    httpd_resp_send(req, resp_json, HTTPD_RESP_USE_STRLEN);
+
+    result = ESP_OK;
+ERROR:
+    return result;
+}
 
 static size_t jpg_encode_stream(void * arg, size_t index, const void* data, size_t len){
     jpg_chunking_t *j = (jpg_chunking_t *)arg;
@@ -118,5 +318,37 @@ void start_webserver() {
             .user_ctx  = NULL
         };
         httpd_register_uri_handler(server, &mjpeg_uri);
+
+        httpd_uri_t getsettings_uri = {
+            .uri       = "/api/getsettings",
+            .method    = HTTP_GET,
+            .handler   = getsettings_httpd_handler,
+            .user_ctx  = NULL
+        };
+        httpd_register_uri_handler(server, &getsettings_uri);
+
+        httpd_uri_t absoluteturn_uri = {
+            .uri       = "/api/servo/absoluteturn",
+            .method    = HTTP_POST,
+            .handler   = absoluteturn_httpd_handler,
+            .user_ctx  = NULL
+        };
+        httpd_register_uri_handler(server, &absoluteturn_uri);
+
+        httpd_uri_t setboundaries_uri = {
+            .uri       = "/api/servo/setboundaries",
+            .method    = HTTP_POST,
+            .handler   = setboundaries_httpd_handler,
+            .user_ctx  = NULL
+        };
+        httpd_register_uri_handler(server, &setboundaries_uri);
+
+        httpd_uri_t getstatus_uri = {
+            .uri       = "/api/getstatus",
+            .method    = HTTP_GET,
+            .handler   = getstatus_httpd_handler,
+            .user_ctx  = NULL
+        };
+        httpd_register_uri_handler(server, &getstatus_uri);
     }
 }

@@ -25,31 +25,30 @@ char* parse_argument(int argc, char *argv[], const char *param_short, const char
     return NULL;
 }
 
-int init_sock(int* sockfd, int port, const char* serv_url){
+int init_sock(int* sockfd, struct sockaddr_in* serv_addr, int port, const char* serv_url){
     int result = 0;
 
-    struct sockaddr_in serv_addr;
-    memset(&serv_addr, 0, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(port);
+    memset(serv_addr, 0, sizeof(*serv_addr));
+
+    serv_addr->sin_family = AF_INET;
+    serv_addr->sin_port = htons(port);
 
     do {
-        //if((*sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
-        if((*sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        if((*sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
         {
             perror("Error : Could not create socket\n");
             result = 1;
             break;
         }
 
-        if(inet_pton(AF_INET, serv_url, &serv_addr.sin_addr) <= 0)
+        if(inet_pton(AF_INET, serv_url, &serv_addr->sin_addr) <= 0)
         {
             perror("inet_pton error occured\n");
             result = 2;
             break;
         }
 
-        if(connect(*sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+        if(connect(*sockfd, (struct sockaddr *)serv_addr, sizeof(*serv_addr)) == -1)
         {
             perror("Error : Connect Failed\n");
             result = 3;
@@ -138,7 +137,8 @@ int main(int argc, char *argv[]) {
         goto ERROR_CLOSE_DEV;
     }
 
-    if (init_sock(&sockfd, atoi(arg_server_port), arg_server) != 0) {
+    struct sockaddr_in serv_addr;
+    if (init_sock(&sockfd, &serv_addr, atoi(arg_server_port), arg_server) != 0) {
         goto ERROR_CLOSE_DEV;
     }
 
@@ -153,12 +153,13 @@ int main(int argc, char *argv[]) {
         char databuff[DATABUFF_SIZE];
         memset(&databuff, 0, DATABUFF_SIZE);
 
-        snprintf(databuff, DATABUFF_SIZE, "\r\n\r\n%d,%d;;", i, i+1);
+        snprintf(databuff, DATABUFF_SIZE, "%d,%d;", i, i+1);
 
         struct timespec time_start, time_end;
         clock_gettime(CLOCK_MONOTONIC, &time_start);
 
-        int write_len = write(sockfd, databuff, strlen(databuff));
+        //int write_len = write(sockfd, databuff, strlen(databuff));
+        ssize_t write_len = sendto(sockfd, databuff, strlen(databuff), 0, (struct sockaddr*)NULL, sizeof(serv_addr));
         if (write_len == -1) {
             fprintf(stderr, "Ошибка записи в сокет: %s\n", strerror(errno));
             goto ERROR_CLOSE_DEV;
@@ -173,12 +174,12 @@ int main(int argc, char *argv[]) {
 
         clock_gettime(CLOCK_MONOTONIC, &time_end);
 
-        if(strcmp(buff, databuff+4) == 0) {
+        if(strcmp(buff, databuff) == 0) {
             if (arg_only == NULL)
                 printf("OK: %s\t", buff);
         } else {
             if (arg_only == NULL)
-                printf("FAIL: %s\t", buff);
+                printf("FAIL(%s): %s\t", databuff, buff);
             fail_count++;
         }
 

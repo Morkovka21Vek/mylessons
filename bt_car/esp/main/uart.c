@@ -10,7 +10,7 @@
 
 // Инициализация UART
 void init_uart() {
-    unsigned int baud_rate = 115200;
+    unsigned int baud_rate = 9600;
     ESP_LOGI(TAG, "Run uart on port %d speed %d", UART_NUM, baud_rate);
     uart_config_t uart_config = {
         .baud_rate = baud_rate,

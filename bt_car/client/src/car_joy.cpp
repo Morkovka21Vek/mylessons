@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <termios.h>
 #include <string.h>
+#include <time.h>
 
 #include "car_joy.h"
 
@@ -35,6 +36,7 @@ void game_joy_getVal (struct js_event js_e, int *x_axis, int *y_axis);
 void rudder_getVal   (struct js_event js_e, int *x_axis, int *y_axis);
 
 ssize_t send_data(enum mode_joy joy_mode, int joy_fd) {
+    static struct timespec time_start, time_end;
     struct js_event js_e;
     static int x_axis=0, y_axis=0,
                old_x_axis = -1, old_y_axis = -1;
@@ -50,20 +52,26 @@ ssize_t send_data(enum mode_joy joy_mode, int joy_fd) {
         char buffer[SIZE_BUFF];
         memset(&buffer, 0, SIZE_BUFF);
 
-        ssize_t len_write = snprintf(buffer, SIZE_BUFF, "%d,%d\n", y_axis, x_axis);
+        ssize_t len_write = snprintf(buffer, SIZE_BUFF, "&0)%d,%d;", y_axis, x_axis);
 
-        if (old_x_axis != x_axis || old_y_axis != y_axis) {
-          //ssize_t bytesWritten = write(car_serial_port, buffer, len_write);
-          ssize_t bytesWritten = sendto(sockfd, buffer, len_write, 0, (struct sockaddr*)NULL, sizeof(serv_addr));
 
-          if (bytesWritten >= 0)
-          {
-            old_x_axis = x_axis;
-            old_y_axis = y_axis;
-          }
+        clock_gettime(CLOCK_MONOTONIC, &time_end);
+        double time_diff = (time_end.tv_sec - time_start.tv_sec) * 1000.0
+                         + (time_end.tv_nsec - time_start.tv_nsec) / 1000000.0;
 
-          debugf(3, "Send %ld bytes, str: %s\n", bytesWritten, buffer);
-          return bytesWritten;
+        if ((old_x_axis != x_axis || old_y_axis != y_axis) && time_diff >= 100) {
+            //ssize_t bytesWritten = write(car_serial_port, buffer, len_write);
+            ssize_t bytesWritten = sendto(sockfd, buffer, len_write, 0, (struct sockaddr*)NULL, sizeof(serv_addr));
+
+            if (bytesWritten >= 0)
+            {
+              old_x_axis = x_axis;
+              old_y_axis = y_axis;
+            }
+            clock_gettime(CLOCK_MONOTONIC, &time_start);
+
+            debugf(3, "Send %ld bytes, str: %s\n", bytesWritten, buffer);
+            return bytesWritten;
         }
         else
             return 0;

@@ -4,11 +4,11 @@
 
 #include "devices.hpp"
 
-#define FIRST_START 1
+//#define FIRST_START
 
 #define MOT_PIN1  6
 #define MOT_PIN2  3 
-#define SERVO_PIN 5
+#define SERVO_REAL_PIN 5
 #define RX_PIN    2
 #define TX_PIN    4
 #define BAUDRATE_PIN 7
@@ -29,8 +29,8 @@ void setup() {
     sett.init();
     sett.updateSettings();
     mot.init(sett.getReverse());
-    Serial.begin(115200);
-    mySerial.begin(sett.getBaudrate()?9600:115200);
+    Serial.begin(9600);
+    mySerial.begin(sett.getBaudrate()?115200:9600);
 
     if (sett.getLogs()) {
         float voltage = (float)analogRead(VOLTAGE_PIN) * VREF * ((DIV_R1 + DIV_R2) / DIV_R2) / 1024;
@@ -43,27 +43,31 @@ void setup() {
     EEPROM.put(0, 0);
     EEPROM.put(2, 180);
 #endif
-    servo.attach(SERVO_PIN);
+    servo.attach(SERVO_REAL_PIN);
 }
 
 void loop() {
     if (mySerial.available() > 0) {
-        int numberType;
-        String textBody;
-        int input_len = sscanf((mySerial.readStringUntil(';')+';').c_str(), "&%d)%[^;]", &numberType, &textBody);
-        Serial.println("strLen: "+input_len);
+        int numberType = -1;
+        char textBody[20] = {0};
+        String input = mySerial.readStringUntil(';')+';';
+        int input_len = sscanf(input.c_str(), "&%d)%[^;]", &numberType, &textBody);
+        //int input_len = sscanf((mySerial.readStringUntil(';')+';').c_str(), "&%d)%s;", &numberType, &textBody);
+        //Serial.println("full: "+input+"| strLen: "+String(input_len)+" numberType = "+numberType+" textBody: "+textBody);
         
         switch(numberType) {
             case 0:
-                if (input_len < 2) {
+                if (input_len >= 2) {
                     int speed, rotate;
-                    if (sscanf(textBody.c_str(), "%d,%d", &speed, &rotate) < 2)
-                        mySerial.print("&3)400;");
+                    if (sscanf(textBody, "%d,%d", &speed, &rotate) < 2)
+                        mySerial.print("&0)400;");
                     else {
+                        //Serial.print("speed = "+String(speed)+" rotate = "+String(rotate)+" motWrite-"+String(speed-255));
                         mot.write(speed-255);
 
-                        int lborder, rborder;
-                        sett.getBorder(lborder, rborder);
+                        int lborder=85, rborder=115;
+                        //sett.getBorder(lborder, rborder);
+                        //Serial.println("ServoWrite - "+String(map(rotate, 0, 99, lborder, rborder)));
                         servo.write(map(rotate, 0, 99, lborder, rborder));
                     }
                 } break;
@@ -74,7 +78,7 @@ void loop() {
                 if (sett.getServo()) {
                     if (input_len < 2) {
                         int val;
-                        sscanf(textBody.c_str(), "%d", &val);
+                        sscanf(textBody, "%d", &val);
                         servo.write(val);
                     }
                 } break;
@@ -82,7 +86,7 @@ void loop() {
                 if (sett.getServo()) {
                     if (input_len < 2) {
                         int lborder, rborder;
-                        if (sscanf(textBody.c_str(), "%d, %d", &lborder, &rborder) < 2)
+                        if (sscanf(textBody, "%d, %d", &lborder, &rborder) < 2)
                             mySerial.print("&3)400;");
                         else {
                             sett.setBorder(lborder, rborder);

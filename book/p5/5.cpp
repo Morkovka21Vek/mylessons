@@ -17,5 +17,4 @@ int main() {
                   << " секундам." << std::endl
                   << std::endl;
     }
-    return 0;
 }

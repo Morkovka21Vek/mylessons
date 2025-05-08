@@ -23,7 +23,7 @@ int main() {
     int factor;
 
     char ch;
-    char cont;
+    char cont = 'n';
     char op;
 
     do {

@@ -6,8 +6,9 @@ struct fraction {
     int b;
 };
 
-void reduction(int x, int y) {
-    int minNum, j;
+void reduction(int& x, int& y) {
+    int minNum;
+    int j;
     do {
         if (x == 0) {
             y = 0;
@@ -91,7 +92,7 @@ int main() {
             break;
         default:
             std::cout << "Введён неправильный операнд!" << std::endl;
-            goto ERROR;
+            continue;
         }
 
         reduction(out.a, out.b);
@@ -115,7 +116,6 @@ int main() {
             break;
         default:
             std::cout << "Введён неправильный операнд!" << std::endl;
-            goto ERROR;
         }
 
         std::cout << "Ешё раз? (Y/n): ";
@@ -123,6 +123,4 @@ int main() {
     } while (contin != 'n');
 
     return 0;
-ERROR:
-    return 1;
 }

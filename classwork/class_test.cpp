@@ -7,8 +7,8 @@ class smallobj
         {
           std::cout << __LINE__ << std::endl;
         }
-        ~smallobj()
-        {}
+
+        ~smallobj() = default;
 
         smallobj(const smallobj& o)
         {

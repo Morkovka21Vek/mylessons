@@ -19,24 +19,25 @@ int main() {
               << ">>> ";
     std::cin >> inp;
 
+    using enum etype;
     switch (inp) {
     case 'l':
-        type1 = etype::laborer;
+        type1 = laborer;
         break;
     case 's':
-        type1 = etype::secretary;
+        type1 = secretary;
         break;
     case 'm':
-        type1 = etype::manager;
+        type1 = manager;
         break;
     case 'a':
-        type1 = etype::accountant;
+        type1 = accountant;
         break;
     case 'e':
-        type1 = etype::executive;
+        type1 = executive;
         break;
     case 'r':
-        type1 = etype::researcher;
+        type1 = researcher;
         break;
     default:
         std::cout << "Error" << std::endl;
@@ -46,22 +47,22 @@ int main() {
     std::cout << "Полное название должности: ";
 
     switch (type1) {
-    case etype::laborer:
+    case laborer:
         std::cout << "laborer";
         break;
-    case etype::secretary:
+    case secretary:
         std::cout << "secretary";
         break;
-    case etype::manager:
+    case manager:
         std::cout << "manager";
         break;
-    case etype::accountant:
+    case accountant:
         std::cout << "accountant";
         break;
-    case etype::executive:
+    case executive:
         std::cout << "executive";
         break;
-    case etype::researcher:
+    case researcher:
         std::cout << "researcher";
         break;
     }

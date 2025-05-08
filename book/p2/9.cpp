@@ -1,7 +1,9 @@
 #include <iostream>
 
-void reduction(int x, int y) {
-    int minNum, j;
+void reduction(int& x, int& y) {
+    int minNum;
+    int j;
+
     do {
         if (x == 0) {
             y = 0;

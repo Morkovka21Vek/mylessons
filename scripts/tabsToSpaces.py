@@ -12,27 +12,28 @@ def init_parser():
     return parser.parse_args()
 
 
-def getFileList(file):
-    filelist = []
+def getfilelist(file):
+    fileslist = []
     if os.path.isdir(file):
-        filesList = [os.path.join(file, path)
+        fileslist = [os.path.join(file, path)
                      for path in os.listdir(file) if os.path.isfile(path)]
     elif os.path.isfile(file):
-        filesList = [file]
+        fileslist = [file]
     else:
         print("Error")
-        return filelist
+    return fileslist
 
 
 def pretty(text, tabs, end):
     if tabs > 0:
         text = text.replace("\t", "".join([' ' for _ in range(tabs)]))
-        if end:
-            split_text = text.split("\n")
-            new_text = []
+    if end:
+        split_text = text.split("\n")
+        new_text = []
         for line in split_text:
             new_text.append(line.rstrip(" "))
             text = "\n".join(new_text)
+    return text
 
 
 def convert(file, tabs, end):
@@ -46,13 +47,13 @@ def convert(file, tabs, end):
 
 def main(args):
     if args.file:
-        filelist = getFileList(args.file)
+        fileslist = getfilelist(args.file)
     else:
         print("use --file <file/dir>")
         quit(1)
 
 
-for file in filesList:
+for file in fileslist:
     if input(f"Можно преобразовать {file}?[Y/n]") != "n":
         convert(file, args.tabs, args.end)
 

@@ -1,6 +1,8 @@
+#!/ usr / bin / env python3
 import os
 import sys
 import argparse
+
 
 def init_parser():
     parser = argparse.ArgumentParser(description='Pretty code')
@@ -9,35 +11,52 @@ def init_parser():
     parser.add_argument('-f', '--file', type=str, help='Input files')
     return parser.parse_args()
 
-def main(args):
-    if os.path.isdir(args.file):
-        filesList = [os.path.join(args.file, path) for path in os.listdir(args.file) if os.path.isfile(path)]
-        #filesList = [os.listdir(args.file)]
-    elif os.path.isfile(args.file):
-        filesList = [args.file]
+
+def getfilelist(file):
+    fileslist = []
+    if os.path.isdir(file):
+        fileslist = [os.path.join(file, path)
+                     for path in os.listdir(file) if os.path.isfile(path)]
+    elif os.path.isfile(file):
+        fileslist = [file]
     else:
         print("Error")
-        exit(1)
+    return fileslist
 
-    for file in filesList:
-        print("Преобразование файла: ", file)
-        if input("Можно преобразовать?[Y/n]") != "n":
-            with open(file, 'r+') as f:
-                text = f.read()
-                if args.tabs:
-                    text = text.replace("\t", "".join([' ' for _ in range(args.tabs)]))
-                if args.end:
-                    split_text = text.split("\n")
-                    new_text = []
-                    for line in split_text:
-                        new_text.append(line.rstrip(" "))
-                    text = "\n".join(new_text)
-                f.seek(0)
-                f.write(text)
-                f.truncate()
+
+def pretty(text, tabs, end):
+    if tabs > 0:
+        text = text.replace("\t", "".join([' ' for _ in range(tabs)]))
+    if end:
+        split_text = text.split("\n")
+        new_text = []
+        for line in split_text:
+            new_text.append(line.rstrip(" "))
+            text = "\n".join(new_text)
+    return text
+
+
+def convert(file, tabs, end):
+    with open(file, 'r+') as f:
+        text = f.read()
+        text = pretty(text, tabs, end)
+        f.seek(0)
+        f.write(text)
+        f.truncate()
+
+
+def main(args):
+    if args.file:
+        fileslist = getfilelist(args.file)
+    else:
+        print("use --file <file/dir>")
+        quit(1)
+
+
+    for file in fileslist:
+        if input(f"Можно преобразовать {file}?[Y/n]") != "n":
+            convert(file, args.tabs, args.end)
 
 if __name__ == "__main__":
     args = init_parser()
     main(args)
-
-

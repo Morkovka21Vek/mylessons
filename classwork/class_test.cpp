@@ -3,10 +3,12 @@
 class smallobj
 {
     public:
-        smallobj(int a):a(a)
+        explicit smallobj(int a):a(a)
         {
           std::cout << __LINE__ << std::endl;
         }
+        ~smallobj()
+        {}
 
         smallobj(const smallobj& o)
         {
@@ -38,8 +40,8 @@ int main(void){
 
     a.print_a();
     {
-    int a;
-    std::cout << "cout "<< a << std:: endl;
+        int a = 0;
+        std::cout << "cout "<< a << std:: endl;
     }
     return 0;
 }

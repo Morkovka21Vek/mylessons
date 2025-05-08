@@ -53,9 +53,9 @@ def main(args):
         quit(1)
 
 
-for file in fileslist:
-    if input(f"Можно преобразовать {file}?[Y/n]") != "n":
-        convert(file, args.tabs, args.end)
+    for file in fileslist:
+        if input(f"Можно преобразовать {file}?[Y/n]") != "n":
+            convert(file, args.tabs, args.end)
 
 if __name__ == "__main__":
     args = init_parser()

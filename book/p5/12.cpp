@@ -18,8 +18,7 @@ void reduction(int& x, int& y) {
         for (j = minNum; j > 0; j--) {
             if (!(x % j) && !(y % j)) {
                 x /= j;
-                y /= j;
-                break;
+                y /= j; break;
             }
         }
     } while (j != 1);
@@ -67,7 +66,7 @@ int main() {
     fraction out;
     char dummychar;
     char op;
-    char contin;
+    char contin = 'n';
 
     std::cout << "Данная программа производит операции(+-*/) над обычными "
                  "дробями.\nДроби необходимо вводить в формате: \"x/y\"."

@@ -110,16 +110,16 @@ int main(int argc, char *argv[]) {
     int return_result = -1;
     int sockfd;
 
-    char *arg_device = parse_argument(argc, argv, "-d", "--device");
+    const char *arg_device = parse_argument(argc, argv, "-d", "--device");
     if (arg_device == NULL || strlen(arg_device) == 0) arg_device = "/dev/ttyUSB0";
-    char *arg_server = parse_argument(argc, argv, "-s", "--server");
+    const char *arg_server = parse_argument(argc, argv, "-s", "--server");
     if (arg_server == NULL || strlen(arg_server) == 0) arg_server = "192.168.4.1";
-    char *arg_server_port = parse_argument(argc, argv, "-p", "--port");
+    const char *arg_server_port = parse_argument(argc, argv, "-p", "--port");
     if (arg_server_port == NULL || strlen(arg_server_port) == 0) arg_server_port = "81";
-    char *arg_baudrate = parse_argument(argc, argv, "-b", "--baudrate");
+    const char *arg_baudrate = parse_argument(argc, argv, "-b", "--baudrate");
     if (arg_baudrate == NULL || strlen(arg_baudrate) == 0) arg_baudrate = "115200";
-    char *arg_only = parse_argument(argc, argv, "-o", "--only");
-    char *arg_count = parse_argument(argc, argv, "-c", "--count");
+    const char *arg_only = parse_argument(argc, argv, "-o", "--only");
+    const char *arg_count = parse_argument(argc, argv, "-c", "--count");
     if (arg_count == NULL || strlen(arg_count) == 0) arg_count = "100";
 
     //printf("%s\n", arg_device);
@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
 
     if (arg_only == NULL) {
         printf("Mean: %f\n", time_sum / atoi(arg_count));
-        printf("Failed: %d\n", fail_count);
+        printf("Failed: %u\n", fail_count);
     }
 
     return_result = 0;

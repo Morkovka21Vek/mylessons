@@ -107,7 +107,7 @@ void start_uart_server(void *pvParameters)
 
         recvBuff[received] = '\0';
 
-        char *semicolon = strchr(recvBuff, ';');
+        const char *semicolon = strchr(recvBuff, ';');
         if (!semicolon) {
             ESP_LOGW(TAG, "No semicolon found - ignoring packet");
             continue;

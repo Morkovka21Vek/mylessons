@@ -1,19 +1,38 @@
-name: clang-format Check
+name: Clang Format Check
+
 on:
-  push:
-    branches:
-      - main
-      - master
-      - develop
-      - 'releases/**'
   pull_request:
-      types: [opened, synchronize, reopened]
-  
+    types: [opened, synchronize, reopened]
+
 jobs:
-  formatting-check:
-    name: Formatting Check
+  format:
+    name: Format code with clang-format
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Run clang-format style check for C/C++/Protobuf programs.
-      uses: jidicula/clang-format-action@v4.15.0
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Get .clang-format from origin/main
+        run: |
+          git fetch origin main
+          git checkout origin/main -- .clang-format
+
+      - name: Set up clang-format
+        run: sudo apt-get update && sudo apt-get install -y clang-format
+
+      - name: Run clang-format
+        run: |
+          find . -regex '.*\.\(cpp\|hpp\|cc\|cxx\|c\|h\)' -exec clang-format -style=file -i {} \;
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: apply clang-format [bot]"
+          add_options: '-u'

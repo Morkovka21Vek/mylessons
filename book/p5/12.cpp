@@ -6,7 +6,7 @@ struct fraction {
     int b;
 };
 
-void reduction(int& x, int& y) {
+void reduction(int &x, int &y) {
     int minNum;
     int j;
     do {
@@ -18,7 +18,8 @@ void reduction(int& x, int& y) {
         for (j = minNum; j > 0; j--) {
             if (!(x % j) && !(y % j)) {
                 x /= j;
-                y /= j; break;
+                y /= j;
+                break;
             }
         }
     } while (j != 1);

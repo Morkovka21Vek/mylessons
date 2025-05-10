@@ -1,14 +1,9 @@
 # Ping pong  
 ## Build  
-### Compilation  
 ```sh
 make
 ```  
-### Clean  
-```sh
-make clean
-```  
-## Run  
+### And Run  
 ```sh
 ./ping_pong.out
 ```  

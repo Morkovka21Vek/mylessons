@@ -4,13 +4,14 @@ BUILD_DIR = build
 OUT_FILE = ./ping_pong.out
 
 OBG_FILES := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(wildcard *.cpp))
-COMP_FLAGS := -Wall -pedantic
+COMP_FLAGS := -Wall -pedantic -std=c++20
+LDFLAGS := -lncurses
 
 
 make: $(OUT_FILE)
 
 $(OUT_FILE): $(OBG_FILES)
-	g++ $^ -o $@
+	g++ $^ -o $@ $(LDFLAGS)
 
 $(BUILD_DIR)/%.o: %.cpp | $(BUILD_DIR)
 	g++ -c $(COMP_FLAGS) -o $@ $<

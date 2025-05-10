@@ -1,4 +1,4 @@
-#include "include/assets.h"
+#include "assets.hpp"
 
 #define char_size(ch, xsize, ysize)                                            \
     xsize = sizeof(ch[0]) / sizeof(char);                                      \

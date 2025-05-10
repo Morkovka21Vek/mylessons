@@ -2,17 +2,17 @@
 
 struct UserProfile {
     const char *name;
-    int adge;
+    int age;
 };
 
 void printUserProfile(struct UserProfile &up) {
     std::cout << "Name: " << up.name << " addr: " << &up.name << std::endl
-              << "Age: " << up.adge << " addr: " << &up.adge << std::endl;
+              << "Age: " << up.age << " addr: " << &up.age << std::endl;
 }
 
 void printUserProfile2(struct UserProfile up) {
     std::cout << "Name: " << up.name << " addr: " << &up.name << std::endl
-              << "Age: " << up.adge << " addr: " << &up.adge << std::endl;
+              << "Age: " << up.age << " addr: " << &up.age << std::endl;
 }
 void test() {
     int i = 0;
@@ -23,7 +23,7 @@ int main() {
     p1 = 12;
 
     {
-        UserProfile p1 = {.name = "Vladimir", .adge = 13};
+        UserProfile p1 = {.name = "Vladimir", .age = 13};
         printUserProfile(p1);
         printUserProfile(p1);
         printUserProfile2(p1);

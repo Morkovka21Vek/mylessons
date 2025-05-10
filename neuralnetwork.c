@@ -26,7 +26,7 @@ int main() {
         /*
             по факту bias(смещение) корректируется так:
             bias += learning_rate * loss * 1;
-            А в forward propogation вычисляется так:
+            А в forward propagation вычисляется так:
             forward = celsius*weight+bias*1
             Т.к bias является тоже весом.
         */

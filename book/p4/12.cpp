@@ -6,7 +6,7 @@ struct fraction {
     int b;
 };
 
-void reduction(int& x, int& y) {
+void reduction(int &x, int &y) {
     int minNum;
     int j;
     do {

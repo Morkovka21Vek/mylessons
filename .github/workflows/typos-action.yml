@@ -1,18 +1,23 @@
-name: Clang Format Check
+name: Typos Check
+
+permissions:
+  contents: read
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-jobs:
-  typos:
-    name: Finds and corrects spelling mistakes
-    runs-on: ubuntu-latest
 
+env:
+  CLICOLOR: 1
+
+jobs:
+  spelling:
+    name: Spell Check with Typos
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout PR branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
-      - name: typos-action
-        uses: crate-ci/typos@v1.32.0
+    - name: Checkout Actions Repository
+      uses: actions/checkout@v4
+    - name: Spell Check Repo
+      uses: crate-ci/typos@v1.32.0
+      with:
+        config: .github/typos.toml

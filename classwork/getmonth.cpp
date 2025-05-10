@@ -5,9 +5,8 @@ int printMonths(int month_num) {
     const char *monts[] = {"Январь",   "Февраль", "Март",   "Апрель",
                            "Май",      "Июнь",    "Июль",   "Август",
                            "Сентябрь", "Октябрь", "Ноябрь", "Декарь"};
-    const int monts_len = sizeof(monts) / sizeof(char *);
-
-    if (!((month_num - 1) >= 0 && (month_num < monts_len))) {
+    
+    if (const int monts_len = sizeof(monts) / sizeof(char *); !((month_num - 1) >= 0 && (month_num < monts_len))) {
         result = -1;
     } else {
         std::cout << monts[month_num - 1] << std::endl;

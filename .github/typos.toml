@@ -1,2 +1,2 @@
 [files]
-ignore = ["sdkconfig"]
+extend-exclude = ["sdkconfig"]

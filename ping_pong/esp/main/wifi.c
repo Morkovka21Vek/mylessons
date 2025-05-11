@@ -1,7 +1,26 @@
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <esp_log.h>
+#include <nvs_flash.h>
+#include <sys/param.h>
+#include "esp_netif.h"
+#include "protocol_examples_common.h"
+#include "protocol_examples_utils.h"
+#include "esp_tls_crypto.h"
+#include <esp_http_server.h>
+#include "esp_event.h"
+#include "esp_netif.h"
+#include "esp_tls.h"
+#include "esp_mac.h"
+#include "esp_wifi.h"
+
 #define ESP_WIFI_SSID "morkovka"
 #define ESP_WIFI_PASS "12345678"
 #define ESP_WIFI_CHANNEL 9
 #define MAX_STA_CONN  5
+
+static const char *TAG = "wifi";
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                     int32_t event_id, void* event_data)
@@ -20,7 +39,6 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
 void wifi_init_softap(void)
 {
     ESP_ERROR_CHECK(esp_netif_init());
-    //ESP_ERROR_CHECK(esp_event_loop_create_default());
     esp_netif_create_default_wifi_ap();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
@@ -56,4 +74,3 @@ void wifi_init_softap(void)
     ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
              ESP_WIFI_SSID, ESP_WIFI_PASS, ESP_WIFI_CHANNEL);
 }
-

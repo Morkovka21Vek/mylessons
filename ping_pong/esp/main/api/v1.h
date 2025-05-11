@@ -1,10 +1,13 @@
+#include <esp_log.h>
+#define TAG "api_v1"
+
 static esp_err_t api_v1__get_buttons_status_handler(httpd_req_t *req)
 {
     char resp_json[100];
 
-    snprintf(resp_json, sizeof(resp_json), "{\n  \"btn1\": %d,\n  \"btn2\": %d\n}", 
-        !gpio_get_level(but_left_down_pin), 
-        !gpio_get_level(but_left_up_pin));
+    snprintf(resp_json, sizeof(resp_json), "{\n  \"btn1\": %d,\n  \"btn2\": %d\n}",
+        !gpio_get_level(CONFIG_DOWN_GPIO_NUM),
+        !gpio_get_level(CONFIG_UP_GPIO_NUM));
 
     httpd_resp_set_type(req, HTTPD_TYPE_JSON);
     httpd_resp_send(req, resp_json, HTTPD_RESP_USE_STRLEN);
@@ -25,10 +28,10 @@ static esp_err_t api_v1__get_buttons_count_handler(httpd_req_t *req)
 {
     char resp_json[100];
 
-    snprintf(resp_json, sizeof(resp_json), "%d;%d", 
-        button_count1, 
+    snprintf(resp_json, sizeof(resp_json), "%d;%d",
+        button_count1,
         button_count2);
-    
+
     httpd_resp_set_type(req, HTTPD_TYPE_JSON);
     httpd_resp_send(req, resp_json, HTTPD_RESP_USE_STRLEN);
 

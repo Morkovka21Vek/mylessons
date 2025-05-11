@@ -1,36 +1,21 @@
 menu "Example Configuration"
 
-    config EXAMPLE_BASIC_AUTH
-        bool "Basic Authentication"
-        default n
+    config UP_GPIO_NUM
+        int "GPIO up button pin"
+        range 0 39 if IDF_TARGET_ESP32
+        range 0 47 if IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
+        range 0 23 if IDF_TARGET_ESP32C3
+        default 0
         help
-            Basic Authentication is a method for an HTTP user agent (e.g. a web browser)
-            to provide a user name and password when making a request. It is the simplest
-            technique for enforcing access controls to web resources. because it doesn't
-            require cookies, session identifiers, or login pages; rather, it uses standard
-            fields in the HTTP header.
-            Note that, Basic Authentication is not encrypted channel and also easy to retrieve
-            credentials as they are sent in plain text format.
+            Select the GPIO pin with up button
 
-    config EXAMPLE_BASIC_AUTH_USERNAME
-        string "Basic Authenticate User Name"
-        depends on EXAMPLE_BASIC_AUTH
-        default "ESP32"
+    config DOWN_GPIO_NUM
+        int "GPIO down button pin"
+        range 0 39 if IDF_TARGET_ESP32
+        range 0 47 if IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
+        range 0 23 if IDF_TARGET_ESP32C3
+        default 0
         help
-            The client's user name which used for basic authenticate.
-
-    config EXAMPLE_BASIC_AUTH_PASSWORD
-        string "Basic Authenticate Password"
-        depends on EXAMPLE_BASIC_AUTH
-        default "ESP32Webserver"
-        help
-            The client's password which used for basic authenticate.
-
-    config FROM_MORKOVKA_WI_FI_TYPE
-        bool "wi-fi type"
-        default y
-        help
-          yes - Creating an access point
-          no - Connect to access point
+            Select the GPIO pin with down button
 
 endmenu

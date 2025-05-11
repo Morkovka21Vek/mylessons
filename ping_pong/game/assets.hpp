@@ -1,8 +1,10 @@
 #pragma once
+#include <cstddef>
+#include <chrono>
+
 struct scrsize {
-    int height;
-    int width;
+    size_t height;
+    size_t width;
 };
 
-char getSymbolCh(char, int, int);
-void getSizeCh(char, int &xSize, int &ySize);
+void fps_lock(std::chrono::milliseconds frame_time, size_t fpscount);

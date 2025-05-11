@@ -1,10 +1,10 @@
-.PHONY: clean diff check debug
+.PHONY: clean diff check format debug
 
 BUILD_DIR = build
 OUT_FILE = ./ping_pong.out
 
 OBG_FILES := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(wildcard *.cpp))
-COMP_FLAGS := -Wall -pedantic -std=c++20
+COMP_FLAGS := -Wall -pedantic -std=c++20 -g
 LDFLAGS := -lncurses
 
 
@@ -38,3 +38,5 @@ diff:
 check:
 	cppcheck --enable=all --inconclusive --suppress=missingIncludeSystem .
 
+format:
+	clang-format --style=file -i *.cpp *.hpp

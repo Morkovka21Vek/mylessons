@@ -1,26 +1,30 @@
 #include "screen.hpp"
 #include "assets.hpp"
+#include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <ncurses.h>
 #include <string>
 #include <vector>
-#include <chrono>
+
+const size_t screen::offset_top = 1;
+const size_t screen::offset_bottom = 1;
+const size_t screen::offset_left = 0;
+const size_t screen::offset_right = 0;
 
 screen::screen() {
     initscr();
     nocbreak();
     echo();
 
-    if (has_colors())
-    {
+    if (has_colors()) {
         start_color();
         init_pair(1, COLOR_GREEN, COLOR_BLACK);
         init_pair(2, COLOR_WHITE, COLOR_WHITE);
     }
     curs_set(0);
 
-    int height, width;
+    size_t height, width;
     getmaxyx(stdscr, height, width);
     this->ws = {height, width};
 
@@ -32,60 +36,70 @@ screen::screen() {
 
 screen::~screen() { endwin(); }
 
-void screen::getSize(scrsize& ws) const{
-    ws = this->ws;
+scrsize screen::getScreenSize() const {
+    return this->ws;
+}
+
+scrsize screen::getGameSize() const {
+    struct scrsize crop_ws = {
+        this->ws.height - this->offset_top - this->offset_bottom,
+        this->ws.width - this->offset_left - this->offset_right};
+    return crop_ws;
 }
 
 void screen::reset(char fill) {
     this->screen_vector.assign(this->ws.height,
                                std::vector<char>(this->ws.width, fill));
 
-    for (int i = 0; i < this->ws.width; i++) {
+    for (size_t i = 0; i < this->ws.width; i++) {
         screen_vector[0][i] = '#';
-        screen_vector[ws.height-1][i] = '#';
+        screen_vector[ws.height - 1][i] = '#';
     }
 }
 
-void screen::draw(bool showfps) {
-    for (int y = 0; y < this->ws.height; y++) {
-        for (int x = 0; x < this->ws.width; x++) {
+void screen::draw(size_t frame_time) {
+    for (size_t y = 0; y < this->ws.height; y++) {
+        for (size_t x = 0; x < this->ws.width; x++) {
             if (screen_vector[y][x] == screen_vector_old[y][x]) {
                 continue;
             }
-            if (screen_vector[y][x] == '#') {
-                attron(COLOR_PAIR(2));
-                mvaddch(y, x, screen_vector[y][x]);
-                attroff(COLOR_PAIR(2));
-            } else {
-                mvaddch(y, x, screen_vector[y][x]);
-            }
+            //if (screen_vector[y][x] == '#') {
+            //    attron(COLOR_PAIR(2));
+            //    mvaddch(y, x, screen_vector[y][x]);
+            //    attroff(COLOR_PAIR(2));
+            //} else {
+            mvaddch(y, x, screen_vector[y][x]);
+            //}
             screen_vector_old[y][x] = screen_vector[y][x];
         }
     }
+
+    if (frame_time > 0) {
+        std::string fps =
+            std::to_string((frame_time == 0) ? 0 : 1000 / frame_time) + "fps";
+        for (size_t i = 0; i < fps.length(); i++) {
+            screen_vector[0][i] = fps[i];
+            screen_vector_old[0][i] = fps[i];
+        }
+        attron(COLOR_PAIR(1));
+        mvprintw(0, 0, "%s", fps.c_str());
+        attroff(COLOR_PAIR(1));
+    }
+
     refresh();
-
-    auto timer_now = std::chrono::high_resolution_clock::now();
-    size_t frame_time = std::chrono::duration_cast<std::chrono::milliseconds> (timer_now - this->timer).count();
-
-    size_t fpscount = (frame_time == 0) ? 0 : 1000/frame_time;
-    attron(COLOR_PAIR(1));
-    mvprintw(0, 0, "%ldfps", fpscount);
-    attroff(COLOR_PAIR(1));
-
-    this->timer = std::chrono::high_resolution_clock::now();
 }
 
 void screen::add(int posY, int posX, std::vector<std::vector<char>> vec) {
-    if (vec.size() < 1)
+    if (vec.empty() || vec[0].empty())
         return;
 
     for (size_t y = 0; y < vec.size(); y++) {
         for (size_t x = 0; x < vec[0].size(); x++) {
-            if (posY + y >= screen_vector.size() || posY + y < 0 ||
-                posX + x >= screen_vector[0].size() || posX + x < 0) {
+            if (posY + y + this->offset_top  >= screen_vector.size()    - this->offset_bottom ||
+                posX + x + this->offset_left >= screen_vector[0].size() - this->offset_right) {
                 continue;
             }
-            screen_vector[posY + y][posX + x] = vec[y][x];
+            screen_vector[offset_top + posY + y][offset_left + posX + x] = vec[y][x];
         }
     }
 }

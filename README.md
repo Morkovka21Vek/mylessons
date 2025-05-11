@@ -1,4 +1,7 @@
 # mylessons
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/98132999239143bebe1afcb7f078aa00)](https://app.codacy.com/gh/Morkovka21Vek/mylessons?utm_source=github.com&utm_medium=referral&utm_content=Morkovka21Vek/mylessons&utm_campaign=Badge_Grade)
+
 <p align="center">
   <a href="https://sonarcloud.io/summary/new_code?id=Morkovka21Vek_mylessons"><img src="https://sonarcloud.io/api/project_badges/measure?project=Morkovka21Vek_mylessons&metric=ncloc" alt="Lines"/></a>
   <a href="https://sonarcloud.io/summary/new_code?id=Morkovka21Vek_mylessons"><img src="https://sonarcloud.io/api/project_badges/measure?project=Morkovka21Vek_mylessons&metric=reliability_rating" alt="Reliability rating"/></a>

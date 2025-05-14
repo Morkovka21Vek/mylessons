@@ -1,6 +1,6 @@
 #pragma once
-#include <cstddef>
 #include <chrono>
+#include <cstddef>
 
 struct scrsize {
     size_t height;

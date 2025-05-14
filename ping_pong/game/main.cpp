@@ -1,7 +1,8 @@
 #include <chrono>
 
 #include "assets.hpp"
-#include "gameobjects.hpp"
+#include "gameobj/ball.hpp"
+#include "gameobj/player.hpp"
 #include "screen.hpp"
 
 int main(int argc, char const *argv[]) {
@@ -15,8 +16,8 @@ int main(int argc, char const *argv[]) {
     while (true) {
         auto timer_start = std::chrono::high_resolution_clock::now();
 
-        lpl.tick(sc.getGameSize(), bl);
-        rpl.tick(sc.getGameSize(), bl);
+        lpl.tick(sc.getGameSize());
+        rpl.tick(sc.getGameSize());
         bl.tick(sc.getGameSize(), frame_time);
 
         sc.reset('-');

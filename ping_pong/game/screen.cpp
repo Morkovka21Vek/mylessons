@@ -36,10 +36,6 @@ screen::screen() {
 
 screen::~screen() { endwin(); }
 
-scrsize screen::getScreenSize() const {
-    return this->ws;
-}
-
 scrsize screen::getGameSize() const {
     struct scrsize crop_ws = {
         this->ws.height - this->offset_top - this->offset_bottom,
@@ -63,11 +59,11 @@ void screen::draw(size_t frame_time) {
             if (screen_vector[y][x] == screen_vector_old[y][x]) {
                 continue;
             }
-            //if (screen_vector[y][x] == '#') {
-            //    attron(COLOR_PAIR(2));
-            //    mvaddch(y, x, screen_vector[y][x]);
-            //    attroff(COLOR_PAIR(2));
-            //} else {
+            // if (screen_vector[y][x] == '#') {
+            //     attron(COLOR_PAIR(2));
+            //     mvaddch(y, x, screen_vector[y][x]);
+            //     attroff(COLOR_PAIR(2));
+            // } else {
             mvaddch(y, x, screen_vector[y][x]);
             //}
             screen_vector_old[y][x] = screen_vector[y][x];
@@ -75,8 +71,7 @@ void screen::draw(size_t frame_time) {
     }
 
     if (frame_time > 0) {
-        std::string fps =
-            std::to_string((frame_time == 0) ? 0 : 1000 / frame_time) + "fps";
+        std::string fps = std::to_string(1000 / frame_time) + "fps";
         for (size_t i = 0; i < fps.length(); i++) {
             screen_vector[0][i] = fps[i];
             screen_vector_old[0][i] = fps[i];
@@ -89,17 +84,21 @@ void screen::draw(size_t frame_time) {
     refresh();
 }
 
-void screen::add(int posY, int posX, std::vector<std::vector<char>> vec) {
+void screen::add(int posY, int posX,
+                 const std::vector<std::vector<char>> &vec) {
     if (vec.empty() || vec[0].empty())
         return;
 
     for (size_t y = 0; y < vec.size(); y++) {
         for (size_t x = 0; x < vec[0].size(); x++) {
-            if (posY + y + this->offset_top  >= screen_vector.size()    - this->offset_bottom ||
-                posX + x + this->offset_left >= screen_vector[0].size() - this->offset_right) {
+            if (posY + y + this->offset_top >=
+                    screen_vector.size() - this->offset_bottom ||
+                posX + x + this->offset_left >=
+                    screen_vector[0].size() - this->offset_right) {
                 continue;
             }
-            screen_vector[offset_top + posY + y][offset_left + posX + x] = vec[y][x];
+            screen_vector[offset_top + posY + y][offset_left + posX + x] =
+                vec[y][x];
         }
     }
 }

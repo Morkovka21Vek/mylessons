@@ -1,10 +1,9 @@
+#include "assets.hpp"
 #include <chrono>
 #include <thread>
-#include "assets.hpp"
 
 void fps_lock(std::chrono::milliseconds frame_time, size_t fpscount) {
     size_t timesleep = 1000 / fpscount - frame_time.count();
-    timesleep = (timesleep < 0) ? 0 : timesleep;
     std::this_thread::sleep_for(std::chrono::milliseconds(timesleep));
 }
 

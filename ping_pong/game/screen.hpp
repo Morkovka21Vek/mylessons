@@ -3,18 +3,18 @@
 #include <chrono>
 #include <vector>
 
-class screen {
+class Screen {
   public:
-    screen();
-    ~screen();
+    Screen();
+    ~Screen();
     void draw(size_t frame_time = 0);
     void add(int posY, int posX, const std::vector<std::vector<char>> &);
     void reset(char fill);
     scrsize getGameSize() const;
 
   private:
-    std::vector<std::vector<char>> screen_vector;
-    std::vector<std::vector<char>> screen_vector_old;
+    std::vector<std::vector<char>> Screen_vector;
+    std::vector<std::vector<char>> Screen_vector_old;
     struct scrsize ws;
 
     static const size_t offset_top;

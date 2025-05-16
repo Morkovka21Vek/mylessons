@@ -3,14 +3,13 @@
 #include <cstddef>
 #include <vector>
 
-enum class playermode { bot };
-enum class playerpos { left, right };
+enum class Playermode { bot };
+enum class Playerpos { left, right };
 
-class player {
+class Player {
   public:
-    player(int width, int height, enum playermode mode, enum playerpos posX);
+    Player(int width, int height, enum Playermode mode, enum Playerpos posX);
     void tick(struct scrsize ws);
-    int getScore() const;
     int getPos() const;
     size_t calcX(struct scrsize ws) const;
     void reset(struct scrsize ws);
@@ -18,11 +17,10 @@ class player {
 
   private:
     int pos;
-    int score;
     const size_t width;
     const size_t height;
-    const enum playermode mode;
-    const enum playerpos posX;
+    const enum Playermode mode;
+    const enum Playerpos posX;
 
     int bot(float posY) const;
 };

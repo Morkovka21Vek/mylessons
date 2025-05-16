@@ -3,9 +3,9 @@
 #include <cstddef>
 #include "assets.hpp"
 
-class ball {
+class Ball {
   public:
-    ball(float _speedX, float _speedY, int _width, int _height);
+    Ball(float _speedX, float _speedY, int _width, int _height);
     void tick(struct scrsize, size_t frame_time);
     void reset(struct scrsize);
     float getX() const;

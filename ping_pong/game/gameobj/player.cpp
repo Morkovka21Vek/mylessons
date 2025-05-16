@@ -2,11 +2,11 @@
 #include "gameobj/player.hpp"
 #include <vector>
 
-player::player(int _width, int _height, enum playermode _mode, enum playerpos _posX)
-    : pos(-1), score(0), width(_width), height(_height), mode(_mode), posX(_posX) {}
+Player::Player(int _width, int _height, enum Playermode _mode, enum Playerpos _posX)
+    : pos(-1), width(_width), height(_height), mode(_mode), posX(_posX) {}
 
-void player::tick(struct scrsize ws) {
-    using enum playermode;
+void Player::tick(struct scrsize ws) {
+    using enum Playermode;
 
     if (this->pos == -1) {
         this->reset(ws);
@@ -23,19 +23,17 @@ void player::tick(struct scrsize ws) {
                     : temppos;
 }
 
-int player::getScore() const { return this->score; }
+int Player::getPos() const { return this->pos; }
 
-int player::getPos() const { return this->pos; }
-
-size_t player::calcX(struct scrsize ws) const {
-    return (this->posX == playerpos::left) ? 0 : ws.width - this->width;
+size_t Player::calcX(struct scrsize ws) const {
+    return (this->posX == Playerpos::left) ? 0 : ws.width - this->width;
 }
 
-void player::reset(struct scrsize ws) {
+void Player::reset(struct scrsize ws) {
     this->pos = (ws.height - this->height) / 2;
 }
 
-std::vector<std::vector<char>> player::getMatrix() const {
+std::vector<std::vector<char>> Player::getMatrix() const {
     std::vector<std::vector<char>> matrix(this->height,
                                           std::vector<char>(this->width, '#'));
     return matrix;

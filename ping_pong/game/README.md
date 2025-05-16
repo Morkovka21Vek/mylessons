@@ -17,5 +17,5 @@ make
 ```  
 ### And Run  
 ```sh
-./ping_pong.out
+./build/ping_pong.out
 ```  

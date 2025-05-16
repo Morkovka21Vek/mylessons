@@ -3,37 +3,35 @@
 #include "assets.hpp"
 #include "gameobj/ball.hpp"
 #include "gameobj/player.hpp"
+#include "gameobj/scoreBoard.hpp"
 #include "screen.hpp"
 
 int main(int argc, char const *argv[]) {
 
-    screen sc;
-    ball bl(0.05, 0.025, 6, 3);
-    player lpl(3, 7, playermode::bot, playerpos::left);
-    player rpl(3, 7, playermode::bot, playerpos::right);
+    const size_t MAX_FPS = 90;
 
-    size_t frame_time = 0;
+    Screen screen;
+    ScoreBoard scboard;
+    Ball ball(0.05, 0.025, 6, 3);
+    Player leftPl(3, 7, Playermode::bot, Playerpos::left);
+    Player rightPl(3, 7, Playermode::bot, Playerpos::right);
+
+    size_t frame_time_ms = 0;
     while (true) {
-        auto timer_start = std::chrono::high_resolution_clock::now();
+        timer_start();
 
-        lpl.tick(sc.getGameSize());
-        rpl.tick(sc.getGameSize());
-        bl.tick(sc.getGameSize(), frame_time);
+        leftPl.tick(screen.getGameSize());
+        rightPl.tick(screen.getGameSize());
+        ball.tick(screen.getGameSize(), frame_time_ms);
 
-        sc.reset('-');
-        sc.add(lpl.getPos(), lpl.calcX(sc.getGameSize()), lpl.getMatrix());
-        sc.add(rpl.getPos(), rpl.calcX(sc.getGameSize()), rpl.getMatrix());
-        sc.add(bl.getY(), bl.getX(), bl.getMatrix());
-        sc.draw(frame_time);
+        screen.reset('-');
+        screen.add(0, scboard.calcX(screen.getGameSize()), scboard.getMatrix());
+        screen.add(leftPl.getPos(), leftPl.calcX(screen.getGameSize()), leftPl.getMatrix());
+        screen.add(rightPl.getPos(), rightPl.calcX(screen.getGameSize()), rightPl.getMatrix());
+        screen.add(ball.getY(), ball.getX(), ball.getMatrix());
+        screen.draw(frame_time_ms);
 
-        auto timer_end = std::chrono::high_resolution_clock::now();
-        fps_lock(std::chrono::duration_cast<std::chrono::milliseconds>(
-                     timer_end - timer_start),
-                 90);
-        auto timer_end_lock = std::chrono::high_resolution_clock::now();
-        frame_time = std::chrono::duration_cast<std::chrono::milliseconds>(
-                         timer_end_lock - timer_start)
-                         .count();
+        frame_time_ms = timer_end(MAX_FPS);
     }
     return 0;
 }

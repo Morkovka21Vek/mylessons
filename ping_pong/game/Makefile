@@ -4,30 +4,30 @@ CXX := g++
 
 SRC_DIR := .
 BUILD_DIR := build
-OUT_FILE := ./ping_pong.out
+BUILD_OBJ_SUBDIR := obj_dir
+BUILD_DEPS_SUBDIR := deps_dir
+OUT_FILE := $(BUILD_DIR)/ping_pong.out
 
 SOURCE_FILES := $(shell find $(SRC_DIR) -name '*.cpp')
-OBG_FILES := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(SOURCE_FILES))
+OBG_FILES := $(patsubst %.cpp, $(BUILD_DIR)/$(BUILD_OBJ_SUBDIR)/%.o, $(SOURCE_FILES))
+DEPS_FILES := $(patsubst %.cpp, $(BUILD_DIR)/$(BUILD_DEPS_SUBDIR)/%.d, $(SOURCE_FILES))
 CXX_FLAGS := -Wall -pedantic -std=c++20 -g -I . -MMD
-DEP_FLAGS = -MT $@ -MMD -MP -MF $(BUILD_DIR)/$*.d
+DEP_FLAGS = -MT $@ -MMD -MP -MF $(BUILD_DIR)/$(BUILD_DEPS_SUBDIR)/$*.d
 LDFLAGS := -lncurses
 
 make: $(OUT_FILE)
 
--include $(OBG_FILES:.o=.d)
+-include $(DEPS_FILES)
 
 $(OUT_FILE): $(OBG_FILES)
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
-$(BUILD_DIR)/%.o: %.cpp | $(BUILD_DIR)
+$(BUILD_DIR)/$(BUILD_OBJ_SUBDIR)/%.o: %.cpp
 	@mkdir -p $(@D)
-	$(CXX) -c $(CXX_FLAGS) $(DEPFLAGS) -o $@ $<
-
-$(BUILD_DIR):
-	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(subst $(BUILD_OBJ_SUBDIR),$(BUILD_DEPS_SUBDIR),$(@D))
+	$(CXX) -c $(CXX_FLAGS) $(DEP_FLAGS) -o $@ $<
 
 clean:
-	@rm $(OUT_FILE) 2> /dev/null
 	@rm -rf $(BUILD_DIR) 2> /dev/null
 
 debug:

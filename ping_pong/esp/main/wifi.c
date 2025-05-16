@@ -1,22 +1,10 @@
 #include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <esp_log.h>
-#include <nvs_flash.h>
-#include <sys/param.h>
-#include "esp_netif.h"
-#include "protocol_examples_common.h"
-#include "protocol_examples_utils.h"
-#include "esp_tls_crypto.h"
-#include <esp_http_server.h>
-#include "esp_event.h"
-#include "esp_netif.h"
-#include "esp_tls.h"
 #include "esp_mac.h"
 #include "esp_wifi.h"
 
 #define ESP_WIFI_SSID "morkovka"
-#define ESP_WIFI_PASS "12345678"
+#define ESP_WIFI_PASS ""
 #define ESP_WIFI_CHANNEL 9
 #define MAX_STA_CONN  5
 

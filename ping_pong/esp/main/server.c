@@ -2,68 +2,61 @@
 #include "esp_http_server.h"
 #include "gpio.h"
 
+#define BUF_SIZE 50
+
 static const char *TAG = "server";
 
 static esp_err_t get_buttons_status_handler(httpd_req_t *req)
 {
-    char resp_json[30];
+    char response[BUF_SIZE];
 
-    snprintf(resp_json, sizeof(resp_json), "{\"btn1\": %s,\"btn2\": %s}",
-        getButton_level1()?"true":"false",
-        getButton_level2()?"true":"false");
+    snprintf(response, BUF_SIZE, "{\"btn1\": %s,\"btn2\": %s}",
+        getButton_level(0)?"true":"false",
+        getButton_level(1)?"true":"false");
 
     httpd_resp_set_type(req, HTTPD_TYPE_JSON);
-    httpd_resp_send(req, resp_json, HTTPD_RESP_USE_STRLEN);
 
-    if (httpd_req_get_hdr_value_len(req, "Host") == 0) {
-        ESP_LOGD(TAG, "Request headers lost");
-    }
-    return ESP_OK;
+    return httpd_resp_send(req, response, HTTPD_RESP_USE_STRLEN);
 }
+
+static const httpd_uri_t get_buttons_status_uri = {
+    .uri       = "/get_buttons_status",
+    .method    = HTTP_GET,
+    .handler   = get_buttons_status_handler,
+};
 
 static esp_err_t get_buttons_count_handler(httpd_req_t *req)
 {
-    char resp_json[20];
+    char response[BUF_SIZE];
 
-    snprintf(resp_json, sizeof(resp_json), "%d;%d",
-        getButton_count1(),
-        getButton_count2());
+    snprintf(response, BUF_SIZE, "%d;%d",
+        getButton_count(0),
+        getButton_count(1));
 
-    httpd_resp_set_type(req, HTTPD_TYPE_JSON);
-    httpd_resp_send(req, resp_json, HTTPD_RESP_USE_STRLEN);
+    httpd_resp_set_type(req, HTTPD_TYPE_TEXT);
 
-    if (httpd_req_get_hdr_value_len(req, "Host") == 0) {
-        ESP_LOGD(TAG, "Request headers lost");
-    }
-    return ESP_OK;
+    return httpd_resp_send(req, response, HTTPD_RESP_USE_STRLEN);
 }
+
+static const httpd_uri_t get_buttons_count_uri = {
+    .uri       = "/get_buttons_count",
+    .method    = HTTP_GET,
+    .handler   = get_buttons_count_handler,
+};
 
 httpd_handle_t start_webserver(void)
 {
     httpd_handle_t server = NULL;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    config.lru_purge_enable = true;
 
-    ESP_LOGD(TAG, "Starting server on port: '%d'", config.server_port);
+    ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
 
     if (httpd_start(&server, &config) == ESP_OK) {
-        static const httpd_uri_t get_buttons_status_uri = {
-            .uri       = "/get_buttons_status",
-            .method    = HTTP_GET,
-            .handler   = get_buttons_status_handler,
-        };
         httpd_register_uri_handler(server, &get_buttons_status_uri);
-
-        static const httpd_uri_t get_buttons_count_uri = {
-            .uri       = "/get_buttons_count",
-            .method    = HTTP_GET,
-            .handler   = get_buttons_count_handler,
-        };
         httpd_register_uri_handler(server, &get_buttons_count_uri);
-
         return server;
     }
 
-    ESP_LOGD(TAG, "Error starting server!");
+    ESP_LOGE(TAG, "Error start server!");
     return NULL;
 }

@@ -1,55 +1,48 @@
 #include "driver/gpio.h"
-#include "sdkconfig.h"
 #include "esp_attr.h"
 #include "esp_timer.h"
+#include "sdkconfig.h"
 
-static int button_count1 = 0;
-static int button_count2 = 0;
+#define DEBOUNCE_TIME_MS 100
 
-static volatile uint32_t last_interrupt_time1 = 0;
-static volatile uint32_t last_interrupt_time2 = 0;
+typedef struct {
+    uint32_t count;
+    uint32_t last_interrupt_time;
+    int gpio_num;
+} button_t;
 
-void IRAM_ATTR button_tick1(void* arg) {
-  uint32_t current_time = esp_timer_get_time() / 1000;
-  if (current_time - last_interrupt_time1 > 100) {
-    button_count1++;
-    last_interrupt_time1 = current_time;
-  }
-}
-void IRAM_ATTR button_tick2(void* arg) {
-  uint32_t current_time = esp_timer_get_time() / 1000;
-  if (current_time - last_interrupt_time2 > 100) {
-    button_count2++;
-    last_interrupt_time2 = current_time;
-  }
-}
+static button_t buttons[2] = {{.gpio_num = CONFIG_DOWN_GPIO_NUM, .count = 0},
+                              {.gpio_num = CONFIG_UP_GPIO_NUM, .count = 0}};
 
-int getButton_count1() {
-    return button_count1;
+void IRAM_ATTR button_tick(void *arg) {
+    size_t button_num = (size_t)arg;
+    uint32_t current_time = esp_timer_get_time() / 1000;
+    if (current_time - buttons[button_num].last_interrupt_time >
+        DEBOUNCE_TIME_MS) {
+        buttons[button_num].count++;
+        buttons[button_num].last_interrupt_time = current_time;
+    }
 }
 
-int getButton_count2() {
-    return button_count2;
+int getButton_count(size_t button_num) {
+    return (button_num < sizeof(buttons) / sizeof(button_t))
+               ? buttons[button_num].count
+               : 0;
 }
 
-bool getButton_level1() {
-    return !gpio_get_level(CONFIG_DOWN_GPIO_NUM);
-}
-
-bool getButton_level2() {
-    return !gpio_get_level(CONFIG_UP_GPIO_NUM);
+bool getButton_level(size_t button_num) {
+    return (button_num < sizeof(buttons) / sizeof(button_t))
+               ? !gpio_get_level(buttons[button_num].gpio_num)
+               : 0;
 }
 
 void init_gpio() {
-    gpio_set_direction(CONFIG_DOWN_GPIO_NUM, GPIO_MODE_INPUT);
-    gpio_set_pull_mode(CONFIG_DOWN_GPIO_NUM, GPIO_PULLUP_ONLY);
-    gpio_set_intr_type(CONFIG_DOWN_GPIO_NUM, GPIO_INTR_NEGEDGE);
-
-    gpio_set_direction(CONFIG_UP_GPIO_NUM, GPIO_MODE_INPUT);
-    gpio_set_pull_mode(CONFIG_UP_GPIO_NUM, GPIO_PULLUP_ONLY);
-    gpio_set_intr_type(CONFIG_UP_GPIO_NUM, GPIO_INTR_NEGEDGE);
-
     gpio_install_isr_service(0);
-    gpio_isr_handler_add(CONFIG_DOWN_GPIO_NUM, button_tick1, NULL);
-    gpio_isr_handler_add(CONFIG_UP_GPIO_NUM, button_tick2, NULL);
+
+    for (size_t i = 0; i < sizeof(buttons) / sizeof(button_t); i++) {
+        gpio_set_direction(buttons[i].gpio_num, GPIO_MODE_INPUT);
+        gpio_set_pull_mode(buttons[i].gpio_num, GPIO_PULLUP_ONLY);
+        gpio_set_intr_type(buttons[i].gpio_num, GPIO_INTR_NEGEDGE);
+        gpio_isr_handler_add(buttons[i].gpio_num, button_tick, (void *)i);
+    }
 }

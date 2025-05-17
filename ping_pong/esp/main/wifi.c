@@ -1,10 +1,8 @@
-#include <string.h>
 #include <esp_log.h>
 #include "esp_mac.h"
 #include "esp_wifi.h"
 
-#define ESP_WIFI_SSID "morkovka"
-#define ESP_WIFI_PASS ""
+#define ESP_WIFI_SSID "ESP32_AP"
 #define ESP_WIFI_CHANNEL 9
 #define MAX_STA_CONN  5
 
@@ -26,7 +24,6 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
 
 void wifi_init_softap(void)
 {
-    ESP_ERROR_CHECK(esp_netif_init());
     esp_netif_create_default_wifi_ap();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
@@ -41,24 +38,16 @@ void wifi_init_softap(void)
     wifi_config_t wifi_config = {
         .ap = {
             .ssid = ESP_WIFI_SSID,
-            .ssid_len = strlen(ESP_WIFI_SSID),
             .channel = ESP_WIFI_CHANNEL,
-            .password = ESP_WIFI_PASS,
             .max_connection = MAX_STA_CONN,
             .authmode = WIFI_AUTH_OPEN,
-            .pmf_cfg = {
-                    .required = true,
-            },
         },
     };
-    if (strlen(ESP_WIFI_PASS) == 0) {
-        wifi_config.ap.authmode = WIFI_AUTH_OPEN;
-    }
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
-    ESP_ERROR_CHECK(esp_wifi_start());
+    esp_wifi_set_mode(WIFI_MODE_AP);
+    esp_wifi_set_config(WIFI_IF_AP, &wifi_config);
+    esp_wifi_start();
 
-    ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
-             ESP_WIFI_SSID, ESP_WIFI_PASS, ESP_WIFI_CHANNEL);
+    ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s channel:%d",
+             ESP_WIFI_SSID, ESP_WIFI_CHANNEL);
 }

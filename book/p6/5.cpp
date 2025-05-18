@@ -34,16 +34,6 @@ std::vector<std::string> date::splitDate(std::string str, char sep) {
 
     while(getline(ss, temp, sep))
         result.push_back(temp);
-    //int pos = 0;
-    //while ((pos = str.find(sep, pos)) != std::string::npos) {
-    //    int lpos = str.find(sep, pos+1);
-    //    int size = (lpos == std::string::npos) ? str.size()-pos : lpos-pos;
-    //    result.push_back(str.substr(pos, size));
-    //    if (pos+1 >= str.size())
-    //        break;
-    //    else
-    //        pos++;
-    //}
     return result;
 }
 
@@ -124,7 +114,7 @@ int date::parseDate(std::string str, date& dt, char sep) {
 date::date(std::string str)
 {
     if (parseDate(str, *this) != 0) {
-        throw new std::invalid_argument("Date formate error");
+        throw new std::invalid_argument("Date format error");
     }
 }
 

@@ -5,7 +5,7 @@ class ship {
     public:
         ship();
         int answerData();
-        void getValues(int& num, int& dec, float& min, char& orientaion) const;
+        void getValues(int& num, int& dec, float& min, char& orientation) const;
 
     private:
         static int _count;
@@ -13,7 +13,7 @@ class ship {
 
         int _dec;
         float _min;
-        char _orientaion;
+        char _orientation;
 };
 
 int ship::_count = 1;
@@ -25,13 +25,13 @@ ship::ship() {
 
 int ship::answerData() {
     int result = 0;
-    std::cin >> this->_dec >> this->_min >> this->_orientaion;
+    std::cin >> this->_dec >> this->_min >> this->_orientation;
 
 
     if (this->_min < 0 || this->_dec < 0)
         result = 1;
 
-    switch (this->_orientaion) {
+    switch (this->_orientation) {
         case 'W':
         case 'E':
             if (this->_min/60 + this->_dec > 180)
@@ -48,21 +48,21 @@ int ship::answerData() {
     return result;
 }
 
-void ship::getValues(int& num, int& dec, float& min, char& orientaion) const{
+void ship::getValues(int& num, int& dec, float& min, char& orientation) const{
     num        = this->_num;
     dec        = this->_dec;
     min        = this->_min;
-    orientaion = this->_orientaion;
+    orientation = this->_orientation;
 }
 
 std::ostream& operator<<(std::ostream& os, const ship& obj) {
     int num;
     int dec;
     float min;
-    char orientaion;
-    obj.getValues( num, dec, min, orientaion );
+    char orientation;
+    obj.getValues( num, dec, min, orientation );
 
-    os << "Shup №" << num << ": " << dec << "°" << min << "' " << orientaion;
+    os << "Shup №" << num << ": " << dec << "°" << min << "' " << orientation;
     return os;
 }
 
@@ -71,15 +71,15 @@ std::ostream& operator<<(std::ostream& os, const ship& obj) {
 int main () {
     ship sh1, sh2, sh3;
 
-    std::cout << "Введите координаты в формате: \"d m orientaion\"\n>>> ";
+    std::cout << "Введите координаты в формате: \"d m orientation\"\n>>> ";
     if (sh1.answerData() != 0)
         goto INPUT_ERROR;
 
-    std::cout << "Введите координаты в формате: \"d m orientaion\"\n>>> ";
+    std::cout << "Введите координаты в формате: \"d m orientation\"\n>>> ";
     if (sh2.answerData() != 0)
         goto INPUT_ERROR;
 
-    std::cout << "Введите координаты в формате: \"d m orientaion\"\n>>> ";
+    std::cout << "Введите координаты в формате: \"d m orientation\"\n>>> ";
     if (sh3.answerData() != 0)
         goto INPUT_ERROR;
 

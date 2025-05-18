@@ -5,26 +5,26 @@
 class angle {
     public:
         angle();
-        angle(int dec, int min, char orientaion);
+        angle(int dec, int min, char orientation);
 
         int answerData();
-        void getValues(int& dec, float& min, char& orientaion) const;
+        void getValues(int& dec, float& min, char& orientation) const;
 
     private:
         int _dec;
         float _min;
-        char _orientaion;
+        char _orientation;
 };
 
-angle::angle(): _dec(0), _min(0), _orientaion('W')
+angle::angle(): _dec(0), _min(0), _orientation('W')
 {}
 
-angle::angle(int dec, int min, char orientaion): _dec(dec), _min(min), _orientaion(orientaion)
+angle::angle(int dec, int min, char orientation): _dec(dec), _min(min), _orientation(orientation)
 {
     if (this->_min < 0 || this->_dec < 0)
         throw std::invalid_argument("Value error");
 
-    switch (this->_orientaion) {
+    switch (this->_orientation) {
         case 'W':
         case 'E':
             if (this->_min/60 + this->_dec > 180)
@@ -36,24 +36,24 @@ angle::angle(int dec, int min, char orientaion): _dec(dec), _min(min), _orientai
                 throw std::invalid_argument("Value error");
             break;
         default:
-            throw std::invalid_argument("Value error orientaion");
+            throw std::invalid_argument("Value error orientation");
     }
 }
 
-void angle::getValues(int& dec, float& min, char& orientaion) const{
+void angle::getValues(int& dec, float& min, char& orientation) const{
     dec        = this->_dec;
     min        = this->_min;
-    orientaion = this->_orientaion;
+    orientation = this->_orientation;
 }
 
 int angle::answerData() {
     int result = 0;
-    std::cin >> this->_dec >> this->_min >> this->_orientaion;
+    std::cin >> this->_dec >> this->_min >> this->_orientation;
 
     if (this->_min < 0 || this->_dec < 0)
         result = 1;
 
-    switch (this->_orientaion) {
+    switch (this->_orientation) {
         case 'W':
         case 'E':
             if (this->_min/60 + this->_dec > 180)
@@ -73,10 +73,10 @@ int angle::answerData() {
 std::ostream& operator<<(std::ostream& os, const angle& obj) {
     int dec;
     float min;
-    char orientaion;
-    obj.getValues( dec, min, orientaion );
+    char orientation;
+    obj.getValues( dec, min, orientation );
 
-    os << dec << "°" << min << "' " << orientaion;
+    os << dec << "°" << min << "' " << orientation;
     return os;
 }
 
@@ -91,7 +91,7 @@ int main () {
     }
 
     while(1) {
-        std::cout << "Введите координаты в формате: \"d m orientaion\"\n>>> ";
+        std::cout << "Введите координаты в формате: \"d m orientation\"\n>>> ";
 
         angle ang;
         if (ang.answerData() != 0) {

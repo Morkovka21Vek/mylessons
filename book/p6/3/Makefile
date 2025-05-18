@@ -1,6 +1,6 @@
 # Компилятор и флаги
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -I./src 
+CXXFLAGS = -std=c++20 -Wall -Wextra -I./src 
 
 # Директории
 SRC_DIR = src

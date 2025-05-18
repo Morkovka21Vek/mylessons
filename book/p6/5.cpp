@@ -7,26 +7,25 @@
 
 class date {
     public:
-        date();
+        date() = default;
         date(int, int, int);
-        date(std::string);
+        explicit date(const std::string&);
         void getValues(int& month, int& day, int& year) const;
-        int parseDate(std::string str, date&, char sep='/');
+        int parseDate(const std::string& str, date&, char sep='/');
 
     private:
-        bool checkDate(std::vector<int>);
-        std::vector<std::string> splitDate(std::string, char sep='/');
+        bool checkDate(std::vector<int>) const;
+        std::vector<std::string> splitDate(const std::string&, char sep='/') const;
 
-        int _month, _day, _year;
+        int _month = 0;
+        int _day = 0;
+        int _year = 0;
 };
-
-date::date(): _month(0), _day(0), _year(0)
-{}
 
 date::date(int month, int day, int year): _month(month), _day(day), _year(year)
 {}
 
-std::vector<std::string> date::splitDate(std::string str, char sep) {
+std::vector<std::string> date::splitDate(const std::string& str, char sep) const {
     std::vector<std::string> result;
 
     std::stringstream ss(str);
@@ -37,33 +36,28 @@ std::vector<std::string> date::splitDate(std::string str, char sep) {
     return result;
 }
 
-bool date::checkDate(std::vector<int> input) {
-    int result = -1;
-    int day, month, year;
+bool date::checkDate(std::vector<int> input) const {
+    int day;
+    int month;
+    int year;
 
-    if (input.size() != 3) {
-        result = 1;
+    if (input.size() != 3)
         goto ERROR;
-    }
 
     day   = input[0];
     month = input[1];
     year  = input[2];
 
-    if (year < 0 || month < 0 || month >= 12 || day < 0) {
-        result = 2;
+    if (year < 0 || month < 0 || month >= 12 || day < 0)
         goto ERROR;
-    }
 
     if (month == 1) {
         if ((year % 400 == 0) || (year % 100 != 0 && year % 4 == 0)) {
             if (day > 29) {
-                result = 3;
                 goto ERROR;
             }
         } else {
             if (day > 28) {
-                result = 3;
                 goto ERROR;
             }
         }
@@ -74,33 +68,24 @@ bool date::checkDate(std::vector<int> input) {
              month == 8 ||
              month == 10) {
 
-        if (day > 30) {
-            result = 3;
+        if (day > 30)
             goto ERROR;
-        }
-
+    } else {
+        if (day > 31)
+            goto ERROR;
     }
 
-    else
-    {
-        if (day > 31) {
-            result = 3;
-            goto ERROR;
-        }
-    }
-
-    result = 0;
-
+    return 0;
 ERROR:
-    return result;
+    return 1;
 }
 
-int date::parseDate(std::string str, date& dt, char sep) {
+int date::parseDate(const std::string& str, date& dt, char sep) {
     std::vector<int> parse_int;
     std::vector<std::string> parse_str = splitDate(str, sep);
 
-    for(int i = 0; i < parse_str.size(); i++) {
-        parse_int.push_back(atoi(parse_str[i].c_str()));
+    for (auto i : parse_str) {
+        parse_int.push_back(atoi(i.c_str()));
     }
 
     int result = checkDate(parse_int);
@@ -111,10 +96,10 @@ int date::parseDate(std::string str, date& dt, char sep) {
 
 }
 
-date::date(std::string str)
+date::date(const std::string& str)
 {
     if (parseDate(str, *this) != 0) {
-        throw new std::invalid_argument("Date format error");
+        throw std::invalid_argument("Date format error");
     }
 }
 
@@ -125,7 +110,9 @@ void date::getValues(int& month, int& day, int& year) const{
 }
 
 std::ostream& operator<<(std::ostream& os, const date& obj) {
-    int month, day, year;
+    int month;
+    int day;
+    int year;
     obj.getValues( month, day, year );
 
     os << day << '/' << month << '/' << year;
@@ -147,9 +134,8 @@ int main() {
     try {
         runCalendar();
     }
-    catch(std::exception *e) {
-        std::cerr << e->what() << std::endl;
-        delete e;
+    catch(std::exception e) {
+        std::cerr << e.what() << std::endl;
     }
     return 0;
 }

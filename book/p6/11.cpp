@@ -3,7 +3,7 @@
 
 class fraction {
     public:
-        fraction();
+        fraction() = default;
         fraction(int a, int b);
 
         void getData();
@@ -17,12 +17,9 @@ class fraction {
     private:
         void reduce();
         int computeGCD(int, int) const;
-        int a;
-        int b;
+        int a = 0;
+        int b = 0;
 };
-
-fraction::fraction(): a(0), b(0)
-{}
 
 fraction::fraction(int _a, int _b): a(_a), b(_b)
 {}
@@ -47,74 +44,39 @@ void fraction::reduce() {
     }
 }
 
-int fraction::computeGCD(int a, int b) const {
-    while (b != 0) {
-        int temp = b;
-        b = a % b;
-        a = temp;
+int fraction::computeGCD(int _a, int _b) const {
+    while (_b != 0) {
+        int temp = _b;
+        _b = _a % _b;
+        _a = temp;
     }
-    return a;
+    return _a;
 }
 
 fraction fraction::operator+(fraction other) const {
-    int other_a, other_b;
-    other.getValues(other_a, other_b);
-
-    int out_a = this->a*other_b + this->b*other_a;
-    int out_b = this->b*other_b;
-
-    fraction out(out_a, out_b);
-    out.reduce();
-
-    return out;
+    return fraction(this->a*other.b + this->b*other.a, this->b*other.b);
 }
 
 fraction fraction::operator-(fraction other) const {
-    int other_a, other_b;
-    other.getValues(other_a, other_b);
-
-    int out_a = this->a*other_b - this->b*other_a;
-    int out_b = this->b*other_b;
-
-    fraction out(out_a, out_b);
-    out.reduce();
-
-    return out;
+    return fraction(this->a*other.b - this->b*other.a, this->b*other.b);
 }
 
 fraction fraction::operator*(fraction other) const {
-    int other_a, other_b;
-    other.getValues(other_a, other_b);
-
-    int out_a = this->a*other_a;
-    int out_b = this->b*other_b;
-
-    fraction out(out_a, out_b);
-    out.reduce();
-
-    return out;
+    return fraction(this->a*other.a, this->b*other.b);
 }
 
 fraction fraction::operator/(fraction other) const {
-    int other_a, other_b;
-    other.getValues(other_a, other_b);
-
-    int out_a = this->a*other_b;
-    int out_b = this->b*other_a;
-
-    fraction out(out_a, out_b);
-    out.reduce();
-
-    return out;
+    return fraction(this->a*other.b, this->b*other.a);
 }
 
-void fraction::getValues(int& a, int& b) const {
-    a = this->a;
-    b = this->b;
+void fraction::getValues(int& _a, int& _b) const {
+    _a = this->a;
+    _b = this->b;
 }
 
 std::ostream& operator<<(std::ostream& os, const fraction& obj) {
-    int a, b;
+    int a;
+    int b;
     obj.getValues(a, b);
 
     if (b != 1)
@@ -125,8 +87,10 @@ std::ostream& operator<<(std::ostream& os, const fraction& obj) {
 }
 
 int main() {
-    char op, contin;
-    fraction frac1, frac2;
+    char op;
+    char contin;
+    fraction frac1;
+    fraction frac2;
 
     std::cout << "Данная программа производит операции(+-*/) обычные дроби.\nДроби необходимо вводить в формате: \"x/y\"." << std::endl;
 

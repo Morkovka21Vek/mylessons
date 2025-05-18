@@ -3,14 +3,14 @@
 
 class employee {
     public:
-        employee(int num);
+        explicit employee(int num);
 
         void answerData();
         void getValues(int& num, int& id, float& salary) const;
 
     private:
-        int _id;
-        float _salary;
+        int _id = -1;
+        float _salary = -1;
         int _num;
 };
 
@@ -42,7 +42,9 @@ std::ostream& operator<<(std::ostream& os, const employee& obj) {
 
 
 int main () {
-    employee emp1(1), emp2(2), emp3(3);
+    employee emp1(1);
+    employee emp2(2);
+    employee emp3(3);
 
     emp1.answerData();
     emp2.answerData();

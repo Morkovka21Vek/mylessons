@@ -6,18 +6,10 @@ class Int {
     public:
         Int(int val);
         Int();
-        bool operator==(int) const;
-        bool operator==(const Int&) const;
-
-        bool operator!=(const Int&) const;
+        std::strong_ordering operator<=>(int) const;
+        std::strong_ordering operator<=>(const Int&) const = default;
 
         Int& operator=(int val);
-
-        bool operator>(const Int&) const;
-        bool operator<(const Int&) const;
-
-        bool operator>=(const Int&) const;
-        bool operator<=(const Int&) const;
 
         Int operator+(int val) const;
         Int operator+(const Int&) const;

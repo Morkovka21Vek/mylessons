@@ -6,7 +6,8 @@
 
 std::pair<bool,char> kbhit() {
     std::pair<bool,char> result;
-    struct termios oldt, newt;
+    struct termios oldt;
+    struct termios newt;
     tcgetattr(STDIN_FILENO, &oldt);
     newt = oldt;
     newt.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
@@ -26,5 +27,5 @@ std::pair<bool,char> kbhit() {
         result.first = true;
         result.second = ch;
     }
-    return (result);
+    return result;
 }

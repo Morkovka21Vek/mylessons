@@ -4,21 +4,25 @@
 
 class employee {
     public:
-        employee(int num): _num(num)
-        {}
+        explicit employee(int num);
 
         void getemploy();
-        void putemploy();
+        void putemploy() const;
 
     private:
-        int _month, _day, _year;
+        int _month = -1;
+        int _day = -1;
+        int _year = -1;
 
-        int _id;
-        float _salary;
-        int _num;
+        int _id = -1;
+        float _salary = -1;
+        int _num = -1;
 
-        std::string _type;
+        std::string _type = "Bomzh";
 };
+
+employee::employee(int num): _num(num)
+{}
 
 void employee::getemploy() {
     char blackhole;
@@ -52,7 +56,7 @@ void employee::getemploy() {
         this->_type = it->second;
 }
 
-void employee::putemploy() {
+void employee::putemploy() const {
     std::cout << "ID сотрудника " << this->_num << ": " << this->_id << std::endl
               << "Его зарплата составляет " << this->_salary << '$' << std::endl
               << "Дата приёма на работу: " << this->_day << '/' << this->_month << '/' << this->_year << std::endl
@@ -63,7 +67,9 @@ void employee::putemploy() {
 
 
 int main () {
-    employee emp1(1), emp2(2), emp3(3);
+    employee emp1(1);
+    employee emp2(2);
+    employee emp3(3);
 
     emp1.getemploy();
     emp2.getemploy();

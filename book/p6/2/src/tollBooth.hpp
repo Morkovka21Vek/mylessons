@@ -4,7 +4,7 @@
 
 class tollBooth {
     public:
-        tollBooth();
+        tollBooth() = default;
 
         void payingCar();
         void nopayCar();
@@ -12,8 +12,8 @@ class tollBooth {
         void display_get(std::ostream&) const;
 
     private:
-        unsigned int _cars;
-        double _money;
+        unsigned int _cars = 0;
+        double _money = 0;
 };
 
 std::ostream& operator<<(std::ostream&, const tollBooth&);

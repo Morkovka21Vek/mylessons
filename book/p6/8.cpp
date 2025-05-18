@@ -29,7 +29,9 @@ std::ostream& operator<<(std::ostream& os, const counter& obj) {
 
 
 int main () {
-    counter ct1, ct2, ct3;
+    counter ct1;
+    counter ct2;
+    counter ct3;
 
     std::cout << "Мой номер: " << ct1 << std::endl
               << "Мой номер: " << ct2 << std::endl

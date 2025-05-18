@@ -11,9 +11,9 @@ class ship {
         static int _count;
         int _num;
 
-        int _dec;
-        float _min;
-        char _orientation;
+        int _dec = -1;
+        float _min = -1;
+        char _orientation = ' ';
 };
 
 int ship::_count = 1;
@@ -69,7 +69,9 @@ std::ostream& operator<<(std::ostream& os, const ship& obj) {
 
 
 int main () {
-    ship sh1, sh2, sh3;
+    ship sh1;
+    ship sh2;
+    ship sh3;
 
     std::cout << "Введите координаты в формате: \"d m orientation\"\n>>> ";
     if (sh1.answerData() != 0)

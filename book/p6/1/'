@@ -8,9 +8,18 @@ Int::Int(int val):_num(val)
 Int::Int():_num(0)
 {}
 
-std::strong_ordering Int::operator<=>(int val) const {
-    return _num <=> val;
+bool Int::operator==(int val) const {
+    return _num == val;
 }
+
+explicit bool Int::operator==(const Int& other) const {
+    return _num == other._num;
+}
+
+bool Int::operator<=(const Int& other) const {
+    return _num <= other._num;
+}
+
 
 Int& Int::operator=(int val)
 {
@@ -26,7 +35,7 @@ Int& Int::operator+=(int val)
 }
 Int& Int::operator+=(const Int& other)
 {
-    _num += other._num;
+    _num += other.getValue();
     return *this;
 }
 
@@ -37,7 +46,7 @@ Int& Int::operator-=(int val)
 }
 Int& Int::operator-=(const Int& other)
 {
-    _num -= other._num;
+    _num -= other.getValue();
     return *this;
 }
 
@@ -48,7 +57,7 @@ Int Int::operator+(int val) const
 
 Int Int::operator+(const Int& other) const
 {
-    return Int(_num + other._num);
+    return Int(_num + other.getValue());
 }
 
 Int Int::operator-(int val) const
@@ -58,7 +67,7 @@ Int Int::operator-(int val) const
 
 Int Int::operator-(const Int& other) const
 {
-    return Int(_num - other._num);
+    return Int(_num - other.getValue());
 }
 
 bool operator>(int l, const Int& other) {

@@ -90,7 +90,7 @@ int main () {
         std::cerr << "Error: " << e.what() << std::endl;
     }
 
-    while(1) {
+    while(true) {
         std::cout << "Введите координаты в формате: \"d m orientation\"\n>>> ";
 
         angle ang;
@@ -100,6 +100,4 @@ int main () {
         }
         std::cout << ang << std::endl;
     }
-
-    return 0;
 }

@@ -37,13 +37,13 @@ void fraction::reduce() {
     }
 }
 
-int fraction::computeGCD(int a, int b) const {
-    while (b != 0) {
-        int temp = b;
-        b = a % b;
-        a = temp;
+int fraction::computeGCD(int _a, int _b) const {
+    while (_b != 0) {
+        int temp = _b;
+        _b = _a % _b;
+        _a = temp;
     }
-    return a;
+    return _a;
 }
 
 fraction::fraction(int _a, int _b): a(_a), b(_b)
@@ -57,23 +57,17 @@ void fraction::getData() {
 }
 
 fraction fraction::operator+(fraction other) const {
-    int other_a, other_b;
-    int out_a, out_b;
-    other.getValues(other_a, other_b);
-
-    out_a = this->a*other_b + this->b*other_a;
-    out_b = this->b*other_b;
-
-    return fraction(out_a, out_b);
+    return fraction(this->a*other.b + this->b*other.a, this->b*other.b);
 }
 
-void fraction::getValues(int& a, int& b) const {
-    a = this->a;
-    b = this->b;
+void fraction::getValues(int& _a, int& _b) const {
+    _a = this->a;
+    _b = this->b;
 }
 
 std::ostream& operator<<(std::ostream& os, const fraction& obj) {
-    int a, b;
+    int a;
+    int b;
     obj.getValues(a, b);
 
     os << a << '/' << b;
@@ -81,7 +75,8 @@ std::ostream& operator<<(std::ostream& os, const fraction& obj) {
 }
 
 int main() {
-    fraction frac1, frac2;
+    fraction frac1;
+    fraction frac2;
     char repeat = 0;
 
     std::cout << "Данная программа складывает обычные дроби.\nДроби необходимо вводить в формате: \"x/y\"." << std::endl;

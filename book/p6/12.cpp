@@ -11,7 +11,7 @@ class Fraction {
         Fraction(int _a, int _b, bool is_reduce = true);
 
         void setData();
-        void getValues(int& a, int& b) const;
+        void getValues(int&, int&) const;
 
         Fraction operator*(Fraction) const;
 
@@ -53,18 +53,17 @@ int Fraction::computeGCD(int a, int b) const {
 }
 
 Fraction Fraction::operator*(Fraction other) const {
-    Fraction out(this->a*other.a, this->b*other.b, true);
-
-    return out;
+    return Fraction(this->a*other.a, this->b*other.b, true);
 }
 
-void Fraction::getValues(int& a, int& b) const {
-    a = this->a;
-    b = this->b;
+void Fraction::getValues(int& _a, int& _b) const {
+    _a = this->a;
+    _b = this->b;
 }
 
 std::ostream& operator<<(std::ostream& os, const Fraction& obj) {
-    int a, b;
+    int a;
+    int b;
     obj.getValues(a, b);
 
     std::ostringstream tmp;
@@ -89,7 +88,7 @@ size_t getWidth(int denominator) {
     return width;
 }
 
-void printHorizontalLine(int denominator, size_t width, std::string left, std::string middle, std::string right) {
+void printHorizontalLine(int denominator, size_t width, const std::string& left, const std::string& middle, const std::string& right) {
     std::cout << left;
     for (int i = 0; i <= denominator; i++) {
         for (int j = 0; j < width; j++)

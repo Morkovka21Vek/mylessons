@@ -1,18 +1,19 @@
 #include <iostream>
 #include <iomanip>
 #include <ostream>
+#include <string>
 
-class fraction {
+class Fraction {
     public:
-        fraction(): a(0), b(0)
+        Fraction(): a(0), b(0)
         {}
 
-        fraction(int _a, int _b);
+        Fraction(int _a, int _b, bool is_reduce = true);
 
-        void getData();
+        void setData();
         void getValues(int& a, int& b) const;
 
-        fraction operator*(fraction) const;
+        Fraction operator*(Fraction) const;
 
     private:
         void reduce();
@@ -21,17 +22,13 @@ class fraction {
         int b;
 };
 
-fraction::fraction(int _a, int _b): a(_a), b(_b)
+Fraction::Fraction(int _a, int _b, bool is_reduce): a(_a), b(_b)
 {
-    reduce();
+    if (is_reduce)
+        reduce();
 }
 
-void fraction::getData() {
-    char space;
-    std::cin >> this->a >> space >> this->b;
-}
-
-void fraction::reduce() {
+void Fraction::reduce() {
     int numerator = this->a;
     int denominator = this->b;
 
@@ -46,7 +43,7 @@ void fraction::reduce() {
     }
 }
 
-int fraction::computeGCD(int a, int b) const {
+int Fraction::computeGCD(int a, int b) const {
     while (b != 0) {
         int temp = b;
         b = a % b;
@@ -55,104 +52,88 @@ int fraction::computeGCD(int a, int b) const {
     return a;
 }
 
-fraction fraction::operator*(fraction other) const {
-    int other_a, other_b;
-    other.getValues(other_a, other_b);
-
-    int out_a = this->a*other_a;
-    int out_b = this->b*other_b;
-
-    fraction out(out_a, out_b);
-    out.reduce();
+Fraction Fraction::operator*(Fraction other) const {
+    Fraction out(this->a*other.a, this->b*other.b, true);
 
     return out;
 }
 
-void fraction::getValues(int& a, int& b) const {
+void Fraction::getValues(int& a, int& b) const {
     a = this->a;
     b = this->b;
 }
 
-std::ostream& operator<<(std::ostream& os, const fraction& obj) {
+std::ostream& operator<<(std::ostream& os, const Fraction& obj) {
     int a, b;
     obj.getValues(a, b);
 
     std::ostringstream tmp;
-    tmp << a << '/' << b;
+    if (b == 1)
+        tmp << a;
+    else
+        tmp << a << '/' << b;
 
-    os << tmp.str();
+    return os << tmp.str();
+}
 
-    return os;
+size_t getWidth(int denominator) {
+    size_t width = 3;
+
+    int temp_denominator = denominator * denominator;
+    while(temp_denominator >= 10)
+    {
+        temp_denominator /= 10;
+        width += 2;
+    }
+
+    return width;
+}
+
+void printHorizontalLine(int denominator, size_t width, std::string left, std::string middle, std::string right) {
+    std::cout << left;
+    for (int i = 0; i <= denominator; i++) {
+        for (int j = 0; j < width; j++)
+            std::cout << "─";
+        std::cout << (i != denominator ? middle : right);
+    }
+    std::cout << std::endl;
 }
 
 int main() {
     int denominator;
-    size_t width = 3;
 
     std::cout << "Введите знаменатель для создания таблицы умножения: "; std::cin >> denominator;
-
     if (denominator <= 0) {
         std::cout << "Некорректный знаменатель!" << std::endl;
-        goto ERROR;
+        return 1;
     }
 
-    {
-        int temp_denominator = denominator * denominator;
-        while(temp_denominator >= 10)
-        {
-            temp_denominator /= 10;
-            width += 2;
-        }
-    }
+    size_t width = getWidth(denominator);
 
     std::cout << std::left << std::setfill(' ');
 
-    std::cout << "┌";
-    for (int num = 0; num < denominator+1; num++) {
-        for (int num2 = 0; num2 < width; num2++)
-            std::cout << "─";
-        if(num != denominator)
-            std::cout << "┬";
-    }
-    std::cout << "┐" << std::endl;
+    printHorizontalLine(denominator, width, "┌", "┬", "┐");
 
-    for (int i = 0; i <= denominator; i++) {
+    for (int y = 0; y <= denominator; y++) {
         std::cout << "│";
-        for (int j = 0; j <= denominator; j++) {
-            if (i == 0 && j != 0)
-                std::cout << "\033[44m" << std::setw(width) << fraction(j, denominator) << std::setw(0) << "\033[0m│";
-            else if (i != 0 && j == 0)
-                std::cout << "\033[46m" << std::setw(width) << fraction(i, denominator) << std::setw(0) << "\033[0m│";
-            else if (i == 0 && j == 0)
-                std::cout << "\033[43m" << std::setw(width) << "j/i" << std::setw(0) << "\033[0m│";
+        for (int x = 0; x <= denominator; x++) {
+            if (y == 0 && x != 0)
+                std::cout << std::setw(width) << Fraction(x, denominator, false);
+            else if (y != 0 && x == 0)
+                std::cout << std::setw(width) << Fraction(y, denominator, false);
+            else if (y == 0 && x == 0)
+                std::cout << std::setw(width) << "";
             else
-            {
-                std::cout << std::setw(width) << fraction(j, denominator) * fraction(i, denominator) << std::setw(0) << "│";
-            }
+                std::cout << std::setw(width) << Fraction(x, denominator) * Fraction(y, denominator);
+            std::cout << "│";
         }
-        if (i != denominator) {
-            std::cout << std::endl << "├";
-            for (int num = 0; num < denominator+1; num++) {
-                for (int num2 = 0; num2 < width; num2++)
-                    std::cout << "─";
-                if(num != denominator)
-                    std::cout << "┼";
-            }
 
-            std::cout << "┤" << std::endl;
-        }
+        std::cout << std::endl;
+        if (y != denominator)
+            printHorizontalLine(denominator, width, "├", "┼", "┤");
+        else
+            printHorizontalLine(denominator, width, "└", "┴", "┘");
     }
-
-    std::cout << std::endl << "└";
-    for (int num = 0; num < denominator+1; num++) {
-        for (int num2 = 0; num2 < width; num2++)
-            std::cout << "─";
-        if(num != denominator)
-            std::cout << "┴";
-    }
-    std::cout << "┘" << std::endl;
 
     return 0;
-ERROR:
-    return 1;
 }

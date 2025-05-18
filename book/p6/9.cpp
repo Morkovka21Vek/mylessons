@@ -12,6 +12,9 @@ class fraction {
         fraction operator+(fraction) const;
 
     private:
+        void reduce();
+        int computeGCD(int, int) const;
+
         int a;
         int b;
 };
@@ -19,19 +22,33 @@ class fraction {
 fraction::fraction(): a(0), b(0)
 {}
 
+void fraction::reduce() {
+    int numerator = this->a;
+    int denominator = this->b;
+
+    int gcd = computeGCD(abs(numerator), abs(denominator));
+
+    this->a = numerator / gcd;
+    this->b = denominator / gcd;
+
+    if (this->b < 0) {
+        this->a = -this->a;
+        this->b = -this->b;
+    }
+}
+
+int fraction::computeGCD(int a, int b) const {
+    while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
 fraction::fraction(int _a, int _b): a(_a), b(_b)
 {
-	int minNum, j;
-	do {
-		minNum = (this->a < this->b) ? this->a : this->b;
-		for	(j = minNum; j > 0; j--) {
-			if (!(this->a % j) && !(this->b % j)) {
-				this->a /= j;
-				this->b /= j;
-				break;
-			}
-		}
-	} while (j != 1);
+    reduce();
 }
 
 void fraction::getData() {
@@ -46,18 +63,6 @@ fraction fraction::operator+(fraction other) const {
 
     out_a = this->a*other_b + this->b*other_a;
     out_b = this->b*other_b;
-
-	int minNum, j;
-	do {
-		minNum = (out_a < out_b) ? out_a : out_b;
-		for	(j = minNum; j > 0; j--) {
-			if (!(out_a % j) && !(out_b % j)) {
-				out_a /= j;
-				out_b /= j;
-				break;
-			}
-		}
-	} while (j != 1);
 
     return fraction(out_a, out_b);
 }

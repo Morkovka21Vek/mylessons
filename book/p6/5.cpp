@@ -1,4 +1,5 @@
 #include <iostream>
+#include <array>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -82,7 +83,9 @@ int date::parseDate(const std::string& str, date& dt, char sep) const {
         int val = 0;
         try {
             val = std::stoi(i);
-        } catch(std::exception &e) {
+        } catch (const std::invalid_argument&) {
+            result = 1;
+        } catch (const std::out_of_range&) {
             result = 1;
         }
         parse_int.push_back(val);
@@ -127,11 +130,8 @@ void runCalendar() {
 int main() {
     try {
         runCalendar();
-    }
     } catch (const std::invalid_argument& e) {
         std::cerr << "Invalid date: " << e.what() << std::endl;
-    } catch (const std::exception& e) {
-        std::cerr << "Unexpected error: " << e.what() << std::endl;
     }
     return 0;
 }

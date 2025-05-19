@@ -36,9 +36,5 @@ int kbhit() {
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
     fcntl(STDIN_FILENO, F_SETFL, oldf);
 
-    if (ch == EOF && errno != EAGAIN) {
-        return EOF;
-    }
-
     return ch;
 }

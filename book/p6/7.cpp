@@ -21,9 +21,7 @@ angle::angle(): _dec(0), _min(0), _orientation('W')
 
 angle::angle(int dec, int min, char orientation): _dec(dec), _min(min), _orientation(orientation)
 {
-    const int totalDegrees = _min / 60 + _dec;
-
-    if (this->_min < 0 || this->_dec < 0 ||
+    if (const int totalDegrees = _min / 60 + _dec; this->_min < 0 || this->_dec < 0 ||
        (this->_orientation == 'W' || this->_orientation == 'E') && totalDegrees > 180 ||
        (this->_orientation == 'N' || this->_orientation == 'S') && totalDegrees > 90  ||
        (this->_orientation != 'W' && this->_orientation != 'E' && this->_orientation != 'N' && this->_orientation != 'S'))
@@ -33,9 +31,7 @@ angle::angle(int dec, int min, char orientation): _dec(dec), _min(min), _orienta
 int angle::answerData() {
     std::cin >> this->_dec >> this->_min >> this->_orientation;
 
-    const int totalDegrees = _min / 60 + _dec;
-
-    if (this->_min < 0 || this->_dec < 0 ||
+    if (const int totalDegrees = _min / 60 + _dec; this->_min < 0 || this->_dec < 0 ||
        (this->_orientation == 'W' || this->_orientation == 'E') && totalDegrees > 180 ||
        (this->_orientation == 'N' || this->_orientation == 'S') && totalDegrees > 90  ||
        (this->_orientation != 'W' && this->_orientation != 'E' && this->_orientation != 'N' && this->_orientation != 'S'))

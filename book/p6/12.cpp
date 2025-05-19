@@ -95,7 +95,7 @@ void printHorizontalLine(int denominator, size_t width, const std::string& left,
     std::cout << std::endl;
 }
 
-Fraction getCellContent(int x, int y, int denominator, int width) {
+Fraction getCellContent(int x, int y, int denominator) {
     if (y == 0 && x != 0) return Fraction(x, denominator, false);
     if (y != 0 && x == 0) return Fraction(y, denominator, false);
     if (y == 0 && x == 0) return Fraction(0, 0, false);
@@ -110,7 +110,7 @@ void draw(int denominator, size_t width) {
     for (int y = 0; y <= denominator; y++) {
         std::cout << "│";
         for (int x = 0; x <= denominator; x++) {
-            std::cout << std::setw(width) << getCellContent(x, y, denominator, width);
+            std::cout << std::setw(width) << getCellContent(x, y, denominator);
             std::cout << "│";
         }
 

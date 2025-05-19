@@ -2,24 +2,23 @@
 #include <ostream>
 
 class fraction {
-    public:
-        fraction();
-        fraction(int a, int b);
-        void getData();
+  public:
+    fraction();
+    fraction(int a, int b);
+    void getData();
 
-        friend fraction operator+(const fraction&, const fraction&);
-        friend std::ostream& operator<<(std::ostream& os, const fraction& obj);
+    friend fraction operator+(const fraction &, const fraction &);
+    friend std::ostream &operator<<(std::ostream &os, const fraction &obj);
 
-    private:
-        void reduce();
-        int computeGCD(int, int) const;
+  private:
+    void reduce();
+    int computeGCD(int, int) const;
 
-        int a;
-        int b;
+    int a;
+    int b;
 };
 
-fraction::fraction(): a(0), b(0)
-{}
+fraction::fraction() : a(0), b(0) {}
 
 void fraction::reduce() {
     int numerator = this->a;
@@ -45,21 +44,18 @@ int fraction::computeGCD(int _a, int _b) const {
     return _a;
 }
 
-fraction::fraction(int _a, int _b): a(_a), b(_b)
-{
-    reduce();
-}
+fraction::fraction(int _a, int _b) : a(_a), b(_b) { reduce(); }
 
 void fraction::getData() {
     char space;
     std::cin >> this->a >> space >> this->b;
 }
 
-fraction operator+(const fraction& obj1, const fraction& obj2) {
-    return fraction(obj1.a*obj2.b + obj1.b*obj2.a, obj1.b*obj2.b);
+fraction operator+(const fraction &obj1, const fraction &obj2) {
+    return fraction(obj1.a * obj2.b + obj1.b * obj2.a, obj1.b * obj2.b);
 }
 
-std::ostream& operator<<(std::ostream& os, const fraction& obj) {
+std::ostream &operator<<(std::ostream &os, const fraction &obj) {
     return os << obj.a << '/' << obj.b;
 }
 
@@ -68,7 +64,9 @@ int main() {
     fraction frac2;
     char repeat = 0;
 
-    std::cout << "Данная программа складывает обычные дроби.\nДроби необходимо вводить в формате: \"x/y\"." << std::endl;
+    std::cout << "Данная программа складывает обычные дроби.\nДроби необходимо "
+                 "вводить в формате: \"x/y\"."
+              << std::endl;
     do {
         std::cout << "Введите 1-ю дробь: >>> ";
         frac1.getData();
@@ -80,8 +78,7 @@ int main() {
 
         std::cout << "Хотите продолжить?(y/*) ";
         std::cin >> repeat;
-    } while(repeat == 'y');
+    } while (repeat == 'y');
 
     return 0;
 }
-

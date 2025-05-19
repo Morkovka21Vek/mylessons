@@ -1,5 +1,5 @@
-#include "tollBooth.hpp"
 #include "keyboard.hpp"
+#include "tollBooth.hpp"
 #include <iostream>
 
 int main() {
@@ -11,16 +11,18 @@ int main() {
     do {
         key = kbhit();
         switch (key) {
-            case 'y':
-                tb.payingCar();
-                break;
-            case 'n':
-                tb.nopayCar();
-                break;
-            case EOF: break;
-            case 27: break;
-            default:
-                std::cout << "Unknown key! Press ESC to exit" << std::endl;
+        case 'y':
+            tb.payingCar();
+            break;
+        case 'n':
+            tb.nopayCar();
+            break;
+        case EOF:
+            break;
+        case 27:
+            break;
+        default:
+            std::cout << "Unknown key! Press ESC to exit" << std::endl;
         }
     } while (key != 27);
     std::cout << tb << std::endl;

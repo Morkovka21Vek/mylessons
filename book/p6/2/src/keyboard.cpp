@@ -1,7 +1,7 @@
 #include "keyboard.hpp"
-#include <termios.h>
 #include <fcntl.h>
 #include <iostream>
+#include <termios.h>
 #include <unistd.h>
 
 int kbhit() {

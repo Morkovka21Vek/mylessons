@@ -1,30 +1,28 @@
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <ostream>
 #include <string>
 
 class Fraction {
-    public:
-        Fraction(): a(0), b(0)
-        {}
+  public:
+    Fraction() : a(0), b(0) {}
 
-        Fraction(int _a, int _b, bool is_reduce = true);
+    Fraction(int _a, int _b, bool is_reduce = true);
 
-        void setData();
-        void getValues(int&, int&) const;
+    void setData();
+    void getValues(int &, int &) const;
 
-        friend Fraction operator*(const Fraction&, const Fraction&);
-        friend std::ostream& operator<<(std::ostream& os, const Fraction& obj);
+    friend Fraction operator*(const Fraction &, const Fraction &);
+    friend std::ostream &operator<<(std::ostream &os, const Fraction &obj);
 
-    private:
-        void reduce();
-        int computeGCD(int, int) const;
-        int a;
-        int b;
+  private:
+    void reduce();
+    int computeGCD(int, int) const;
+    int a;
+    int b;
 };
 
-Fraction::Fraction(int _a, int _b, bool is_reduce): a(_a), b(_b)
-{
+Fraction::Fraction(int _a, int _b, bool is_reduce) : a(_a), b(_b) {
     if (is_reduce)
         reduce();
 }
@@ -53,16 +51,16 @@ int Fraction::computeGCD(int _a, int _b) const {
     return _a;
 }
 
-Fraction operator*(const Fraction& obj1, const Fraction& obj2) {
-    return Fraction(obj1.a*obj2.a, obj1.b*obj2.b, true);
+Fraction operator*(const Fraction &obj1, const Fraction &obj2) {
+    return Fraction(obj1.a * obj2.a, obj1.b * obj2.b, true);
 }
 
-void Fraction::getValues(int& _a, int& _b) const {
+void Fraction::getValues(int &_a, int &_b) const {
     _a = this->a;
     _b = this->b;
 }
 
-std::ostream& operator<<(std::ostream& os, const Fraction& obj) {
+std::ostream &operator<<(std::ostream &os, const Fraction &obj) {
     std::ostringstream tmp;
     if (obj.b == 1)
         tmp << obj.a;
@@ -76,8 +74,7 @@ size_t getWidth(int denominator) {
     size_t width = 3;
 
     int temp_denominator = denominator * denominator;
-    while(temp_denominator >= 10)
-    {
+    while (temp_denominator >= 10) {
         temp_denominator /= 10;
         width += 2;
     }
@@ -85,7 +82,8 @@ size_t getWidth(int denominator) {
     return width;
 }
 
-void printHorizontalLine(int denominator, size_t width, const std::string& left, const std::string& middle, const std::string& right) {
+void printHorizontalLine(int denominator, size_t width, const std::string &left,
+                         const std::string &middle, const std::string &right) {
     std::cout << left;
     for (int i = 0; i <= denominator; i++) {
         for (int j = 0; j < width; j++)
@@ -96,9 +94,12 @@ void printHorizontalLine(int denominator, size_t width, const std::string& left,
 }
 
 Fraction getCellContent(int x, int y, int denominator) {
-    if (y == 0 && x != 0) return Fraction(x, denominator, false);
-    if (y != 0 && x == 0) return Fraction(y, denominator, false);
-    if (y == 0 && x == 0) return Fraction(0, 0, false);
+    if (y == 0 && x != 0)
+        return Fraction(x, denominator, false);
+    if (y != 0 && x == 0)
+        return Fraction(y, denominator, false);
+    if (y == 0 && x == 0)
+        return Fraction(0, 0, false);
     return Fraction(x, denominator) * Fraction(y, denominator);
 }
 
@@ -125,7 +126,8 @@ void draw(int denominator, size_t width) {
 int main() {
     int denominator;
 
-    std::cout << "Введите знаменатель для создания таблицы умножения: "; std::cin >> denominator;
+    std::cout << "Введите знаменатель для создания таблицы умножения: ";
+    std::cin >> denominator;
     if (denominator <= 0) {
         std::cout << "Некорректный знаменатель!" << std::endl;
         return 1;

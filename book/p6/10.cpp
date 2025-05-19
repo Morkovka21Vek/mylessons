@@ -26,28 +26,17 @@ ship::ship() {
 }
 
 int ship::answerData() {
-    int result = 0;
     std::cin >> this->_dec >> this->_min >> this->_orientation;
 
+    const int totalDegrees = _min / 60 + _dec;
 
-    if (this->_min < 0 || this->_dec < 0)
-        result = 1;
+    if (this->_min < 0 || this->_dec < 0 ||
+       (this->_orientation == 'W' || this->_orientation == 'E') && totalDegrees > 180 ||
+       (this->_orientation == 'N' || this->_orientation == 'S') && totalDegrees > 90  ||
+       (this->_orientation != 'W' && this->_orientation != 'E' && this->_orientation != 'N' && this->_orientation != 'S'))
+        return 1;
 
-    switch (this->_orientation) {
-        case 'W':
-        case 'E':
-            if (this->_min/60 + this->_dec > 180)
-                result = 1;
-            break;
-        case 'N':
-        case 'S':
-            if (this->_min/60 + this->_dec > 90)
-                result = 1;
-            break;
-        default:
-            result = 2;
-    }
-    return result;
+    return 0;
 }
 
 void ship::getValues(int& num, int& dec, float& min, char& orientation) const{

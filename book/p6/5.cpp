@@ -40,24 +40,14 @@ std::vector<std::string> date::splitDate(const std::string& str, char sep) const
 }
 
 int date::getDaysCount(int month, int year) const {
-    int days = 0;
+    static constexpr std::array<int, 12> daysInMonth = {
+        31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+    };
+
     if (month == 1) {
-        if ((year % 400 == 0) || (year % 100 != 0 && year % 4 == 0)) {
-            days = 29;
-        } else {
-            days = 28;
-        }
+        return (year % 400 == 0) || (year % 100 != 0 && year % 4 == 0) ? 29 : 28;
     }
-    else if (month == 3 ||
-             month == 5 ||
-             month == 8 ||
-             month == 10)
-
-        days = 30;
-     else
-        days = 31;
-
-     return days;
+    return daysInMonth[month];
 }
 
 bool date::checkDate(std::vector<int> input) const {
@@ -138,8 +128,10 @@ int main() {
     try {
         runCalendar();
     }
-    catch(std::exception &e) {
-        std::cerr << e.what() << std::endl;
+    } catch (const std::invalid_argument& e) {
+        std::cerr << "Invalid date: " << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Unexpected error: " << e.what() << std::endl;
     }
     return 0;
 }

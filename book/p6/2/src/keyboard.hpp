@@ -1,2 +1,2 @@
 #pragma once
-char kbhit();
+int kbhit();

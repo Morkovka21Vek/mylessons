@@ -24,9 +24,7 @@ int main() {
     int posX = 3;
     int posY = 3;
 
-    while (1) {
-        // system("clear");
-
+    while (true) {
         for (int y = 0; y < screenY; y++) {
             for (int x = 0; x < screenX; x++) {
                 draw(x, y);

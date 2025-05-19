@@ -4,11 +4,12 @@
 #include "gameobj/ball.hpp"
 #include "gameobj/player.hpp"
 #include "gameobj/scoreBoard.hpp"
+#include "gameobj/collision.hpp"
 #include "screen.hpp"
 
 int main(int argc, char const *argv[]) {
 
-    const size_t MAX_FPS = 90;
+    const size_t MAX_FPS = 60;
 
     Screen screen;
     ScoreBoard scboard;
@@ -20,9 +21,12 @@ int main(int argc, char const *argv[]) {
     while (true) {
         timer_start();
 
-        leftPl.tick(screen.getGameSize());
-        rightPl.tick(screen.getGameSize());
+        leftPl.tick(screen.getGameSize(), ball.getY());
+        rightPl.tick(screen.getGameSize(), ball.getY());
         ball.tick(screen.getGameSize(), frame_time_ms);
+
+        CollisionSystem::handleAllCollisions(ball, leftPl, rightPl,
+                                   screen.getGameSize(), scboard);
 
         screen.reset('-');
         screen.add(0, scboard.calcX(screen.getGameSize()), scboard.getMatrix());

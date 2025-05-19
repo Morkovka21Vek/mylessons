@@ -10,7 +10,14 @@ class Ball {
     void reset(struct scrsize);
     float getX() const;
     float getY() const;
+    size_t getWidth() const;
+    size_t getHeight() const;
     std::vector<std::vector<char>> getMatrix() const;
+
+    void reverseX();
+    void reverseY();
+    void setX(float x);
+    void setY(float y);
 
   private:
     float posX;

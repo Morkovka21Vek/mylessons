@@ -15,7 +15,8 @@ CXX_FLAGS := -Wall -pedantic -std=c++20 -g -I . -MMD
 DEP_FLAGS = -MT $@ -MMD -MP -MF $(BUILD_DIR)/$(BUILD_DEPS_SUBDIR)/$*.d
 LDFLAGS := -lncurses
 
-make: $(OUT_FILE)
+build: $(OUT_FILE)
+rebuild: clean build
 
 -include $(DEPS_FILES)
 

@@ -12,16 +12,6 @@ void Ball::tick(struct scrsize ws, size_t frametime) {
 
     this->posX += this->speedX * frametime;
     this->posY += this->speedY * frametime;
-
-    if (this->posY <= 0)
-        this->speedY = -this->speedY;
-    else if (this->posY + this->height >= ws.height)
-        this->speedY = -this->speedY;
-
-    if (this->posX <= 0)
-        this->speedX = -this->speedX;
-    else if (this->posX + this->width >= ws.width)
-        this->speedX = -this->speedX;
 }
 
 void Ball::reset(struct scrsize ws) {
@@ -34,6 +24,14 @@ void Ball::reset(struct scrsize ws) {
 
 float Ball::getX() const { return this->posX; }
 float Ball::getY() const { return this->posY; }
+
+void Ball::reverseX() { this->speedX = -this->speedX; }
+void Ball::reverseY() { this->speedY = -this->speedY; }
+void Ball::setX(float x) { this->posX = x; }
+void Ball::setY(float y) { this->posY = y; }
+
+size_t Ball::getWidth() const { return this->width; }
+size_t Ball::getHeight() const { return this->height; }
 
 std::vector<std::vector<char>> Ball::getMatrix() const {
     std::vector<std::vector<char>> matrix(this->height,

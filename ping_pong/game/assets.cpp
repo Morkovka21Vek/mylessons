@@ -5,9 +5,11 @@
 static std::chrono::high_resolution_clock::time_point time_start;
 static std::chrono::high_resolution_clock::time_point time_end;
 
-void fps_lock(std::chrono::milliseconds frame_time_ms, size_t fpscount) {
-    size_t timesleep = 1000 / fpscount - frame_time_ms.count();
-    std::this_thread::sleep_for(std::chrono::milliseconds(timesleep));
+static void fps_lock(std::chrono::milliseconds frame_time_ms, size_t fpscount) {
+    long timesleep = 1000 / fpscount - frame_time_ms.count();
+    if (timesleep > 0) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(timesleep));
+    }
 }
 
 void timer_start() {

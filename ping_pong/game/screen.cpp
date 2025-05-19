@@ -56,17 +56,14 @@ void Screen::reset(char fill) {
 void Screen::draw(size_t frame_time) {
     for (size_t y = 0; y < this->ws.height; y++) {
         for (size_t x = 0; x < this->ws.width; x++) {
-            if (Screen_vector[y][x] == Screen_vector_old[y][x]) {
-                continue;
+
+            char *screen_ch = &Screen_vector[y][x];
+            char *screen_ch_old = &Screen_vector_old[y][x];
+
+            if (*screen_ch != *screen_ch_old) {
+                mvaddch(y, x, *screen_ch);
+                *screen_ch_old = *screen_ch;
             }
-            // if (Screen_vector[y][x] == '#') {
-            //     attron(COLOR_PAIR(2));
-            //     mvaddch(y, x, Screen_vector[y][x]);
-            //     attroff(COLOR_PAIR(2));
-            // } else {
-            mvaddch(y, x, Screen_vector[y][x]);
-            //}
-            Screen_vector_old[y][x] = Screen_vector[y][x];
         }
     }
 

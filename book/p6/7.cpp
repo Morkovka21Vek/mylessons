@@ -10,6 +10,8 @@ class angle {
         int answerData();
         void getValues(int& dec, float& min, char& orientation) const;
 
+        friend std::ostream& operator<<(std::ostream& os, const angle& obj);
+
     private:
         int _dec;
         float _min;
@@ -24,20 +26,14 @@ angle::angle(int dec, int min, char orientation): _dec(dec), _min(min), _orienta
     if (this->_min < 0 || this->_dec < 0)
         throw std::invalid_argument("Value error");
 
-    switch (this->_orientation) {
-        case 'W':
-        case 'E':
-            if (this->_min/60 + this->_dec > 180)
-                throw std::invalid_argument("Value error");
-            break;
-        case 'N':
-        case 'S':
-            if (this->_min/60 + this->_dec > 90)
-                throw std::invalid_argument("Value error");
-            break;
-        default:
-            throw std::invalid_argument("Value error orientation");
-    }
+    if (this->_orientation == 'W' || this->_orientation == 'E') {
+        if (this->_min/60 + this->_dec > 180)
+            throw std::invalid_argument("Value error");
+    } else if (this->_orientation == 'N' || this->_orientation == 'S') {
+        if (this->_min/60 + this->_dec > 90)
+            throw std::invalid_argument("Value error");
+    } else
+        throw std::invalid_argument("Value error orientation");
 }
 
 void angle::getValues(int& dec, float& min, char& orientation) const{
@@ -53,31 +49,20 @@ int angle::answerData() {
     if (this->_min < 0 || this->_dec < 0)
         result = 1;
 
-    switch (this->_orientation) {
-        case 'W':
-        case 'E':
-            if (this->_min/60 + this->_dec > 180)
-                result = 1;
-            break;
-        case 'N':
-        case 'S':
-            if (this->_min/60 + this->_dec > 90)
-                result = 1;
-            break;
-        default:
-            result = 2;
-    }
+    if (this->_orientation == 'W' || this->_orientation == 'E') {
+        if (this->_min/60 + this->_dec > 180)
+            result = 1;
+    } else if (this->_orientation == 'N' || this->_orientation == 'S') {
+        if (this->_min/60 + this->_dec > 90)
+            result = 1;
+    } else
+        result = 2;
+
     return result;
 }
 
 std::ostream& operator<<(std::ostream& os, const angle& obj) {
-    int dec;
-    float min;
-    char orientation;
-    obj.getValues( dec, min, orientation );
-
-    os << dec << "°" << min << "' " << orientation;
-    return os;
+    return os << obj._dec << "°" << obj._min << "' " << obj._orientation;
 }
 
 

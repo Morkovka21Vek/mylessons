@@ -9,11 +9,9 @@ class tollBooth {
         void payingCar();
         void nopayCar();
 
-        void display_get(std::ostream&) const;
+        friend std::ostream& operator<<(std::ostream&, const tollBooth&);
 
     private:
         unsigned int _cars = 0;
         double _money = 0;
 };
-
-std::ostream& operator<<(std::ostream&, const tollBooth&);

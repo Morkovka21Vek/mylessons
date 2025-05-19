@@ -19,66 +19,68 @@ Int& Int::operator=(int val)
 }
 
 
-Int& Int::operator+=(int val)
+Int operator+(const Int& obj1, int val)
 {
-    _num += val;
-    return *this;
+    return Int(obj1._num + val);
 }
-Int& Int::operator+=(const Int& other)
+Int operator+(int val, const Int& obj2)
 {
-    _num += other._num;
-    return *this;
+    return Int(obj2._num + val);
 }
-
-Int& Int::operator-=(int val)
+Int operator+(const Int& obj1, const Int& obj2)
 {
-    _num -= val;
-    return *this;
-}
-Int& Int::operator-=(const Int& other)
-{
-    _num -= other._num;
-    return *this;
+    return Int(obj1._num + obj2._num);
 }
 
-Int Int::operator+(int val) const
+Int operator-(const Int& obj1, int val)
 {
-    return Int(_num + val);
+    return Int(obj1._num - val);
+}
+Int operator-(int val, const Int& obj2)
+{
+    return Int(val - obj2._num);
+}
+Int operator-(const Int& obj1, const Int& obj2)
+{
+    return Int(obj1._num - obj2._num);
 }
 
-Int Int::operator+(const Int& other) const
+Int& operator+=(Int& obj1, int val)
 {
-    return Int(_num + other._num);
+    obj1._num += val;
+    return obj1;
+}
+Int& operator+=(Int& obj1, const Int& obj2)
+{
+    obj1._num += obj2._num;
+    return obj1;
 }
 
-Int Int::operator-(int val) const
+Int& operator-=(Int& obj1, int val)
 {
-    return Int(_num - val);
+    obj1._num -= val;
+    return obj1;
 }
-
-Int Int::operator-(const Int& other) const
+Int& operator-=(Int& obj1, const Int& obj2)
 {
-    return Int(_num - other._num);
+    obj1._num -= obj2._num;
+    return obj1;
 }
 
 bool operator>(int l, const Int& other) {
-    return l > other.getValue();
+    return l > other._num;
 }
 bool operator<(int l, const Int& other) {
-    return l < other.getValue();
+    return l < other._num;
 }
 
 bool operator>=(int l, const Int& other) {
-    return l >= other.getValue();
+    return l >= other._num;
 }
 bool operator<=(int l, const Int& other) {
-    return l <= other.getValue();
-}
-
-int Int::getValue() const {
-    return _num;
+    return l <= other._num;
 }
 
 std::ostream& operator<<(std::ostream& os, const Int& obj) {
-    return os << obj.getValue();
+    return os << obj._num;
 }

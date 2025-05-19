@@ -7,6 +7,8 @@ class ship {
         int answerData();
         void getValues(int& num, int& dec, float& min, char& orientation) const;
 
+        friend std::ostream& operator<<(std::ostream& os, const ship& obj);
+
     private:
         static int _count;
         int _num;
@@ -56,17 +58,8 @@ void ship::getValues(int& num, int& dec, float& min, char& orientation) const{
 }
 
 std::ostream& operator<<(std::ostream& os, const ship& obj) {
-    int num;
-    int dec;
-    float min;
-    char orientation;
-    obj.getValues( num, dec, min, orientation );
-
-    os << "Shup №" << num << ": " << dec << "°" << min << "' " << orientation;
-    return os;
+    return os << "Shup №" << obj._num << ": " << obj._dec << "°" << obj._min << "' " << obj._orientation;
 }
-
-
 
 int main () {
     ship sh1;

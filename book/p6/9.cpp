@@ -5,11 +5,10 @@ class fraction {
     public:
         fraction();
         fraction(int a, int b);
-
         void getData();
-        void getValues(int& a, int& b) const;
 
-        fraction operator+(fraction) const;
+        friend fraction operator+(const fraction&, const fraction&);
+        friend std::ostream& operator<<(std::ostream& os, const fraction& obj);
 
     private:
         void reduce();
@@ -56,22 +55,12 @@ void fraction::getData() {
     std::cin >> this->a >> space >> this->b;
 }
 
-fraction fraction::operator+(fraction other) const {
-    return fraction(this->a*other.b + this->b*other.a, this->b*other.b);
-}
-
-void fraction::getValues(int& _a, int& _b) const {
-    _a = this->a;
-    _b = this->b;
+fraction operator+(const fraction& obj1, const fraction& obj2) {
+    return fraction(obj1.a*obj2.b + obj1.b*obj2.a, obj1.b*obj2.b);
 }
 
 std::ostream& operator<<(std::ostream& os, const fraction& obj) {
-    int a;
-    int b;
-    obj.getValues(a, b);
-
-    os << a << '/' << b;
-    return os;
+    return os << obj.a << '/' << obj.b;
 }
 
 int main() {

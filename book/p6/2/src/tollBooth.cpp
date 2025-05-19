@@ -9,11 +9,7 @@ void tollBooth::nopayCar() {
     this->_cars++;
 }
 
-void tollBooth::display_get(std::ostream& os) const {
-    os << "Cars: " << this->_cars << "\tMoney: " << this->_money << '$';
-}
-
 std::ostream& operator<<(std::ostream& os, const tollBooth& obj) {
-    obj.display_get(os);
+    os << "Cars: " << obj._cars << "\tMoney: " << obj._money << '$';
     return os;
 }

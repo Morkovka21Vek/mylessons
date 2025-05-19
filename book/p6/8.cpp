@@ -4,7 +4,7 @@
 class counter {
     public:
         counter();
-        int getValue() const;
+        friend std::ostream& operator<<(std::ostream& os, const counter& obj);
 
     private:
         int _num;
@@ -18,15 +18,9 @@ counter::counter() {
     _count++;
 }
 
-int counter::getValue() const{
-    return this->_num;
-}
-
 std::ostream& operator<<(std::ostream& os, const counter& obj) {
-    os << obj.getValue();
-    return os;
+    return os << obj._num;
 }
-
 
 int main () {
     counter ct1;

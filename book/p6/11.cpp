@@ -5,14 +5,14 @@ class fraction {
     public:
         fraction() = default;
         fraction(int a, int b);
-
         void getData();
-        void getValues(int& a, int& b) const;
 
-        fraction operator+(fraction) const;
-        fraction operator-(fraction) const;
-        fraction operator*(fraction) const;
-        fraction operator/(fraction) const;
+        friend fraction operator+(fraction obj1, fraction obj2);
+        friend fraction operator-(fraction obj1, fraction obj2);
+        friend fraction operator*(fraction obj1, fraction obj2);
+        friend fraction operator/(fraction obj1, fraction obj2);
+
+        friend std::ostream& operator<<(std::ostream& os, const fraction& obj);
 
     private:
         void reduce();
@@ -22,7 +22,9 @@ class fraction {
 };
 
 fraction::fraction(int _a, int _b): a(_a), b(_b)
-{}
+{
+    reduce();
+}
 
 void fraction::getData() {
     char space;
@@ -53,36 +55,27 @@ int fraction::computeGCD(int _a, int _b) const {
     return _a;
 }
 
-fraction fraction::operator+(fraction other) const {
-    return fraction(this->a*other.b + this->b*other.a, this->b*other.b);
+fraction operator+(fraction obj1, fraction obj2) {
+    return fraction(obj1.a*obj2.b + obj1.b*obj2.a, obj1.b*obj2.b);
 }
 
-fraction fraction::operator-(fraction other) const {
-    return fraction(this->a*other.b - this->b*other.a, this->b*other.b);
+fraction operator-(fraction obj1, fraction obj2) {
+    return fraction(obj1.a*obj2.b - obj1.b*obj2.a, obj1.b*obj2.b);
 }
 
-fraction fraction::operator*(fraction other) const {
-    return fraction(this->a*other.a, this->b*other.b);
+fraction operator*(fraction obj1, fraction obj2) {
+    return fraction(obj1.a*obj2.a, obj1.b*obj2.b);
 }
 
-fraction fraction::operator/(fraction other) const {
-    return fraction(this->a*other.b, this->b*other.a);
-}
-
-void fraction::getValues(int& _a, int& _b) const {
-    _a = this->a;
-    _b = this->b;
+fraction operator/(fraction obj1, fraction obj2) {
+    return fraction(obj1.a*obj2.b, obj1.b*obj2.a);
 }
 
 std::ostream& operator<<(std::ostream& os, const fraction& obj) {
-    int a;
-    int b;
-    obj.getValues(a, b);
-
-    if (b != 1)
-        os << a << '/' << b;
+    if (obj.b > 1)
+        os << obj.a << '/' << obj.b;
     else
-        os << a;
+        os << obj.a;
     return os;
 }
 

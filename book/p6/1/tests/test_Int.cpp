@@ -27,7 +27,6 @@ TEST_CASE( "Create obj with number and compare value", "[base]" ) {
 
     SECTION("check num is equal 21") {
         REQUIRE( num == 21 );
-        REQUIRE( num.getValue() == 21 );
     }
     SECTION("check num is not equal 22") {
         REQUIRE( !(num == 22) );
@@ -127,7 +126,9 @@ TEST_CASE( "Compare tests", "[logic]" ) {
 
         REQUIRE( num != num2 );
     }
+}
 
+TEST_CASE( "Compare tests 2", "[logic]" ) {
     SECTION("More than test") {
         Int num1 = 1;
         Int num9 = 9;

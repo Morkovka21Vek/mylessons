@@ -13,7 +13,8 @@ class Fraction {
         void setData();
         void getValues(int&, int&) const;
 
-        Fraction operator*(Fraction) const;
+        friend Fraction operator*(const Fraction&, const Fraction&);
+        friend std::ostream& operator<<(std::ostream& os, const Fraction& obj);
 
     private:
         void reduce();
@@ -43,17 +44,17 @@ void Fraction::reduce() {
     }
 }
 
-int Fraction::computeGCD(int a, int b) const {
-    while (b != 0) {
-        int temp = b;
-        b = a % b;
-        a = temp;
+int Fraction::computeGCD(int _a, int _b) const {
+    while (_b != 0) {
+        int temp = _b;
+        _b = _a % _b;
+        _a = temp;
     }
-    return a;
+    return _a;
 }
 
-Fraction Fraction::operator*(Fraction other) const {
-    return Fraction(this->a*other.a, this->b*other.b, true);
+Fraction operator*(const Fraction& obj1, const Fraction& obj2) {
+    return Fraction(obj1.a*obj2.a, obj1.b*obj2.b, true);
 }
 
 void Fraction::getValues(int& _a, int& _b) const {
@@ -62,15 +63,11 @@ void Fraction::getValues(int& _a, int& _b) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const Fraction& obj) {
-    int a;
-    int b;
-    obj.getValues(a, b);
-
     std::ostringstream tmp;
-    if (b == 1)
-        tmp << a;
+    if (obj.b == 1)
+        tmp << obj.a;
     else
-        tmp << a << '/' << b;
+        tmp << obj.a << '/' << obj.b;
 
     return os << tmp.str();
 }
@@ -98,17 +95,7 @@ void printHorizontalLine(int denominator, size_t width, const std::string& left,
     std::cout << std::endl;
 }
 
-int main() {
-    int denominator;
-
-    std::cout << "Введите знаменатель для создания таблицы умножения: "; std::cin >> denominator;
-    if (denominator <= 0) {
-        std::cout << "Некорректный знаменатель!" << std::endl;
-        return 1;
-    }
-
-    size_t width = getWidth(denominator);
-
+void draw(int denominator, size_t width) {
     std::cout << std::left << std::setfill(' ');
 
     printHorizontalLine(denominator, width, "┌", "┬", "┐");
@@ -133,6 +120,19 @@ int main() {
         else
             printHorizontalLine(denominator, width, "└", "┴", "┘");
     }
+}
+
+int main() {
+    int denominator;
+
+    std::cout << "Введите знаменатель для создания таблицы умножения: "; std::cin >> denominator;
+    if (denominator <= 0) {
+        std::cout << "Некорректный знаменатель!" << std::endl;
+        return 1;
+    }
+
+    size_t width = getWidth(denominator);
+    draw(denominator, width);
 
     return 0;
 }

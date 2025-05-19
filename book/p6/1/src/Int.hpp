@@ -11,28 +11,27 @@ class Int {
 
         Int& operator=(int val);
 
-        Int operator+(int val) const;
-        Int operator+(const Int&) const;
+        friend Int operator+(const Int&, int val);
+        friend Int operator+(int val, const Int&);
+        friend Int operator+(const Int&, const Int&);
 
-        Int operator-(int val) const;
-        Int operator-(const Int&) const;
+        friend Int operator-(const Int&, int val);
+        friend Int operator-(int val, const Int&);
+        friend Int operator-(const Int&, const Int&);
 
-        Int& operator+=(int val);
-        Int& operator+=(const Int& other);
+        friend Int& operator+=(Int&, int val);
+        friend Int& operator+=(Int&, const Int&);
 
-        Int& operator-=(int val);
-        Int& operator-=(const Int& other);
+        friend Int& operator-=(Int&, int val);
+        friend Int& operator-=(Int&, const Int&);
 
-        int getValue() const;
+        friend std::ostream& operator<<(std::ostream& os, const Int& obj);
+        friend bool operator>(int, const Int&);
+        friend bool operator<(int, const Int&);
+
+        friend bool operator>=(int, const Int&);
+        friend bool operator<=(int, const Int&);
         
     private:
         int _num;
 };
-
-bool operator>(int, const Int&);
-bool operator<(int, const Int&);
-
-bool operator>=(int, const Int&);
-bool operator<=(int, const Int&);
-
-std::ostream& operator<<(std::ostream& os, const Int& obj);

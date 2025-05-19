@@ -8,6 +8,8 @@ class employee {
         void answerData();
         void getValues(int& num, int& id, float& salary) const;
 
+        friend std::ostream& operator<<(std::ostream& os, const employee& obj);
+
     private:
         int _id = -1;
         float _salary = -1;
@@ -30,13 +32,7 @@ void employee::answerData() {
 }
 
 std::ostream& operator<<(std::ostream& os, const employee& obj) {
-    int num;
-    int id;
-    float salary;
-    obj.getValues( num, id, salary );
-
-    os << "ID сотрудника " << num << "- " << id << "; Его зарплата составляет " << salary << '$';
-    return os;
+    return os << "ID сотрудника " << obj._num << "- " << obj._id << "; Его зарплата составляет " << obj._salary << '$';
 }
 
 

@@ -21,7 +21,7 @@ int main(int argc, char const *argv[]) {
     while (true) {
         timer_start();
 
-        leftPl.tick(screen.getGameSize(), ball.getY());
+        //leftPl.tick(screen.getGameSize(), ball.getY());
         rightPl.tick(screen.getGameSize(), ball.getY());
         ball.tick(screen.getGameSize(), frame_time_ms);
 
@@ -34,6 +34,9 @@ int main(int argc, char const *argv[]) {
         screen.add(rightPl.getPos(), rightPl.calcX(screen.getGameSize()), rightPl.getMatrix());
         screen.add(ball.getY(), ball.getX(), ball.getMatrix());
         screen.draw(frame_time_ms);
+
+        if (scboard.getScoreLeft() >= 3 || scboard.getScoreRight() >= 3)
+            break;
 
         frame_time_ms = timer_end(MAX_FPS);
     }

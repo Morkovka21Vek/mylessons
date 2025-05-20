@@ -4,13 +4,13 @@
 #include "gameobj/collision.hpp"
 #include "gameobj/scoreBoard.hpp"
 
-void CollisionSystem::handleAllCollisions(Ball& ball, const Player& leftPl,
-                              const Player& rightPl, struct scrsize ws,
-                              const ScoreBoard& scoreBoard) {
+void CollisionSystem::handleAllCollisions(Ball& ball, Player& leftPl,
+                              Player& rightPl, struct scrsize ws,
+                              ScoreBoard& scboard) {
     handleWallCollision(ball, ws);
     handlePaddleCollision(ball, leftPl, ws);
     handlePaddleCollision(ball, rightPl, ws);
-    //handleGoalCollision(ball, ws, scoreBoard);
+    handleGoalCollision(ball, ws, scboard, leftPl, rightPl);
 }
 
 void CollisionSystem::handleWallCollision(Ball& ball, const scrsize ws) {
@@ -46,5 +46,19 @@ void CollisionSystem::handleRightPaddleCollision(Ball& ball, const Player& playe
             //ball.setX(player.calcX(ws) - ball.getWidth());
             ball.reverseX();
         }
+    }
+}
+
+void CollisionSystem::handleGoalCollision(Ball& ball, const scrsize ws, ScoreBoard& scboard, Player& leftPl, Player& rightPl) {
+    if (ball.getX() < 0) {
+        scboard.addPointRight();
+        ball.reset(ws);
+        leftPl.reset(ws);
+        rightPl.reset(ws);
+    } else if (ball.getX() + ball.getWidth() > ws.width) {
+        scboard.addPointLeft();
+        ball.reset(ws);
+        leftPl.reset(ws);
+        rightPl.reset(ws);
     }
 }

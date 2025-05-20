@@ -6,9 +6,9 @@
 
 class CollisionSystem {
 public:
-    static void handleAllCollisions(Ball& ball, const Player& leftPl, 
-                                  const Player& rightPl, struct scrsize ws, 
-                                  const ScoreBoard& scoreBoard);
+    static void handleAllCollisions(Ball& ball, Player& leftPl, 
+                                  Player& rightPl, struct scrsize ws, 
+                                  ScoreBoard& scoreBoard);
     
 private:
     static void handleWallCollision(Ball& ball, const scrsize ws);
@@ -17,4 +17,5 @@ private:
 
     static void handleRightPaddleCollision(Ball& ball, const Player& player, const scrsize ws);
     static void handleLeftPaddleCollision(Ball& ball, const Player& player, const scrsize ws);
+    static void handleGoalCollision(Ball&, const scrsize, ScoreBoard&, Player&, Player&);
 };

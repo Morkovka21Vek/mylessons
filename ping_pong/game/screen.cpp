@@ -21,6 +21,7 @@ Screen::Screen() {
         start_color();
         init_pair(1, COLOR_GREEN, COLOR_BLACK);
         init_pair(2, COLOR_WHITE, COLOR_WHITE);
+        init_pair(3, COLOR_RED, COLOR_BLACK);
     }
     curs_set(0);
 
@@ -104,12 +105,22 @@ void Screen::add(int posY, int posX,
     }
 }
 
-/*
-inline bool pathFind(const prediction &pred, int x, int y) {
-    for (int i = 0; i < static_cast<int>(pred.pathX.size()); i++) {
-        if (pred.pathX[i] == x && pred.pathY[i] == y)
-            return 1;
-    }
-    return 0;
+void Screen::exit() const {
+    const std::string text = "Game over!";
+    const std::string secondText = "Press any key to continue...";
+    const size_t width = std::max(text.length(), secondText.length()) + 4;
+    const size_t height = 6;
+
+    WINDOW *popup = newwin(height, width, (this->ws.height - height) / 2, (this->ws.width - width) / 2);
+    box(popup, 0, 0);
+
+    mvwprintw(popup, 2, (width - text.length()) / 2, "%s", text.c_str());
+
+    wattron(popup, COLOR_PAIR(3));
+    mvwprintw(popup, 3, (width - secondText.length()) / 2, "%s", secondText.c_str());
+    wattroff(popup, COLOR_PAIR(3));
+
+    wrefresh(popup);
+    wgetch(popup);
+    delwin(popup);
 }
-*/

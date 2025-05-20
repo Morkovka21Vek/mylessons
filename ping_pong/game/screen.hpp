@@ -10,6 +10,7 @@ class Screen {
     void draw(size_t frame_time = 0);
     void add(int posY, int posX, const std::vector<std::vector<char>> &);
     void reset(char fill);
+    void exit() const;
     scrsize getGameSize() const;
 
   private:

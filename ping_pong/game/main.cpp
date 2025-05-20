@@ -35,10 +35,13 @@ int main(int argc, char const *argv[]) {
         screen.add(ball.getY(), ball.getX(), ball.getMatrix());
         screen.draw(frame_time_ms);
 
-        if (scboard.getScoreLeft() >= 3 || scboard.getScoreRight() >= 3)
+        if (scboard.getScoreLeft() >= 3 || scboard.getScoreRight() >= 3) {
+            screen.exit();
             break;
+        }
 
         frame_time_ms = timer_end(MAX_FPS);
     }
+
     return 0;
 }

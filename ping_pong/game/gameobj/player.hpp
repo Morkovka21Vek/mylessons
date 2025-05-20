@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <vector>
 
-enum class Playermode { bot };
+enum class Playermode { bot, keyboard };
 enum class Playerpos { left, right };
 
 class Player {
@@ -26,4 +26,5 @@ class Player {
     const enum Playerpos posX;
 
     int bot(float posY) const;
+    int keyboard() const;
 };

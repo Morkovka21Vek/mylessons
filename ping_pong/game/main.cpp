@@ -14,14 +14,14 @@ int main(int argc, char const *argv[]) {
     Screen screen;
     ScoreBoard scboard;
     Ball ball(0.05, 0.025, 6, 3);
-    Player leftPl(3, 7, Playermode::bot, Playerpos::left);
+    Player leftPl(3, 7, Playermode::keyboard, Playerpos::left);
     Player rightPl(3, 7, Playermode::bot, Playerpos::right);
 
     size_t frame_time_ms = 0;
     while (true) {
         timer_start();
 
-        //leftPl.tick(screen.getGameSize(), ball.getY());
+        leftPl.tick(screen.getGameSize(), ball.getY());
         rightPl.tick(screen.getGameSize(), ball.getY());
         ball.tick(screen.getGameSize(), frame_time_ms);
 

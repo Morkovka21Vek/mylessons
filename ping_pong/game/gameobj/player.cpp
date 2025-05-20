@@ -16,6 +16,10 @@ void Player::tick(struct scrsize ws, float ball_posY) {
     switch (this->mode) {
     case bot:
         temppos = this->bot(ball_posY);
+        break;
+    case keyboard:
+        temppos = this->keyboard();
+        break;
     }
     temppos = (temppos < 0) ? 0 : temppos;
     this->pos = (temppos + this->height > ws.height)

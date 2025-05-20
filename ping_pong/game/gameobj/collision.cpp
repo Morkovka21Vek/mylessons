@@ -32,20 +32,14 @@ void CollisionSystem::handlePaddleCollision(Ball& ball, const Player& player, co
 }
 
 void CollisionSystem::handleLeftPaddleCollision(Ball& ball, const Player& player, const scrsize ws) {
-    if (ball.getX() <= player.calcX(ws) + player.getWidth()) {
-        if (ball.getY() + ball.getHeight() >= player.getPos() && ball.getY() <= player.getPos() + player.getHeight()) {
-            //ball.setX(player.calcX(ws) + player.getWidth());
-            ball.reverseX();
-        }
+    if (ball.getX() <= player.calcX(ws) + player.getWidth() && ball.getY() + ball.getHeight() >= player.getPos() && ball.getY() <= player.getPos() + player.getHeight()) {
+        ball.setPositiveX();
     }
 }
 
 void CollisionSystem::handleRightPaddleCollision(Ball& ball, const Player& player, const scrsize ws) {
-    if (ball.getX() + ball.getWidth() >= player.calcX(ws)) {
-        if (ball.getY() + ball.getHeight() >= player.getPos() && ball.getY() <= player.getPos() + player.getHeight()) {
-            //ball.setX(player.calcX(ws) - ball.getWidth());
-            ball.reverseX();
-        }
+    if (ball.getX() + ball.getWidth() >= player.calcX(ws) && ball.getY() + ball.getHeight() >= player.getPos() && ball.getY() <= player.getPos() + player.getHeight()) {
+        ball.setNegativeX();
     }
 }
 

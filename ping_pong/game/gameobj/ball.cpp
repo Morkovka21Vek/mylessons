@@ -30,6 +30,14 @@ void Ball::reverseY() { this->speedY = -this->speedY; }
 void Ball::setX(float x) { this->posX = x; }
 void Ball::setY(float y) { this->posY = y; }
 
+void Ball::setPositiveX() {
+    this->speedX = (this->speedX < 0) ? -this->speedX : this->speedX;
+}
+
+void Ball::setNegativeX() {
+    this->speedX = (this->speedX > 0) ? -this->speedX : this->speedX;
+}
+
 size_t Ball::getWidth() const { return this->width; }
 size_t Ball::getHeight() const { return this->height; }
 

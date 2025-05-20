@@ -19,6 +19,9 @@ class Ball {
     void setX(float x);
     void setY(float y);
 
+    void setPositiveX();
+    void setNegativeX();
+
   private:
     float posX;
     float posY;

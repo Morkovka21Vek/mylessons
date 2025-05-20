@@ -17,5 +17,6 @@ private:
 
     static void handleRightPaddleCollision(Ball& ball, const Player& player, const scrsize ws);
     static void handleLeftPaddleCollision(Ball& ball, const Player& player, const scrsize ws);
+
     static void handleGoalCollision(Ball&, const scrsize, ScoreBoard&, Player&, Player&);
 };

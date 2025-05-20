@@ -25,7 +25,7 @@ void CollisionSystem::handleWallCollision(Ball& ball, const scrsize ws) {
 }
 
 void CollisionSystem::handlePaddleCollision(Ball& ball, const Player& player, const scrsize ws) {
-    switch (player.getPlPosX()) {
+    switch (player.getPlayerposX()) {
         case Playerpos::left:  handleLeftPaddleCollision(ball, player, ws);  break;
         case Playerpos::right: handleRightPaddleCollision(ball, player, ws); break;
     }
@@ -46,13 +46,15 @@ void CollisionSystem::handleRightPaddleCollision(Ball& ball, const Player& playe
 void CollisionSystem::handleGoalCollision(Ball& ball, const scrsize ws, ScoreBoard& scboard, Player& leftPl, Player& rightPl) {
     if (ball.getX() < 0) {
         scboard.addPointRight();
-        ball.reset(ws);
-        leftPl.reset(ws);
-        rightPl.reset(ws);
+        resetPos(ball, leftPl, rightPl, ws);
     } else if (ball.getX() + ball.getWidth() > ws.width) {
         scboard.addPointLeft();
-        ball.reset(ws);
-        leftPl.reset(ws);
-        rightPl.reset(ws);
+        resetPos(ball, leftPl, rightPl, ws);
     }
+}
+
+void CollisionSystem::resetPos(Ball& ball, Player& leftPl, Player& rightPl, const scrsize ws) {
+    ball.reset(ws);
+    leftPl.reset(ws);
+    rightPl.reset(ws);
 }

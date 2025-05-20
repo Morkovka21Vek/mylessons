@@ -1,5 +1,6 @@
-#include "gameobj/scoreBoard.hpp"
 #include <vector>
+#include <unordered_map>
+#include "gameobj/scoreBoard.hpp"
 #include "assets.hpp"
 
 const size_t ScoreBoard::width = 12;
@@ -60,35 +61,24 @@ void ScoreBoard::addSymbolToMatrix(std::vector<std::vector<char>>& matrix, const
 }
 
 std::vector<std::vector<char>> ScoreBoard::getChar(char ch) const {
-    const std::vector<std::vector<char>> symbol_0 = {{'0', '0', '0', '0'}, {'0', '\0', '\0', '0'},
-                                    {'0', '\0', '\0', '0'}, {'0', '\0', '\0', '0'},
-                                    {'0', '\0', '\0', '0'}, {'0', '0', '0', '0'}};
+    static const std::unordered_map<char, std::vector<std::vector<char>>> symbols = {
+        {'0', {{'0', '0', '0', '0'}, {'0', '\0', '\0', '0'},
+               {'0', '\0', '\0', '0'}, {'0', '\0', '\0', '0'},
+               {'0', '\0', '\0', '0'}, {'0', '0', '0', '0'}}},
+        {'1', {{'\0', '1', '1'}, {'\0', '1', '1'}, {'\0', '1', '1'},
+               {'\0', '1', '1'}, {'\0', '1', '1'}, {'\0', '1', '1'}}},
+        {'2', {{'2', '2', '2', '2'}, {'\0', '\0', '\0', '2'},
+               {'2', '2', '2', '2'}, {'2', '\0', '\0', '\0'},
+               {'2', '\0', '\0', '\0'}, {'2', '2', '2', '2'}}},
+        {'3', {{'3', '3', '3', '3'}, {'\0', '\0', '\0', '3'},
+               {'3', '3', '3', '3'}, {'\0', '\0', '\0', '3'},
+               {'\0', '\0', '\0', '3'}, {'3', '3', '3', '3'}}},
+        {'.', {{'#', '#'}, {'#', '#'}}},
+        {'E', {{'E', 'E', 'E', 'E'}, {'E', '\0', '\0', '\0'},
+               {'E', 'E', 'E', 'E'}, {'E', '\0', '\0', '\0'},
+               {'E', '\0', '\0', '\0'}, {'E', 'E', 'E', 'E'}}}
+    };
 
-    const std::vector<std::vector<char>> symbol_1 = {
-        {'\0', '1', '1'}, {'\0', '1', '1'}, {'\0', '1', '1'},
-        {'\0', '1', '1'}, {'\0', '1', '1'}, {'\0', '1', '1'}};
-
-    const std::vector<std::vector<char>> symbol_2 = {{'2', '2', '2', '2'}, {'\0', '\0', '\0', '2'},
-                                       {'2', '2', '2', '2'}, {'2', '\0', '\0', '\0'},
-                                       {'2', '\0', '\0', '\0'}, {'2', '2', '2', '2'}};
-
-    const std::vector<std::vector<char>> symbol_3 = {
-        {'3', '3', '3', '3'}, {'\0', '\0', '\0', '3'}, {'3', '3', '3', '3'},
-        {'\0', '\0', '\0', '3'}, {'\0', '\0', '\0', '3'}, {'3', '3', '3', '3'}};
-
-    const std::vector<std::vector<char>> symbol_point = {{'#', '#'}, {'#', '#'}};
-
-    const std::vector<std::vector<char>> symbol_err = {
-        {'E', 'E', 'E', 'E'}, {'E', '\0', '\0', '\0'}, {'E', 'E', 'E', 'E'},
-        {'E', '\0', '\0', '\0'}, {'E', '\0', '\0', '\0'}, {'E', 'E', 'E', 'E'}};
-
-    switch (ch) {
-        case '0': return symbol_0;
-        case '1': return symbol_1;
-        case '2': return symbol_2;
-        case '3': return symbol_3;
-        case '.': return symbol_point;
-        default:  return symbol_err;
-    }
-    return symbol_err;
+    auto it = symbols.find(ch);
+    return (it != symbols.end()) ? it->second : symbols.at('E');
 }

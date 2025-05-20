@@ -44,4 +44,4 @@ check:
 	cppcheck --enable=all --inconclusive --suppress=missingIncludeSystem --suppress=missingInclude .
 
 format:
-	clang-format --style=file -i *.cpp *.hpp
+	find . -type f \( -name "*.cpp" -o -name "*.hpp" \) -exec clang-format --style=file -i {} \;

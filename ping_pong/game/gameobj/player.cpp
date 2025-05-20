@@ -12,19 +12,21 @@ void Player::tick(struct scrsize ws, float ball_posY) {
         this->reset(ws);
     }
 
-    int temppos = 0;
     switch (this->mode) {
     case bot:
-        temppos = this->bot(ball_posY);
+        this->pos = correctPos(this->bot(ball_posY), ws);
         break;
     case keyboard:
-        temppos = this->keyboard();
+        this->pos = correctPos(this->keyboard(), ws);
         break;
     }
-    temppos = (temppos < 0) ? 0 : temppos;
-    this->pos = (temppos + this->height > ws.height)
+}
+
+int Player::correctPos(int pos, const scrsize ws) {
+    pos = (pos < 0) ? 0 : pos;
+    return (pos + this->height > ws.height)
                     ? ws.height - this->height
-                    : temppos;
+                    : pos;
 }
 
 int Player::getPos() const { return this->pos; }
@@ -36,7 +38,7 @@ size_t Player::calcX(struct scrsize ws) const {
 size_t Player::getWidth() const { return this->width; }
 size_t Player::getHeight() const { return this->height; }
 
-Playerpos Player::getPlPosX() const {
+Playerpos Player::getPlayerposX() const {
     return this->posX;
 }
 

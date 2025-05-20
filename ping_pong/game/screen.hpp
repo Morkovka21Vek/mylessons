@@ -18,6 +18,10 @@ class Screen {
     std::vector<std::vector<char>> Screen_vector_old;
     struct scrsize ws;
 
+    void drawBuff();
+    void printFps(size_t frameTime);
+    void showWin(size_t posX, size_t posY, size_t width, size_t height, const std::string& text, const std::string& secondText) const;
+
     static const size_t offset_top;
     static const size_t offset_bottom;
     static const size_t offset_left;

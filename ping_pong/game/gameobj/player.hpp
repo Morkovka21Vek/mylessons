@@ -10,12 +10,13 @@ class Player {
   public:
     Player(int width, int height, enum Playermode mode, enum Playerpos posX);
     void tick(struct scrsize ws, float ball_posY);
+
     int getPos() const;
     size_t calcX(struct scrsize ws) const;
     size_t getWidth() const;
     size_t getHeight() const;
     void reset(struct scrsize ws);
-    Playerpos getPlPosX() const;
+    Playerpos getPlayerposX() const;
     std::vector<std::vector<char>> getMatrix() const;
 
   private:
@@ -24,6 +25,8 @@ class Player {
     const size_t height;
     const enum Playermode mode;
     const enum Playerpos posX;
+
+    int correctPos(int pos, const scrsize ws);
 
     int bot(float posY) const;
     int keyboard() const;

@@ -2,10 +2,11 @@
 #include <fcntl.h>
 #include <termios.h>
 #include <unistd.h>
+#include <cstdio>
 
 int Player::bot(float posY) const { return posY - this->height / 2; }
 
-int kbhit();
+static int kbhit();
 
 int Player::keyboard() const {
     int result = this->pos;
@@ -26,7 +27,7 @@ int Player::keyboard() const {
     return result;
 }
 
-int kbhit() {
+static int kbhit() {
     struct termios oldt;
     struct termios newt;
     int ch;

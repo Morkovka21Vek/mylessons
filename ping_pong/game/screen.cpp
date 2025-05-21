@@ -30,19 +30,19 @@ Screen::Screen() {
     this->ws = {height, width};
 
     this->ScreenVector.assign(this->ws.height,
-                               std::vector<char>(this->ws.width, 0));
+                              std::vector<char>(this->ws.width, 0));
     this->ScreenVectorOld.assign(this->ws.height,
-                                   std::vector<char>(this->ws.width, 0));
+                                 std::vector<char>(this->ws.width, 0));
 }
 
 Screen::~Screen() { endwin(); }
 
-Screen::Screen(Screen&& other) noexcept
+Screen::Screen(Screen &&other) noexcept
     : ScreenVector(std::move(other.ScreenVector)),
       ScreenVectorOld(std::move(other.ScreenVectorOld)),
       ws(std::move(other.ws)) {}
 
-Screen& Screen::operator=(Screen&& other) noexcept {
+Screen &Screen::operator=(Screen &&other) noexcept {
     if (this != &other) {
         ScreenVector = std::move(other.ScreenVector);
         ScreenVectorOld = std::move(other.ScreenVectorOld);
@@ -60,7 +60,7 @@ scrsize Screen::getGameSize() const {
 
 void Screen::reset(char fill) {
     this->ScreenVector.assign(this->ws.height,
-                               std::vector<char>(this->ws.width, fill));
+                              std::vector<char>(this->ws.width, fill));
 
     for (size_t i = 0; i < this->ws.width; i++) {
         ScreenVector[0][i] = '#';
@@ -103,13 +103,14 @@ void Screen::printFps(size_t frameTimeMs) {
 }
 
 void Screen::addToBuff(size_t posY, size_t posX,
-                 const std::vector<std::vector<char>> &vec, size_t y, size_t x) {
+                       const std::vector<std::vector<char>> &vec, size_t y,
+                       size_t x) {
     size_t cursorX = posX + x + Screen::offsetLeft;
     size_t cursorY = posY + y + Screen::offsetTop;
     if (cursorY < ScreenVector.size() - Screen::offsetBottom &&
-        cursorX < ScreenVector[0].size() - Screen::offsetRight && vec[y][x] != 0) {
-        ScreenVector[cursorY][cursorX] =
-            vec[y][x];
+        cursorX < ScreenVector[0].size() - Screen::offsetRight &&
+        vec[y][x] != 0) {
+        ScreenVector[cursorY][cursorX] = vec[y][x];
     }
 }
 
@@ -134,10 +135,12 @@ void Screen::exit() const {
     const size_t width = std::max(text.length(), secondText.length()) + 4;
     const size_t height = 6;
 
-    showWin((this->ws.width - width) / 2, (this->ws.height - height) / 2, width, height, text, secondText);
+    showWin((this->ws.width - width) / 2, (this->ws.height - height) / 2, width,
+            height, text, secondText);
 }
 
-void Screen::showWin(size_t posX, size_t posY, size_t width, size_t height, const std::string& text, const std::string& secondText) {
+void Screen::showWin(size_t posX, size_t posY, size_t width, size_t height,
+                     const std::string &text, const std::string &secondText) {
     WINDOW *popup = newwin(height, width, posY, posX);
     box(popup, 0, 0);
 
@@ -145,7 +148,8 @@ void Screen::showWin(size_t posX, size_t posY, size_t width, size_t height, cons
 
     init_pair(3, COLOR_RED, COLOR_BLACK);
     wattron(popup, COLOR_PAIR(3));
-    mvwprintw(popup, 3, (width - secondText.length()) / 2, "%s", secondText.c_str());
+    mvwprintw(popup, 3, (width - secondText.length()) / 2, "%s",
+              secondText.c_str());
     wattroff(popup, COLOR_PAIR(3));
 
     wrefresh(popup);

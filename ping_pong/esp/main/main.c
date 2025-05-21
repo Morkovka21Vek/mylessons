@@ -15,10 +15,5 @@ void app_main(void)
     init_gpio();
     wifi_init_softap();
 
-    //httpd_handle_t server = start_webserver();
     start_webserver();
-
-    //while (server) {
-    //    vTaskDelay(pdMS_TO_TICKS(1000));
-    //}
 }

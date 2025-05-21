@@ -16,6 +16,7 @@ Screen::Screen() {
     initscr();
     cbreak();
     noecho();
+    nodelay(stdscr, TRUE);
 
     if (has_colors())
         start_color();

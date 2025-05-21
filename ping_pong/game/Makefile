@@ -1,39 +1,47 @@
-.PHONY: clean diff check debug
+.PHONY: clean check format debug
 
-BUILD_DIR = build
-OUT_FILE = ./ping_pong.out
+CXX := g++
 
-OBG_FILES := $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(wildcard *.cpp))
-COMP_FLAGS := -Wall -pedantic
+SRC_DIR := .
+BUILD_DIR := build
+BUILD_OBJ_SUBDIR := obj_dir
+BUILD_DEPS_SUBDIR := deps_dir
+OUT_FILE := $(BUILD_DIR)/ping_pong.out
 
+SOURCE_FILES := $(shell find $(SRC_DIR) -name '*.cpp')
+OBG_FILES := $(patsubst %.cpp, $(BUILD_DIR)/$(BUILD_OBJ_SUBDIR)/%.o, $(SOURCE_FILES))
+DEPS_FILES := $(patsubst %.cpp, $(BUILD_DIR)/$(BUILD_DEPS_SUBDIR)/%.d, $(SOURCE_FILES))
+CXX_FLAGS := -Wall -pedantic -std=c++20 -g -I . -MMD
+DEP_FLAGS = -MT $@ -MMD -MP -MF $(BUILD_DIR)/$(BUILD_DEPS_SUBDIR)/$*.d
+LDFLAGS := -lncurses
 
-make: $(OUT_FILE)
+build: $(OUT_FILE)
+rebuild: clean build
+
+-include $(DEPS_FILES)
 
 $(OUT_FILE): $(OBG_FILES)
-	g++ $^ -o $@
+	$(CXX) $^ -o $@ $(LDFLAGS)
 
-$(BUILD_DIR)/%.o: %.cpp | $(BUILD_DIR)
-	g++ -c $(COMP_FLAGS) -o $@ $<
-
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+$(BUILD_DIR)/$(BUILD_OBJ_SUBDIR)/%.o: %.cpp
+	@mkdir -p $(@D)
+	@mkdir -p $(subst $(BUILD_OBJ_SUBDIR),$(BUILD_DEPS_SUBDIR),$(@D))
+	$(CXX) -c $(CXX_FLAGS) $(DEP_FLAGS) -o $@ $<
 
 clean:
-	@rm $(OUT_FILE) 2> /dev/null
 	@rm -rf $(BUILD_DIR) 2> /dev/null
 
 debug:
 	$(info )
-	$(info =========================)
-	$(info OBG_FILES  = $(OBG_FILES))
-	$(info COMP_FLAGS = $(COMP_FLAGS))
-	$(info BUILD_DIR  = $(BUILD_DIR))
-	$(info =========================)
+	$(info SRC_DIR       = $(SRC_DIR))
+	$(info SOURCE_FILES  = $(SOURCE_FILES))
+	$(info OBG_FILES     = $(OBG_FILES))
+	$(info CXX_FLAGS     = $(CXX_FLAGS))
+	$(info BUILD_DIR     = $(BUILD_DIR))
 	$(info )
 
-diff:
-	@git diff --name-only HEAD .
-
 check:
-	cppcheck --enable=all --inconclusive --suppress=missingIncludeSystem .
+	cppcheck --enable=all --inconclusive --suppress=missingIncludeSystem --suppress=missingInclude .
 
+format:
+	find . -type f \( -name "*.cpp" -o -name "*.hpp" \) -exec clang-format --style=file -i {} \;

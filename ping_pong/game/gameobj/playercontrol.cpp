@@ -7,16 +7,16 @@ int Player::keyboard() const {
     int result = this->pos;
 
     switch (getch()) {
-        case 'a':
-        case 'A':
-            result--;
-            break;
-        case 'z':
-        case 'Z':
-            result++;
-            break;
-        default:
-            break;
+    case 'a':
+    case 'A':
+        result--;
+        break;
+    case 'z':
+    case 'Z':
+        result++;
+        break;
+    default:
+        break;
     }
 
     return result;

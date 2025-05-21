@@ -1,7 +1,7 @@
 #pragma once
-#include <vector>
-#include <cstddef>
 #include "assets.hpp"
+#include <cstddef>
+#include <vector>
 
 class Ball {
   public:

@@ -11,16 +11,16 @@
 
 class Game {
     public:
-        Game();
+        Game() = default;
         void loop();
     private:
         Screen screen;
         ScoreBoard scboard;
-        Ball ball;
-        Player leftPl;
-        Player rightPl;
+        Ball ball = Ball(0.05, 0.025, 6, 3);
+        Player leftPl = Player(3, 7, Playermode::keyboard, Playerpos::left);
+        Player rightPl = Player(3, 7, Playermode::bot, Playerpos::right);
 
-        void fps_lock(std::chrono::milliseconds frame_time_ms, size_t fpscount) const;
+        static void fps_lock(std::chrono::milliseconds frameTimeMs, size_t fpscount);
 
         static const size_t MAX_FPS;
 };

@@ -5,9 +5,6 @@
 
 const size_t ScoreBoard::width = 12;
 
-ScoreBoard::ScoreBoard(): lscore(0), rscore(0)
-{}
-
 void ScoreBoard::addPointLeft() {
     this->lscore++;
 }
@@ -33,12 +30,12 @@ int ScoreBoard::getScoreRight() const {
 }
 
 size_t ScoreBoard::calcX(struct scrsize ws) const {
-    return (ws.width - this->width) / 2;
+    return (ws.width - ScoreBoard::width) / 2;
 }
 
 std::vector<std::vector<char>> ScoreBoard::getMatrix() const {
     std::vector<std::vector<char>> matrix(6,
-                                          std::vector<char>(this->width, '\0'));
+                                          std::vector<char>(ScoreBoard::width, '\0'));
 
     this->addSymbolToMatrix(matrix, this->getChar('0' + (this->lscore % 10)), 0, 0);
     this->addSymbolToMatrix(matrix, this->getChar('.'), 0, 5);
@@ -48,7 +45,7 @@ std::vector<std::vector<char>> ScoreBoard::getMatrix() const {
     return matrix;
 }
 
-void ScoreBoard::addSymbolToMatrix(std::vector<std::vector<char>>& matrix, const std::vector<std::vector<char>>& symbol, int posY, int posX) const {
+void ScoreBoard::addSymbolToMatrix(std::vector<std::vector<char>>& matrix, const std::vector<std::vector<char>>& symbol, size_t posY, size_t posX) const {
     for (size_t y = 0; y < symbol.size(); y++) {
         for (size_t x = 0; x < symbol[0].size(); x++) {
             if (posY + y >= matrix.size()    || posY + y < 0 ||

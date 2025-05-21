@@ -3,7 +3,7 @@
 #include <vector>
 
 Player::Player(int _width, int _height, enum Playermode _mode, enum Playerpos _posX)
-    : pos(-1), width(_width), height(_height), mode(_mode), posX(_posX) {}
+    : width(_width), height(_height), mode(_mode), posX(_posX) {}
 
 void Player::tick(struct scrsize ws, float ball_posY) {
     using enum Playermode;
@@ -22,11 +22,11 @@ void Player::tick(struct scrsize ws, float ball_posY) {
     }
 }
 
-int Player::correctPos(int pos, const scrsize ws) {
-    pos = (pos < 0) ? 0 : pos;
-    return (pos + this->height > ws.height)
+int Player::correctPos(int val, const scrsize ws) const {
+    val = (val < 0) ? 0 : val;
+    return (val + this->height > ws.height)
                     ? ws.height - this->height
-                    : pos;
+                    : val;
 }
 
 int Player::getPos() const { return this->pos; }

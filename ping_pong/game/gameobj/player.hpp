@@ -20,13 +20,13 @@ class Player {
     std::vector<std::vector<char>> getMatrix() const;
 
   private:
-    int pos;
+    int pos = -1;
     const size_t width;
     const size_t height;
     const enum Playermode mode;
     const enum Playerpos posX;
 
-    int correctPos(int pos, const scrsize ws);
+    int correctPos(int val, const scrsize ws) const;
 
     int bot(float posY) const;
     int keyboard() const;

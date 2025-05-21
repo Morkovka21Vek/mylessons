@@ -3,15 +3,15 @@
 #include <vector>
 
 Ball::Ball(float _speedX, float _speedY, int _width, int _height)
-    : posX(-1), posY(-1), width(_width), height(_height),
+    : width(_width), height(_height),
       default_speedX(_speedX), default_speedY(_speedY) {}
-void Ball::tick(struct scrsize ws, size_t frametime) {
+void Ball::tick(struct scrsize ws, size_t frameTimeMs) {
     if (this->posX == -1 || this->posY == -1) {
         this->reset(ws);
     }
 
-    this->posX += this->speedX * frametime;
-    this->posY += this->speedY * frametime;
+    this->posX += this->speedX * frameTimeMs;
+    this->posY += this->speedY * frameTimeMs;
 }
 
 void Ball::reset(struct scrsize ws) {

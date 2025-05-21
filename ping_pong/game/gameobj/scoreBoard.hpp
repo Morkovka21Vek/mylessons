@@ -4,7 +4,7 @@
 
 class ScoreBoard {
     public:
-        ScoreBoard();
+        ScoreBoard() = default;
 
         void addPointLeft();
         void setScoreLeft(int score);
@@ -17,11 +17,11 @@ class ScoreBoard {
         std::vector<std::vector<char>> getMatrix() const;
         size_t calcX(struct scrsize ws) const;
     private:
-        int lscore;
-        int rscore;
+        int lscore = 0;
+        int rscore = 0;
 
         static const size_t width;
 
-        void addSymbolToMatrix(std::vector<std::vector<char>>& matrix, const std::vector<std::vector<char>>& symbol, int posY, int posX) const;
+        void addSymbolToMatrix(std::vector<std::vector<char>>& matrix, const std::vector<std::vector<char>>& symbol, size_t posY, size_t posX) const;
         std::vector<std::vector<char>> getChar(char ch) const;
 };

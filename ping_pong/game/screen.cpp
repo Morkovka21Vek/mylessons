@@ -24,7 +24,8 @@ Screen::Screen() {
 
     curs_set(0);
 
-    size_t height, width;
+    size_t height;
+    size_t width;
     getmaxyx(stdscr, height, width);
     this->ws = {height, width};
 
@@ -38,8 +39,8 @@ Screen::~Screen() { endwin(); }
 
 scrsize Screen::getGameSize() const {
     struct scrsize crop_ws = {
-        this->ws.height - this->offset_top - this->offset_bottom,
-        this->ws.width - this->offset_left - this->offset_right};
+        this->ws.height - Screen::offset_top - Screen::offset_bottom,
+        this->ws.width - Screen::offset_left - Screen::offset_right};
     return crop_ws;
 }
 
@@ -53,9 +54,9 @@ void Screen::reset(char fill) {
     }
 }
 
-void Screen::draw(size_t frameTime) {
+void Screen::draw(size_t frameTimeMs) {
     drawBuff();
-    printFps(frameTime);
+    printFps(frameTimeMs);
     refresh();
 }
 
@@ -63,7 +64,7 @@ void Screen::drawBuff() {
     for (size_t y = 0; y < this->ws.height; y++) {
         for (size_t x = 0; x < this->ws.width; x++) {
 
-            char *screen_ch = &Screen_vector[y][x];
+            const char *screen_ch = &Screen_vector[y][x];
             char *screen_ch_old = &Screen_vector_old[y][x];
 
             if (*screen_ch != *screen_ch_old) {
@@ -74,9 +75,9 @@ void Screen::drawBuff() {
     }
 }
 
-void Screen::printFps(size_t frameTime) {
-    if (frameTime > 0) {
-        std::string fps = std::to_string(1000 / frameTime) + "fps";
+void Screen::printFps(size_t frameTimeMs) {
+    if (frameTimeMs > 0) {
+        std::string fps = std::format("{}fps", 1000 / frameTimeMs);
         for (size_t i = 0; i < fps.length(); i++) {
             Screen_vector[0][i] = fps[i];
             Screen_vector_old[0][i] = fps[i];
@@ -87,21 +88,28 @@ void Screen::printFps(size_t frameTime) {
     }
 }
 
+void Screen::addToBuff(size_t posY, size_t posX,
+                 const std::vector<std::vector<char>> &vec, size_t y, size_t x) {
+    size_t cursorX = posX + x + Screen::offset_left;
+    size_t cursorY = posY + y + Screen::offset_top;
+    if (cursorY < Screen_vector.size() - Screen::offset_bottom &&
+        cursorX < Screen_vector[0].size() - Screen::offset_right && vec[y][x] != 0) {
+        Screen_vector[cursorY][cursorX] =
+            vec[y][x];
+    }
+}
+
 void Screen::add(int posY, int posX,
                  const std::vector<std::vector<char>> &vec) {
     if (vec.empty() || vec[0].empty())
         return;
 
+    posY = (posY < 0) ? 0 : posY;
+    posX = (posX < 0) ? 0 : posX;
+
     for (size_t y = 0; y < vec.size(); y++) {
         for (size_t x = 0; x < vec[0].size(); x++) {
-            if (posY + y + this->offset_top >=
-                    Screen_vector.size() - this->offset_bottom || posY + y < 0 ||
-                posX + x + this->offset_left >=
-                    Screen_vector[0].size() - this->offset_right || posY + y < 0 || vec[y][x] == 0) {
-                continue;
-            }
-            Screen_vector[offset_top + posY + y][offset_left + posX + x] =
-                vec[y][x];
+            addToBuff(posY, posX, vec, y, x);
         }
     }
 }
@@ -115,7 +123,7 @@ void Screen::exit() const {
     showWin((this->ws.width - width) / 2, (this->ws.height - height) / 2, width, height, text, secondText);
 }
 
-void Screen::showWin(size_t posX, size_t posY, size_t width, size_t height, const std::string& text, const std::string& secondText) const {
+void Screen::showWin(size_t posX, size_t posY, size_t width, size_t height, const std::string& text, const std::string& secondText) {
     WINDOW *popup = newwin(height, width, posY, posX);
     box(popup, 0, 0);
 

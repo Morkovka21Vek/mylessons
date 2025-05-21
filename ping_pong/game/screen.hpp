@@ -15,8 +15,8 @@ class Screen {
 
     Screen(const Screen&) = delete;
     Screen& operator=(const Screen&) = delete;
-    Screen(Screen&&) noexcept = default;
-    Screen& operator=(Screen&&) noexcept = default;
+    Screen(Screen&& other) noexcept;
+    Screen& operator=(Screen&& other) noexcept;
 
   private:
     std::vector<std::vector<char>> ScreenVector;

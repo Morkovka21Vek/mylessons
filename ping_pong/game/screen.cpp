@@ -37,6 +37,20 @@ Screen::Screen() {
 
 Screen::~Screen() { endwin(); }
 
+Screen::Screen(Screen&& other) noexcept
+    : ScreenVector(std::move(other.ScreenVector)),
+      ScreenVectorOld(std::move(other.ScreenVectorOld)),
+      ws(std::move(other.ws)) {}
+
+Screen& Screen::operator=(Screen&& other) noexcept {
+    if (this != &other) {
+        ScreenVector = std::move(other.ScreenVector);
+        ScreenVectorOld = std::move(other.ScreenVectorOld);
+        ws = std::move(other.ws);
+    }
+    return *this;
+}
+
 scrsize Screen::getGameSize() const {
     struct scrsize gameSize = {
         this->ws.height - Screen::offsetTop - Screen::offsetBottom,

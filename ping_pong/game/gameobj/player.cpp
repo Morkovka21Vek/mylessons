@@ -1,8 +1,9 @@
-#include "assets.hpp"
 #include "gameobj/player.hpp"
+#include "assets.hpp"
 #include <vector>
 
-Player::Player(int _width, int _height, enum Playermode _mode, enum Playerpos _posX)
+Player::Player(int _width, int _height, enum Playermode _mode,
+               enum Playerpos _posX)
     : width(_width), height(_height), mode(_mode), posX(_posX) {}
 
 void Player::tick(struct scrsize ws, float ballPosY) {
@@ -24,9 +25,7 @@ void Player::tick(struct scrsize ws, float ballPosY) {
 
 int Player::correctPos(int val, const scrsize ws) const {
     val = (val < 0) ? 0 : val;
-    return (val + this->height > ws.height)
-                    ? ws.height - this->height
-                    : val;
+    return (val + this->height > ws.height) ? ws.height - this->height : val;
 }
 
 int Player::getPos() const { return this->pos; }
@@ -38,9 +37,7 @@ size_t Player::calcX(struct scrsize ws) const {
 size_t Player::getWidth() const { return this->width; }
 size_t Player::getHeight() const { return this->height; }
 
-Playerpos Player::getPlayerposX() const {
-    return this->posX;
-}
+Playerpos Player::getPlayerposX() const { return this->posX; }
 
 void Player::reset(struct scrsize ws) {
     this->pos = (ws.height - this->height) / 2;

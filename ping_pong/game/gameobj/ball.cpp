@@ -1,10 +1,10 @@
-#include "assets.hpp"
 #include "gameobj/ball.hpp"
+#include "assets.hpp"
 #include <vector>
 
 Ball::Ball(float _speedX, float _speedY, int _width, int _height)
-    : width(_width), height(_height),
-      defaultSpeedX(_speedX), defaultSpeedY(_speedY) {}
+    : width(_width), height(_height), defaultSpeedX(_speedX),
+      defaultSpeedY(_speedY) {}
 void Ball::tick(struct scrsize ws, size_t frameTimeMs) {
     if (this->posX == -1 || this->posY == -1) {
         this->reset(ws);

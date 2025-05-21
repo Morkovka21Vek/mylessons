@@ -1,13 +1,13 @@
 #include <thread>
 #include "game.hpp"
 
-const size_t Game::MAX_FPS = 60;
+const size_t Game::MAXFPS = 60;
 
 void Game::loop() {
     size_t frameTimeMs = 0;
 
     do {
-        auto time_start = std::chrono::high_resolution_clock::now();
+        auto timeStart = std::chrono::high_resolution_clock::now();
 
         leftPl.tick(screen.getGameSize(), ball.getY());
         rightPl.tick(screen.getGameSize(), ball.getY());
@@ -23,13 +23,13 @@ void Game::loop() {
         screen.add(ball.getY(), ball.getX(), ball.getMatrix());
         screen.draw(frameTimeMs);
 
-        auto time_middle = std::chrono::high_resolution_clock::now();
-        fps_lock(std::chrono::duration_cast<std::chrono::milliseconds>(
-                     time_middle - time_start),
-                 MAX_FPS);
-        auto time_end = std::chrono::high_resolution_clock::now();
+        auto timeMiddle = std::chrono::high_resolution_clock::now();
+        fpsLock(std::chrono::duration_cast<std::chrono::milliseconds>(
+                     timeMiddle - timeStart),
+                 MAXFPS);
+        auto timeEnd = std::chrono::high_resolution_clock::now();
         frameTimeMs = std::chrono::duration_cast<std::chrono::milliseconds>(
-                     time_end - time_start)
+                     timeEnd - timeStart)
                      .count();
 
     } while(scboard.getScoreLeft() < 3 && scboard.getScoreRight() < 3);
@@ -37,7 +37,7 @@ void Game::loop() {
 }
 
 
-void Game::fps_lock(std::chrono::milliseconds frameTimeMs, size_t fpscount) {
+void Game::fpsLock(std::chrono::milliseconds frameTimeMs, size_t fpscount) {
     long timesleep = 1000 / fpscount - frameTimeMs.count();
     if (timesleep > 0) {
         std::this_thread::sleep_for(std::chrono::milliseconds(timesleep));

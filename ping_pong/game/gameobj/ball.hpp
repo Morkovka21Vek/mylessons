@@ -30,6 +30,6 @@ class Ball {
     const size_t width;
     const size_t height;
 
-    const float default_speedX;
-    const float default_speedY;
+    const float defaultSpeedX;
+    const float defaultSpeedY;
 };

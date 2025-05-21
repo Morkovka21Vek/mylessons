@@ -48,8 +48,8 @@ std::vector<std::vector<char>> ScoreBoard::getMatrix() const {
 void ScoreBoard::addSymbolToMatrix(std::vector<std::vector<char>>& matrix, const std::vector<std::vector<char>>& symbol, size_t posY, size_t posX) const {
     for (size_t y = 0; y < symbol.size(); y++) {
         for (size_t x = 0; x < symbol[0].size(); x++) {
-            if (posY + y >= matrix.size()    || posY + y < 0 ||
-                posX + x >= matrix[0].size() || posX + x < 0) {
+            if (posY + y >= matrix.size() ||
+                posX + x >= matrix[0].size()) {
                 continue;
             }
             matrix[posY+y][posX+x] = symbol[y][x];

@@ -7,10 +7,10 @@
 #include <string>
 #include <vector>
 
-const size_t Screen::offset_top = 1;
-const size_t Screen::offset_bottom = 1;
-const size_t Screen::offset_left = 0;
-const size_t Screen::offset_right = 0;
+const size_t Screen::offsetTop = 1;
+const size_t Screen::offsetBottom = 1;
+const size_t Screen::offsetLeft = 0;
+const size_t Screen::offsetRight = 0;
 
 Screen::Screen() {
     initscr();
@@ -29,28 +29,28 @@ Screen::Screen() {
     getmaxyx(stdscr, height, width);
     this->ws = {height, width};
 
-    this->Screen_vector.assign(this->ws.height,
+    this->ScreenVector.assign(this->ws.height,
                                std::vector<char>(this->ws.width, 0));
-    this->Screen_vector_old.assign(this->ws.height,
+    this->ScreenVectorOld.assign(this->ws.height,
                                    std::vector<char>(this->ws.width, 0));
 }
 
 Screen::~Screen() { endwin(); }
 
 scrsize Screen::getGameSize() const {
-    struct scrsize crop_ws = {
-        this->ws.height - Screen::offset_top - Screen::offset_bottom,
-        this->ws.width - Screen::offset_left - Screen::offset_right};
-    return crop_ws;
+    struct scrsize gameSize = {
+        this->ws.height - Screen::offsetTop - Screen::offsetBottom,
+        this->ws.width - Screen::offsetLeft - Screen::offsetRight};
+    return gameSize;
 }
 
 void Screen::reset(char fill) {
-    this->Screen_vector.assign(this->ws.height,
+    this->ScreenVector.assign(this->ws.height,
                                std::vector<char>(this->ws.width, fill));
 
     for (size_t i = 0; i < this->ws.width; i++) {
-        Screen_vector[0][i] = '#';
-        Screen_vector[ws.height - 1][i] = '#';
+        ScreenVector[0][i] = '#';
+        ScreenVector[ws.height - 1][i] = '#';
     }
 }
 
@@ -64,12 +64,12 @@ void Screen::drawBuff() {
     for (size_t y = 0; y < this->ws.height; y++) {
         for (size_t x = 0; x < this->ws.width; x++) {
 
-            const char *screen_ch = &Screen_vector[y][x];
-            char *screen_ch_old = &Screen_vector_old[y][x];
+            const char *screenCh = &ScreenVector[y][x];
+            char *screenChOld = &ScreenVectorOld[y][x];
 
-            if (*screen_ch != *screen_ch_old) {
-                mvaddch(y, x, *screen_ch);
-                *screen_ch_old = *screen_ch;
+            if (*screenCh != *screenChOld) {
+                mvaddch(y, x, *screenCh);
+                *screenChOld = *screenCh;
             }
         }
     }
@@ -79,8 +79,8 @@ void Screen::printFps(size_t frameTimeMs) {
     if (frameTimeMs > 0) {
         std::string fps = std::format("{}fps", 1000 / frameTimeMs);
         for (size_t i = 0; i < fps.length(); i++) {
-            Screen_vector[0][i] = fps[i];
-            Screen_vector_old[0][i] = fps[i];
+            ScreenVector[0][i] = fps[i];
+            ScreenVectorOld[0][i] = fps[i];
         }
         attron(COLOR_PAIR(1));
         mvprintw(0, 0, "%s", fps.c_str());
@@ -90,11 +90,11 @@ void Screen::printFps(size_t frameTimeMs) {
 
 void Screen::addToBuff(size_t posY, size_t posX,
                  const std::vector<std::vector<char>> &vec, size_t y, size_t x) {
-    size_t cursorX = posX + x + Screen::offset_left;
-    size_t cursorY = posY + y + Screen::offset_top;
-    if (cursorY < Screen_vector.size() - Screen::offset_bottom &&
-        cursorX < Screen_vector[0].size() - Screen::offset_right && vec[y][x] != 0) {
-        Screen_vector[cursorY][cursorX] =
+    size_t cursorX = posX + x + Screen::offsetLeft;
+    size_t cursorY = posY + y + Screen::offsetTop;
+    if (cursorY < ScreenVector.size() - Screen::offsetBottom &&
+        cursorX < ScreenVector[0].size() - Screen::offsetRight && vec[y][x] != 0) {
+        ScreenVector[cursorY][cursorX] =
             vec[y][x];
     }
 }

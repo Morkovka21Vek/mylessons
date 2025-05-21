@@ -4,7 +4,7 @@
 
 Ball::Ball(float _speedX, float _speedY, int _width, int _height)
     : width(_width), height(_height),
-      default_speedX(_speedX), default_speedY(_speedY) {}
+      defaultSpeedX(_speedX), defaultSpeedY(_speedY) {}
 void Ball::tick(struct scrsize ws, size_t frameTimeMs) {
     if (this->posX == -1 || this->posY == -1) {
         this->reset(ws);
@@ -18,8 +18,8 @@ void Ball::reset(struct scrsize ws) {
     this->posX = ws.width / 2;
     this->posY = ws.height / 2;
 
-    this->speedX = this->default_speedX;
-    this->speedY = this->default_speedY;
+    this->speedX = this->defaultSpeedX;
+    this->speedY = this->defaultSpeedY;
 }
 
 float Ball::getX() const { return this->posX; }

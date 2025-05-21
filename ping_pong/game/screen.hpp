@@ -19,8 +19,8 @@ class Screen {
     Screen& operator=(Screen&&) noexcept = default;
 
   private:
-    std::vector<std::vector<char>> Screen_vector;
-    std::vector<std::vector<char>> Screen_vector_old;
+    std::vector<std::vector<char>> ScreenVector;
+    std::vector<std::vector<char>> ScreenVectorOld;
     struct scrsize ws;
 
     void drawBuff();
@@ -29,8 +29,8 @@ class Screen {
     void addToBuff(size_t posY, size_t posX,
                  const std::vector<std::vector<char>> &vec, size_t y, size_t x);
 
-    static const size_t offset_top;
-    static const size_t offset_bottom;
-    static const size_t offset_left;
-    static const size_t offset_right;
+    static const size_t offsetTop;
+    static const size_t offsetBottom;
+    static const size_t offsetLeft;
+    static const size_t offsetRight;
 };

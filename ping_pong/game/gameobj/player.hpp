@@ -9,7 +9,7 @@ enum class Playerpos { left, right };
 class Player {
   public:
     Player(int width, int height, enum Playermode mode, enum Playerpos posX);
-    void tick(struct scrsize ws, float ball_posY);
+    void tick(struct scrsize ws, float ballPosY);
 
     int getPos() const;
     size_t calcX(struct scrsize ws) const;

@@ -20,7 +20,7 @@ class Game {
         Player leftPl = Player(3, 7, Playermode::keyboard, Playerpos::left);
         Player rightPl = Player(3, 7, Playermode::bot, Playerpos::right);
 
-        static void fps_lock(std::chrono::milliseconds frameTimeMs, size_t fpscount);
+        static void fpsLock(std::chrono::milliseconds frameTimeMs, size_t fpscount);
 
-        static const size_t MAX_FPS;
+        static const size_t MAXFPS;
 };

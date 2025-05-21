@@ -5,7 +5,7 @@
 Player::Player(int _width, int _height, enum Playermode _mode, enum Playerpos _posX)
     : width(_width), height(_height), mode(_mode), posX(_posX) {}
 
-void Player::tick(struct scrsize ws, float ball_posY) {
+void Player::tick(struct scrsize ws, float ballPosY) {
     using enum Playermode;
 
     if (this->pos == -1) {
@@ -14,7 +14,7 @@ void Player::tick(struct scrsize ws, float ball_posY) {
 
     switch (this->mode) {
     case bot:
-        this->pos = correctPos(this->bot(ball_posY), ws);
+        this->pos = correctPos(this->bot(ballPosY), ws);
         break;
     case keyboard:
         this->pos = correctPos(this->keyboard(), ws);

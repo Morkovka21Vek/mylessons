@@ -12,4 +12,3 @@ make clean
 ```sh
 ./ping_pong.out
 ```  
-

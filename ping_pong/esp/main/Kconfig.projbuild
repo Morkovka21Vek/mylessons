@@ -1,0 +1,21 @@
+menu "Example Configuration"
+
+    config UP_GPIO_NUM
+        int "GPIO up button pin"
+        range 0 39 if IDF_TARGET_ESP32
+        range 0 47 if IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
+        range 0 23 if IDF_TARGET_ESP32C3
+        default 0
+        help
+            Select the GPIO pin with up button
+
+    config DOWN_GPIO_NUM
+        int "GPIO down button pin"
+        range 0 39 if IDF_TARGET_ESP32
+        range 0 47 if IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
+        range 0 23 if IDF_TARGET_ESP32C3
+        default 0
+        help
+            Select the GPIO pin with down button
+
+endmenu

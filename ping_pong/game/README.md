@@ -1,14 +1,21 @@
-# Ping pong  
+# Ping Pong game  
+## dependencies
+```sh
+sudo apt install libncurses-dev # Ubuntu/Debian
+
+sudo dnf install ncurses-devel # Fedora/RHEL/CentOS
+
+sudo pacman -S ncurses # Arch/Manjaro
+
+sudo apk add ncurses-dev # Alpine Linux
+
+brew install ncurses # macOS
+```  
 ## Build  
-### Compilation  
 ```sh
 make
 ```  
-### Clean  
+### And Run  
 ```sh
-make clean
-```  
-## Run  
-```sh
-./ping_pong.out
+./build/ping_pong.out
 ```  

@@ -6,9 +6,9 @@ class smallobj {
 
     ~smallobj() = default;
 
-    smallobj(const smallobj &o) { a = o.a + 2; }
+    smallobj(const smallobj &o) : a(o.a + 2) {}
 
-    void print_a() { std::cout << this->a << std::endl; }
+    void print_a() const { std::cout << this->a << std::endl; }
 
     smallobj &operator=(const smallobj &o) {
         a = o.a + 10;

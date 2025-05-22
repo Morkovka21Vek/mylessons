@@ -13,14 +13,12 @@ int simple_test(void) {
     int *var3 = (int)malloc(sizeof(int));
     if (var3 == NULL)
         goto free_var2;
-    //
-    // code here
-    //
+
     free(var3);
 free_var2:
     free(var2);
 free_var1:
     free(var1);
 error:
-    return (result);
+    return result;
 }

@@ -2,42 +2,78 @@
 
 CXX := g++
 
-SRC_DIR := .
+SRC_DIR := ./src
+TEST_DIR := ./test
 BUILD_DIR := build
 BUILD_OBJ_SUBDIR := obj_dir
 BUILD_DEPS_SUBDIR := deps_dir
-OUT_FILE := $(BUILD_DIR)/ping_pong.out
 
-SOURCE_FILES := $(shell find $(SRC_DIR) -name '*.cpp')
-OBG_FILES := $(patsubst %.cpp, $(BUILD_DIR)/$(BUILD_OBJ_SUBDIR)/%.o, $(SOURCE_FILES))
-DEPS_FILES := $(patsubst %.cpp, $(BUILD_DIR)/$(BUILD_DEPS_SUBDIR)/%.d, $(SOURCE_FILES))
-CXX_FLAGS := -Wall -pedantic -std=c++20 -g -I . -MMD
-DEP_FLAGS = -MT $@ -MMD -MP -MF $(BUILD_DIR)/$(BUILD_DEPS_SUBDIR)/$*.d
-LDFLAGS := -lncurses
+APP_BUILD_DIR := $(BUILD_DIR)/app
+TEST_BUILD_DIR := $(BUILD_DIR)/test
 
-build: $(OUT_FILE)
-rebuild: clean build
+APP_TARGET := $(APP_BUILD_DIR)/ping_pong.out
+TEST_TARGET := $(TEST_BUILD_DIR)/tests
 
--include $(DEPS_FILES)
+APP_SOURCE_FILES := $(shell find $(SRC_DIR) -name '*.cpp')
+APP_OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp, $(APP_BUILD_DIR)/$(BUILD_OBJ_SUBDIR)/%.o, $(APP_SOURCE_FILES))
+APP_DEPS_FILES := $(patsubst $(SRC_DIR)/%.cpp, $(APP_BUILD_DIR)/$(BUILD_DEPS_SUBDIR)/%.d, $(APP_SOURCE_FILES))
 
-$(OUT_FILE): $(OBG_FILES)
+TEST_SOURCE_FILES := $(shell find $(TEST_DIR) -name '*.cpp')
+TEST_OBJ_FILES := $(patsubst $(TEST_DIR)/%.cpp, $(TEST_BUILD_DIR)/$(BUILD_OBJ_SUBDIR)/%.o, $(TEST_SOURCE_FILES)) $(filter-out $(APP_BUILD_DIR)/$(BUILD_OBJ_SUBDIR)/main.o, $(APP_OBJ_FILES))
+TEST_DEPS_FILES := $(patsubst $(TEST_DIR)/%.cpp, $(TEST_BUILD_DIR)/$(BUILD_DEPS_SUBDIR)/%.d, $(TEST_SOURCE_FILES))
+
+CXXFLAGS := -Wall -pedantic -Wextra -std=c++20 -g -I./src -I./test -MMD
+APP_DEP_FLAGS := -MT $@ -MMD -MP -MF $(APP_BUILD_DIR)/$(BUILD_DEPS_SUBDIR)/$*.d
+TEST_DEP_FLAGS := -MT $@ -MMD -MP -MF $(TEST_BUILD_DIR)/$(BUILD_DEPS_SUBDIR)/$*.d
+LDFLAGS := -lncurses -lCatch2Main -lCatch2
+
+all: app test
+app: $(APP_TARGET)
+reapp: clean app
+reall: clean all
+
+-include $(APP_DEPS_FILES) $(TEST_DEPS_FILES)
+
+test: $(TEST_TARGET)
+	./$(TEST_TARGET) -v high -s
+
+$(APP_TARGET): $(APP_OBJ_FILES) $(LDFLAGS)
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
-$(BUILD_DIR)/$(BUILD_OBJ_SUBDIR)/%.o: %.cpp
+$(TEST_TARGET): $(TEST_OBJ_FILES) $(LDFLAGS)
+	$(CXX) $^ -o $@ $(LDFLAGS)
+	@echo "Tests built at $@"
+
+$(APP_BUILD_DIR)/$(BUILD_OBJ_SUBDIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
 	@mkdir -p $(subst $(BUILD_OBJ_SUBDIR),$(BUILD_DEPS_SUBDIR),$(@D))
-	$(CXX) -c $(CXX_FLAGS) $(DEP_FLAGS) -o $@ $<
+	$(CXX) -c $(CXXFLAGS) $(APP_DEP_FLAGS) -o $@ $<
+
+$(TEST_BUILD_DIR)/$(BUILD_OBJ_SUBDIR)/%.o: $(TEST_DIR)/%.cpp
+	@mkdir -p $(@D)
+	@mkdir -p $(subst $(BUILD_OBJ_SUBDIR),$(BUILD_DEPS_SUBDIR),$(@D))
+	$(CXX) -c $(CXXFLAGS) $(TEST_DEP_FLAGS) -o $@ $<
 
 clean:
 	@rm -rf $(BUILD_DIR) 2> /dev/null
 
 debug:
 	$(info )
-	$(info SRC_DIR       = $(SRC_DIR))
-	$(info SOURCE_FILES  = $(SOURCE_FILES))
-	$(info OBG_FILES     = $(OBG_FILES))
-	$(info CXX_FLAGS     = $(CXX_FLAGS))
-	$(info BUILD_DIR     = $(BUILD_DIR))
+	$(info APP_TARGET = $(APP_TARGET))
+	$(info TEST_TARGET = $(TEST_TARGET))
+	$(info )
+	$(info APP_SOURCE_FILES = $(APP_SOURCE_FILES))
+	$(info APP_OBJ_FILES = $(APP_OBJ_FILES))
+	$(info APP_DEPS_FILES = $(APP_DEPS_FILES))
+	$(info )
+	$(info TEST_SOURCE_FILES = $(TEST_SOURCE_FILES))
+	$(info TEST_OBJ_FILES = $(TEST_OBJ_FILES))
+	$(info TEST_DEPS_FILES = $(TEST_DEPS_FILES))
+	$(info )
+	$(info CXXFLAGS = $(CXXFLAGS))
+	$(info APP_DEP_FLAGS = $(APP_DEP_FLAGS))
+	$(info TEST_DEP_FLAGS = $(TEST_DEP_FLAGS))
+	$(info LDFLAGS = $(LDFLAGS))
 	$(info )
 
 check:

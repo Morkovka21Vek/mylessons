@@ -29,8 +29,7 @@ LDFLAGS := -lncurses -lCatch2Main -lCatch2
 
 all: app test
 app: $(APP_TARGET)
-reapp: clean app
-reall: clean all
+rebuild: clean all
 
 -include $(APP_DEPS_FILES) $(TEST_DEPS_FILES)
 

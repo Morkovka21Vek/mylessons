@@ -1,12 +1,12 @@
 name: Clang Format
 
 on:
-  pull_request:
-    types: [labeled]
+  issue_comment:
+    types: [created]
 
 jobs:
   format:
-    if: ${{ github.event.label.name == 'format' }}
+    if: github.event.comment.body == '/format' && github.event.issue.pull_request
     name: Format code with clang-format
     runs-on: ubuntu-latest
     permissions:
@@ -14,6 +14,12 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Add start reaction
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: eyes
+
       - name: Checkout PR branch
         uses: actions/checkout@v4
         with:
@@ -22,11 +28,22 @@ jobs:
 
       - name: Get .clang-format from origin/main
         run: |
-          git fetch origin main
-          git checkout origin/main -- .clang-format
+          git fetch origin ${{ github.event.repository.default_branch }}
+          git checkout origin/${{ github.event.repository.default_branch }} -- .clang-format
 
       - name: Set up clang-format
         run: sudo apt-get install -y clang-format
+
+      - name: Get diff
+        id: diff
+        run: |
+          git diff --numstat > changes.txt
+          ADDED=$(awk '{sum += $1} END {print (sum == 0 ? 0 : sum)}' changes.txt || echo 0)
+          DELETED=$(awk '{sum += $2} END {print (sum == 0 ? 0 : sum)}' changes.txt || echo 0)
+          FILES=$(wc -l < changes.txt)
+          echo "ADDED=$ADDED" >> $GITHUB_OUTPUT
+          echo "DELETED=$DELETED" >> $GITHUB_OUTPUT
+          echo "FILES=$FILES" >> $GITHUB_OUTPUT
 
       - name: Run clang-format
         run: |
@@ -37,3 +54,15 @@ jobs:
         with:
           commit_message: "style: apply clang-format [bot]"
           add_options: '-u'
+
+      - name: Print result
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          body: |
+            ✅ Format completed
+            ```diff
+            + ${{ steps.diff.outputs.ADDED }} lines added
+            - ${{ steps.diff.outputs.DELETED }} lines removed
+            Edited: ${{ steps.diff.outputs.FILES }} files
+            ```

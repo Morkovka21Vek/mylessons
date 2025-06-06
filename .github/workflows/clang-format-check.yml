@@ -52,7 +52,6 @@ jobs:
       - name: Print result
         uses: peter-evans/create-or-update-comment@v4
         with:
-          token: ${{ secrets.BOT_TOKEN }}
           comment-id: ${{ github.event.comment.id }}
           body: |
             ✅ Format completed\n\n\`\`\`diff\n

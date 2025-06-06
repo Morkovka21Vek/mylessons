@@ -1,15 +1,13 @@
 # Ping Pong game  
-## dependencies
+## Dependencies  
 ```sh
-sudo apt install libncurses-dev # Ubuntu/Debian
+sudo apt install libncurses-dev catch2 # Ubuntu/Debian
 
-sudo dnf install ncurses-devel # Fedora/RHEL/CentOS
+sudo dnf install ncurses-devel Catch2-devel # Fedora/RHEL/CentOS
 
-sudo pacman -S ncurses # Arch/Manjaro
+sudo pacman -S ncurses catch2 # Arch/Manjaro
 
-sudo apk add ncurses-dev # Alpine Linux
-
-brew install ncurses # macOS
+brew install ncurses catch2 # macOS
 ```  
 ## Build  
 ```sh

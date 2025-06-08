@@ -1,6 +1,6 @@
 #include "gameobj/player.hpp"
-#include "assets.hpp"
 #include <vector>
+#include "screen.hpp"
 
 Player::Player(int _width, int _height, enum Playermode _mode,
                enum Playerpos _posX)

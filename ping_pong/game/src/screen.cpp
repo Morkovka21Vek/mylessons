@@ -1,8 +1,5 @@
 #include "screen.hpp"
-#include "assets.hpp"
-#include <chrono>
-#include <iomanip>
-#include <iostream>
+#include <format>
 #include <ncurses.h>
 #include <string>
 #include <vector>

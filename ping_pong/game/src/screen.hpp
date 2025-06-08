@@ -1,7 +1,12 @@
 #pragma once
-#include "assets.hpp"
-#include <chrono>
+#include <string>
 #include <vector>
+#include <cstddef>
+
+struct scrsize {
+    size_t height;
+    size_t width;
+};
 
 class Screen {
   public:

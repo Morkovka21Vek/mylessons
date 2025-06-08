@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include "gameobj/collision.hpp"
 #include <thread>
 
 const size_t Game::MAXFPS = 60;

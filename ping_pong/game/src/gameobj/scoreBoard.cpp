@@ -1,7 +1,7 @@
 #include "gameobj/scoreBoard.hpp"
-#include "assets.hpp"
 #include <unordered_map>
 #include <vector>
+#include <screen.hpp>
 
 const size_t ScoreBoard::width = 12;
 

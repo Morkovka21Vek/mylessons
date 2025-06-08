@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <cstddef>
+#include <string>
 
 struct scrsize {
     size_t height;
@@ -12,8 +13,9 @@ class Screen {
   public:
     Screen();
     ~Screen();
-    void draw(size_t frameTimeMs = 0);
-    void add(int posY, int posX, const std::vector<std::vector<char>> &);
+    void draw();
+    void addMatrix(int posY, int posX, const std::vector<std::vector<char>> &);
+    void addText(int posY, int posX, std::string);
     void reset(char fill);
     void exit() const;
     scrsize getGameSize() const;
@@ -29,7 +31,6 @@ class Screen {
     struct scrsize ws;
 
     void drawBuff();
-    void printFps(size_t frameTimeMs);
     static void showWin(size_t posX, size_t posY, size_t width, size_t height,
                         const std::string &text, const std::string &secondText);
     void addToBuff(size_t posY, size_t posX,

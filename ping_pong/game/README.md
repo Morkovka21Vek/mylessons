@@ -1,6 +1,6 @@
 # Ping Pong game  
 
-<p align="center"><img src="/ping_pong.gif?raw=true"/></p>
+<p align="center"><img src="ping_pong.gif?raw=true"/></p>
 
 ## Dependencies  
 ```sh

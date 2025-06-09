@@ -1,11 +1,8 @@
 #include "screen.hpp"
-#include "assets.hpp"
-#include <chrono>
-#include <iomanip>
-#include <iostream>
 #include <ncurses.h>
 #include <string>
 #include <vector>
+#include <string>
 
 const size_t Screen::offsetTop = 1;
 const size_t Screen::offsetBottom = 1;
@@ -68,9 +65,8 @@ void Screen::reset(char fill) {
     }
 }
 
-void Screen::draw(size_t frameTimeMs) {
+void Screen::draw() {
     drawBuff();
-    printFps(frameTimeMs);
     refresh();
 }
 
@@ -89,17 +85,16 @@ void Screen::drawBuff() {
     }
 }
 
-void Screen::printFps(size_t frameTimeMs) {
-    if (frameTimeMs > 0) {
-        std::string fps = std::format("{}fps", 1000 / frameTimeMs);
-        for (size_t i = 0; i < fps.length(); i++) {
-            ScreenVector[0][i] = fps[i];
-            ScreenVectorOld[0][i] = fps[i];
-        }
-        attron(COLOR_PAIR(1));
-        mvprintw(0, 0, "%s", fps.c_str());
-        attroff(COLOR_PAIR(1));
+void Screen::addText(int posY, int posX, std::string text) {
+    for (size_t i = 0; i < text.length(); i++) {
+        if (posX + i >= this->ws.width)
+            break;
+        ScreenVector[posY][posX + i] = text[i];
+        ScreenVectorOld[posY][posX + i] = text[i];
     }
+    attron(COLOR_PAIR(1));
+    mvprintw(0, 0, "%s", text.c_str());
+    attroff(COLOR_PAIR(1));
 }
 
 void Screen::addToBuff(size_t posY, size_t posX,
@@ -114,7 +109,7 @@ void Screen::addToBuff(size_t posY, size_t posX,
     }
 }
 
-void Screen::add(int posY, int posX,
+void Screen::addMatrix(int posY, int posX,
                  const std::vector<std::vector<char>> &vec) {
     if (vec.empty() || vec[0].empty())
         return;

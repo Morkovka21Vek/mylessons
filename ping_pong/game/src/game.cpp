@@ -1,5 +1,7 @@
 #include "game.hpp"
+#include "gameobj/collision.hpp"
 #include <thread>
+#include <format>
 
 const size_t Game::MAXFPS = 60;
 
@@ -17,13 +19,14 @@ void Game::loop() {
                                              screen.getGameSize(), scboard);
 
         screen.reset('-');
-        screen.add(0, scboard.calcX(screen.getGameSize()), scboard.getMatrix());
-        screen.add(leftPl.getPos(), leftPl.calcX(screen.getGameSize()),
+        screen.addMatrix(0, scboard.calcX(screen.getGameSize()), scboard.getMatrix());
+        screen.addMatrix(leftPl.getPos(), leftPl.calcX(screen.getGameSize()),
                    leftPl.getMatrix());
-        screen.add(rightPl.getPos(), rightPl.calcX(screen.getGameSize()),
+        screen.addMatrix(rightPl.getPos(), rightPl.calcX(screen.getGameSize()),
                    rightPl.getMatrix());
-        screen.add(ball.getY(), ball.getX(), ball.getMatrix());
-        screen.draw(frameTimeMs);
+        screen.addMatrix(ball.getY(), ball.getX(), ball.getMatrix());
+        screen.addText(0, 0, std::format("{}fps", (frameTimeMs > 0) ? 1000 / frameTimeMs : 0));
+        screen.draw();
 
         auto timeMiddle = std::chrono::high_resolution_clock::now();
         fpsLock(std::chrono::duration_cast<std::chrono::milliseconds>(

@@ -1,5 +1,4 @@
 #pragma once
-#include "assets.hpp"
 #include <cstddef>
 #include <vector>
 

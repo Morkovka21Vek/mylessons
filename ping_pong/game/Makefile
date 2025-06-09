@@ -37,9 +37,11 @@ test: $(TEST_TARGET)
 	./$(TEST_TARGET) -v high -s
 
 $(APP_TARGET): $(APP_OBJ_FILES) $(LDFLAGS)
+	@mkdir -p $(@D)
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
 $(TEST_TARGET): $(TEST_OBJ_FILES) $(LDFLAGS)
+	@mkdir -p $(@D)
 	$(CXX) $^ -o $@ $(LDFLAGS)
 	@echo "Tests built at $@"
 

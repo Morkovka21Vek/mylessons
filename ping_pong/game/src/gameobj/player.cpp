@@ -1,5 +1,5 @@
 #include "gameobj/player.hpp"
-#include "assets.hpp"
+#include "screen.hpp"
 #include <vector>
 
 Player::Player(int _width, int _height, enum Playermode _mode,

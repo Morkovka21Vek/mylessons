@@ -2,9 +2,7 @@
 
 #include <chrono>
 
-#include "assets.hpp"
 #include "gameobj/ball.hpp"
-#include "gameobj/collision.hpp"
 #include "gameobj/player.hpp"
 #include "gameobj/scoreBoard.hpp"
 #include "screen.hpp"

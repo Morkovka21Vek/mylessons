@@ -1,7 +1,9 @@
 #include "gameobj/player.hpp"
 #include <ncurses.h>
 
-int Player::bot(float posY) const { return posY - this->height / 2; }
+int Player::bot(float posY) const {
+    return posY - static_cast<float>(this->height) / 2;
+}
 
 int Player::keyboard() const {
     int result = this->pos;

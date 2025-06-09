@@ -1,8 +1,8 @@
 #include "gameobj/collision.hpp"
-#include "assets.hpp"
 #include "gameobj/ball.hpp"
 #include "gameobj/player.hpp"
 #include "gameobj/scoreBoard.hpp"
+#include "screen.hpp"
 
 void CollisionSystem::handleAllCollisions(Ball &ball, Player &leftPl,
                                           Player &rightPl, struct scrsize ws,

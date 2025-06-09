@@ -1,4 +1,7 @@
 # Ping Pong game  
+
+<p align="center"><img src="/ping_pong.gif?raw=true"/></p>
+
 ## Dependencies  
 ```sh
 sudo apt install libncurses-dev catch2 # Ubuntu/Debian

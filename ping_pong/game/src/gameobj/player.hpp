@@ -1,31 +1,31 @@
 #pragma once
 #include <cstddef>
 #include <vector>
+#include "assets.hpp"
 
 enum class Playermode { bot, keyboard };
-enum class Playerpos { left, right };
+enum class PlayerSide { left, right };
 
 class Player {
   public:
-    Player(int width, int height, enum Playermode mode, enum Playerpos posX);
-    void tick(struct scrsize ws, float ballPosY);
+    Player(size_t width, size_t height, enum Playermode mode, enum PlayerSide side);
+    Player(Size2D size, enum Playermode mode, enum PlayerSide side);
+    void tick(Size2D ws, float ballPosY);
 
     int getPos() const;
-    size_t calcX(struct scrsize ws) const;
-    size_t getWidth() const;
-    size_t getHeight() const;
-    void reset(struct scrsize ws);
-    Playerpos getPlayerposX() const;
+    int calcX(Size2D ws) const;
+    Size2D getSize() const;
+    void reset(Size2D ws);
+    PlayerSide getSide() const;
     std::vector<std::vector<char>> getMatrix() const;
 
   private:
     int pos = -1;
-    const size_t width;
-    const size_t height;
+    const Size2D size;
     const enum Playermode mode;
-    const enum Playerpos posX;
+    const enum PlayerSide side;
 
-    int correctPos(int val, const scrsize ws) const;
+    int correctPos(int val, Size2D ws) const;
 
     int bot(float posY) const;
     int keyboard() const;

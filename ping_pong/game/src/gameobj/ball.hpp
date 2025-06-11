@@ -1,34 +1,32 @@
 #pragma once
 #include <cstddef>
 #include <vector>
+#include "assets.hpp"
 
 class Ball {
   public:
-    Ball(float _speedX, float _speedY, int _width, int _height);
-    void tick(struct scrsize, size_t frameTimeMs);
-    void reset(struct scrsize);
-    float getX() const;
-    float getY() const;
-    size_t getWidth() const;
-    size_t getHeight() const;
+    Ball(float speedX, float speedY, size_t width, size_t height);
+    Ball(Vector2D speed, Size2D size);
+
+    void tick(size_t frameTimeMs);
+    void reset(Size2D ws);
+    Vector2D getPos() const;
+    Size2D getSize() const;
     std::vector<std::vector<char>> getMatrix() const;
 
-    void reverseX();
-    void reverseY();
     void setX(float x);
     void setY(float y);
 
     void setPositiveX();
     void setNegativeX();
 
-  private:
-    float posX = -1;
-    float posY = -1;
-    float speedX;
-    float speedY;
-    const size_t width;
-    const size_t height;
+    void setPositiveY();
+    void setNegativeY();
 
-    const float defaultSpeedX;
-    const float defaultSpeedY;
+  private:
+    Vector2D pos;
+    Vector2D speed;
+    const Size2D size;
+
+    const Vector2D defaultSpeed;
 };

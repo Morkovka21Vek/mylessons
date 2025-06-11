@@ -2,22 +2,23 @@
 #include <unordered_map>
 #include <vector>
 #include <screen.hpp>
+#include "assets.hpp"
 
 const size_t ScoreBoard::width = 12;
 
-void ScoreBoard::addPointLeft() { this->lscore++; }
+void ScoreBoard::addPointsLeft(int points) { this->lscore += points; }
 
 void ScoreBoard::setScoreLeft(int score) { lscore = score; }
 
 int ScoreBoard::getScoreLeft() const { return this->lscore; }
 
-void ScoreBoard::addPointRight() { this->rscore++; }
+void ScoreBoard::addPointsRight(int points) { this->rscore += points; }
 
 void ScoreBoard::setScoreRight(int score) { this->rscore = score; }
 
 int ScoreBoard::getScoreRight() const { return this->rscore; }
 
-size_t ScoreBoard::calcX(struct scrsize ws) const {
+size_t ScoreBoard::calcX(Size2D ws) const {
     return (ws.width - ScoreBoard::width) / 2;
 }
 

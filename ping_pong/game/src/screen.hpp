@@ -3,22 +3,18 @@
 #include <vector>
 #include <cstddef>
 #include <string>
-
-struct scrsize {
-    size_t height;
-    size_t width;
-};
+#include "assets.hpp"
 
 class Screen {
   public:
     Screen();
     ~Screen();
     void draw();
-    void addMatrix(int posY, int posX, const std::vector<std::vector<char>> &);
-    void addText(int posY, int posX, std::string);
+    void addMatrix(Vector2D pos, const std::vector<std::vector<char>> &);
+    void addText(Vector2D pos, std::string);
     void reset(char fill);
     void exit() const;
-    scrsize getGameSize() const;
+    Size2D getGameSize() const;
 
     Screen(const Screen &) = delete;
     Screen &operator=(const Screen &) = delete;
@@ -28,12 +24,12 @@ class Screen {
   private:
     std::vector<std::vector<char>> ScreenVector;
     std::vector<std::vector<char>> ScreenVectorOld;
-    struct scrsize ws;
+    struct Size2D ws;
 
     void drawBuff();
-    static void showWin(size_t posX, size_t posY, size_t width, size_t height,
+    static void showWin(Vector2D pos, Size2D size,
                         const std::string &text, const std::string &secondText);
-    void addToBuff(size_t posY, size_t posX,
+    void addToBuff(Vector2D pos,
                    const std::vector<std::vector<char>> &vec, size_t y,
                    size_t x);
 

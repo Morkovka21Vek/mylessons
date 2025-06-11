@@ -1,20 +1,21 @@
 #pragma once
 #include <vector>
+#include "assets.hpp"
 
 class ScoreBoard {
   public:
     ScoreBoard() = default;
 
-    void addPointLeft();
+    void addPointsLeft(int points);
     void setScoreLeft(int score);
     int getScoreLeft() const;
 
-    void addPointRight();
+    void addPointsRight(int points);
     void setScoreRight(int score);
     int getScoreRight() const;
 
     std::vector<std::vector<char>> getMatrix() const;
-    size_t calcX(struct scrsize ws) const;
+    size_t calcX(Size2D ws) const;
 
   private:
     int lscore = 0;

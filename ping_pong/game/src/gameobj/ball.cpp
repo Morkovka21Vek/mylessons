@@ -1,49 +1,46 @@
 #include "gameobj/ball.hpp"
 #include <vector>
-#include "screen.hpp"
+#include "assets.hpp"
 
-Ball::Ball(float _speedX, float _speedY, int _width, int _height)
-    : width(_width), height(_height), defaultSpeedX(_speedX),
-      defaultSpeedY(_speedY) {}
+Ball::Ball(float speedX, float speedY, size_t width, size_t height)
+    : size(width, height), defaultSpeed(speedX, speedY) {}
+Ball::Ball(Vector2D speed, Size2D size)
+    : size(size), defaultSpeed(speed) {}
 
-void Ball::tick(struct scrsize ws, size_t frameTimeMs) {
-    if (this->posX == -1 || this->posY == -1) {
-        this->reset(ws);
-    }
-
-    this->posX += this->speedX * frameTimeMs;
-    this->posY += this->speedY * frameTimeMs;
+void Ball::tick(size_t frameTimeMs) {
+    this->pos += this->speed * frameTimeMs;
 }
 
-void Ball::reset(struct scrsize ws) {
-    this->posX = static_cast<float>(ws.width) / 2;
-    this->posY = static_cast<float>(ws.height) / 2;
+void Ball::reset(Size2D ws) {
+    this->pos.x = static_cast<float>(ws.width) / 2;
+    this->pos.y = static_cast<float>(ws.height) / 2;
 
-    this->speedX = this->defaultSpeedX;
-    this->speedY = this->defaultSpeedY;
+    this->speed = this->defaultSpeed;
 }
 
-float Ball::getX() const { return this->posX; }
-float Ball::getY() const { return this->posY; }
+Vector2D Ball::getPos() const { return pos; }
 
-void Ball::reverseX() { this->speedX = -this->speedX; }
-void Ball::reverseY() { this->speedY = -this->speedY; }
-void Ball::setX(float x) { this->posX = x; }
-void Ball::setY(float y) { this->posY = y; }
+void Ball::setX(float x) { this->pos.x = x; }
+void Ball::setY(float y) { this->pos.y = y; }
 
 void Ball::setPositiveX() {
-    this->speedX = (this->speedX < 0) ? -this->speedX : this->speedX;
+    speed.x = (speed.x < 0) ? -speed.x : speed.x;
 }
-
 void Ball::setNegativeX() {
-    this->speedX = (this->speedX > 0) ? -this->speedX : this->speedX;
+    speed.x = (speed.x > 0) ? -speed.x : speed.x;
 }
 
-size_t Ball::getWidth() const { return this->width; }
-size_t Ball::getHeight() const { return this->height; }
+void Ball::setPositiveY() {
+    speed.y = (speed.y < 0) ? -speed.y : speed.y;
+}
+void Ball::setNegativeY() {
+    speed.y = (speed.y > 0) ? -speed.y : speed.y;
+}
+
+Size2D Ball::getSize() const { return size; }
 
 std::vector<std::vector<char>> Ball::getMatrix() const {
-    std::vector<std::vector<char>> matrix(this->height,
-                                          std::vector<char>(this->width, '#'));
+    std::vector<std::vector<char>> matrix(size.height,
+                                          std::vector<char>(size.width, '#'));
     return matrix;
 }

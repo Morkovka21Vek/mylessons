@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <string>
+#include "assets.hpp"
 
 const size_t Screen::offsetTop = 1;
 const size_t Screen::offsetBottom = 1;
@@ -48,11 +49,10 @@ Screen &Screen::operator=(Screen &&other) noexcept {
     return *this;
 }
 
-scrsize Screen::getGameSize() const {
-    struct scrsize gameSize = {
-        this->ws.height - Screen::offsetTop - Screen::offsetBottom,
-        this->ws.width - Screen::offsetLeft - Screen::offsetRight};
-    return gameSize;
+Size2D Screen::getGameSize() const {
+    return Size2D(
+        ws.height - Screen::offsetTop - Screen::offsetBottom,
+        ws.width - Screen::offsetLeft - Screen::offsetRight);
 }
 
 void Screen::reset(char fill) {
@@ -85,23 +85,23 @@ void Screen::drawBuff() {
     }
 }
 
-void Screen::addText(int posY, int posX, std::string text) {
+void Screen::addText(Vector2D pos, std::string text) {
     for (size_t i = 0; i < text.length(); i++) {
-        if (posX + i >= this->ws.width)
+        if (pos.x + i >= this->ws.width)
             break;
-        ScreenVector[posY][posX + i] = text[i];
-        ScreenVectorOld[posY][posX + i] = text[i];
+        ScreenVector[pos.y][pos.y + i] = text[i];
+        ScreenVectorOld[pos.y][pos.y + i] = text[i];
     }
     attron(COLOR_PAIR(1));
     mvprintw(0, 0, "%s", text.c_str());
     attroff(COLOR_PAIR(1));
 }
 
-void Screen::addToBuff(size_t posY, size_t posX,
+void Screen::addToBuff(Vector2D pos,
                        const std::vector<std::vector<char>> &vec, size_t y,
                        size_t x) {
-    size_t cursorX = posX + x + Screen::offsetLeft;
-    size_t cursorY = posY + y + Screen::offsetTop;
+    size_t cursorX = pos.x + x + Screen::offsetLeft;
+    size_t cursorY = pos.y + y + Screen::offsetTop;
     if (cursorY < ScreenVector.size() - Screen::offsetBottom &&
         cursorX < ScreenVector[0].size() - Screen::offsetRight &&
         vec[y][x] != 0) {
@@ -109,17 +109,17 @@ void Screen::addToBuff(size_t posY, size_t posX,
     }
 }
 
-void Screen::addMatrix(int posY, int posX,
+void Screen::addMatrix(Vector2D pos,
                  const std::vector<std::vector<char>> &vec) {
     if (vec.empty() || vec[0].empty())
         return;
 
-    posY = (posY < 0) ? 0 : posY;
-    posX = (posX < 0) ? 0 : posX;
+    pos.y = (pos.y < 0) ? 0 : pos.y;
+    pos.x = (pos.x < 0) ? 0 : pos.x;
 
     for (size_t y = 0; y < vec.size(); y++) {
         for (size_t x = 0; x < vec[0].size(); x++) {
-            addToBuff(posY, posX, vec, y, x);
+            addToBuff(pos, vec, y, x);
         }
     }
 }
@@ -130,20 +130,19 @@ void Screen::exit() const {
     const size_t width = std::max(text.length(), secondText.length()) + 4;
     const size_t height = 6;
 
-    showWin((this->ws.width - width) / 2, (this->ws.height - height) / 2, width,
-            height, text, secondText);
+    showWin(Vector2D(static_cast<float>(ws.width - width) / 2, static_cast<float>(ws.height - height) / 2), Size2D(width, height), text, secondText);
 }
 
-void Screen::showWin(size_t posX, size_t posY, size_t width, size_t height,
+void Screen::showWin(Vector2D pos, Size2D size,
                      const std::string &text, const std::string &secondText) {
-    WINDOW *popup = newwin(height, width, posY, posX);
+    WINDOW *popup = newwin(size.height, size.width, pos.y, pos.x);
     box(popup, 0, 0);
 
-    mvwprintw(popup, 2, (width - text.length()) / 2, "%s", text.c_str());
+    mvwprintw(popup, 2, (size.width - text.length()) / 2, "%s", text.c_str());
 
     init_pair(3, COLOR_RED, COLOR_BLACK);
     wattron(popup, COLOR_PAIR(3));
-    mvwprintw(popup, 3, (width - secondText.length()) / 2, "%s",
+    mvwprintw(popup, 3, (size.width - secondText.length()) / 2, "%s",
               secondText.c_str());
     wattroff(popup, COLOR_PAIR(3));
 

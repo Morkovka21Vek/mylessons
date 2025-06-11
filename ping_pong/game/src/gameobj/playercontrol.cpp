@@ -1,23 +1,17 @@
 #include "gameobj/player.hpp"
 #include <ncurses.h>
 
-int Player::bot(float posY) const { return posY - static_cast<float>(this->height) / 2; }
+int Player::bot(float posY) const { return posY - static_cast<float>(size.height) / 2; }
 
 int Player::keyboard() const {
-    int result = this->pos;
-
     switch (getch()) {
     case 'a':
     case 'A':
-        result--;
-        break;
+        return pos - 1;
     case 'z':
     case 'Z':
-        result++;
-        break;
+        return pos + 1;
     default:
-        break;
+        return pos;
     }
-
-    return result;
 }

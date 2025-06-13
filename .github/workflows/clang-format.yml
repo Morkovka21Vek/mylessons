@@ -1,12 +1,12 @@
 name: Clang Format
 
 on:
-  issue_comment:
-    types: [created]
+  pull_request:
+    types: [labeled]
 
 jobs:
   format:
-    if: github.event.comment.body == '/format' && github.event.issue.pull_request
+    if: ${{ github.event.label.name == 'format' }}
     name: Format code with clang-format
     runs-on: ubuntu-latest
     permissions:
@@ -14,12 +14,6 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Add start reaction
-        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043
-        with:
-          comment-id: ${{ github.event.comment.id }}
-          reactions: eyes
-
       - name: Checkout PR branch
         uses: actions/checkout@v4
         with:
@@ -34,6 +28,10 @@ jobs:
       - name: Set up clang-format
         run: sudo apt-get install -y clang-format
 
+      - name: Run clang-format
+        run: |
+          find . -regex '.*\.\(cpp\|hpp\|cc\|cxx\|c\|h\)' -exec clang-format -style=file -i {} \;
+
       - name: Get diff
         id: diff
         run: |
@@ -45,10 +43,6 @@ jobs:
           echo "DELETED=$DELETED" >> $GITHUB_OUTPUT
           echo "FILES=$FILES" >> $GITHUB_OUTPUT
 
-      - name: Run clang-format
-        run: |
-          find . -regex '.*\.\(cpp\|hpp\|cc\|cxx\|c\|h\)' -exec clang-format -style=file -i {} \;
-
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403
         with:
@@ -58,7 +52,7 @@ jobs:
       - name: Print result
         uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043
         with:
-          comment-id: ${{ github.event.comment.id }}
+          issue-number: ${{ github.event.pull_request.number }}
           body: |
             ✅ Format completed
             ```diff

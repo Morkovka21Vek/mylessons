@@ -1,6 +1,5 @@
 #include "Time.hpp"
 #include <format>
-#include <iomanip>
 
 Time::Time() : _hours(0), _min(0), _sec(0) {}
 
@@ -10,13 +9,6 @@ Time::Time(unsigned int hours, unsigned int min, unsigned int sec)
     this->_sec %= 60;
     this->_hours += this->_min / 60;
     this->_min %= 60;
-}
-
-void Time::getValues(unsigned int &hours, unsigned int &min,
-                     unsigned int &sec) const {
-    hours = _hours;
-    min = _min;
-    sec = _sec;
 }
 
 std::ostream &operator<<(std::ostream &os, const Time &obj) {

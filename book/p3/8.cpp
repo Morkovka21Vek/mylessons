@@ -25,9 +25,6 @@ int main() {
     int f2;
     int s2;
     int p2;
-    int out_f;
-    int out_s;
-    int out_p;
     char ch;
     char cont = 'n';
 
@@ -38,10 +35,10 @@ int main() {
         std::cout << "Введите вторую сумму: £";
         std::cin >> f2 >> ch >> s2 >> ch >> p2;
 
-        out_p = (p1 + p2) % 12;
-        out_s = (p1 + p2) / 12;
+        int out_p = (p1 + p2) % 12;
+        int out_s = (p1 + p2) / 12;
 
-        out_f = (out_s + s1 + s2) / 20;
+        int out_f = (out_s + s1 + s2) / 20;
         out_s = (out_s + s1 + s2) % 20;
 
         out_f += f1 + f2;

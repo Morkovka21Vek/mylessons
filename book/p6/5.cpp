@@ -11,16 +11,15 @@ class date {
     date() = default;
     date(int, int, int);
     explicit date(const std::string &);
-    void getValues(int &month, int &day, int &year) const;
     int parseDate(const std::string &str, date &, char sep = '/') const;
 
     friend std::ostream &operator<<(std::ostream &os, const date &obj);
 
   private:
-    int getDaysCount(int month, int year) const;
-    bool checkDate(std::vector<int>) const;
-    std::vector<std::string> splitDate(const std::string &,
-                                       char sep = '/') const;
+    static int getDaysCount(int month, int year);
+    static bool checkDate(const std::vector<int> &);
+    static std::vector<std::string> splitDate(const std::string &,
+                                              char sep = '/');
 
     int _month = 0;
     int _day = 0;
@@ -30,8 +29,7 @@ class date {
 date::date(int month, int day, int year)
     : _month(month), _day(day), _year(year) {}
 
-std::vector<std::string> date::splitDate(const std::string &str,
-                                         char sep) const {
+std::vector<std::string> date::splitDate(const std::string &str, char sep) {
     std::vector<std::string> result;
 
     std::stringstream ss(str);
@@ -42,7 +40,7 @@ std::vector<std::string> date::splitDate(const std::string &str,
     return result;
 }
 
-int date::getDaysCount(int month, int year) const {
+int date::getDaysCount(int month, int year) {
     static constexpr std::array<int, 12> daysInMonth = {31, 28, 31, 30, 31, 30,
                                                         31, 31, 30, 31, 30, 31};
 
@@ -53,7 +51,7 @@ int date::getDaysCount(int month, int year) const {
     return daysInMonth[month];
 }
 
-bool date::checkDate(std::vector<int> input) const {
+bool date::checkDate(const std::vector<int> &input) {
     int day;
     int month;
     int year;
@@ -104,12 +102,6 @@ date::date(const std::string &str) {
     if (parseDate(str, *this) != 0) {
         throw std::invalid_argument("Date format error");
     }
-}
-
-void date::getValues(int &month, int &day, int &year) const {
-    month = this->_month;
-    day = this->_day;
-    year = this->_year;
 }
 
 std::ostream &operator<<(std::ostream &os, const date &obj) {

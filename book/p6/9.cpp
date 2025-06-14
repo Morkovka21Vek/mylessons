@@ -12,13 +12,14 @@ class fraction {
 
   private:
     void reduce();
-    int computeGCD(int, int) const;
+    static int computeGCD(int, int);
 
     int a;
     int b;
 };
 
 fraction::fraction() : a(0), b(0) {}
+fraction::fraction(int a, int b) : a(a), b(b) { reduce(); }
 
 void fraction::reduce() {
     int numerator = this->a;
@@ -35,7 +36,7 @@ void fraction::reduce() {
     }
 }
 
-int fraction::computeGCD(int _a, int _b) const {
+int fraction::computeGCD(int _a, int _b) {
     while (_b != 0) {
         int temp = _b;
         _b = _a % _b;
@@ -43,8 +44,6 @@ int fraction::computeGCD(int _a, int _b) const {
     }
     return _a;
 }
-
-fraction::fraction(int _a, int _b) : a(_a), b(_b) { reduce(); }
 
 void fraction::getData() {
     char space;

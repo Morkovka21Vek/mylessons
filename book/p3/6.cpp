@@ -8,13 +8,11 @@
 #include <iostream>
 
 int main() {
-
-    unsigned int num;
-    unsigned long fact = 1;
-
     while (true) {
 
-        fact = 1;
+        unsigned int num;
+        unsigned long fact = 1;
+
         std::cout << "Для подсчёта факториала числа введите целое число:\n>>> ";
         std::cin >> num;
 

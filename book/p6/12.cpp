@@ -10,14 +10,12 @@ class Fraction {
     Fraction(int _a, int _b, bool is_reduce = true);
 
     void setData();
-    void getValues(int &, int &) const;
-
     friend Fraction operator*(const Fraction &, const Fraction &);
     friend std::ostream &operator<<(std::ostream &os, const Fraction &obj);
 
   private:
     void reduce();
-    int computeGCD(int, int) const;
+    static int computeGCD(int, int);
     int a;
     int b;
 };
@@ -42,7 +40,7 @@ void Fraction::reduce() {
     }
 }
 
-int Fraction::computeGCD(int _a, int _b) const {
+int Fraction::computeGCD(int _a, int _b) {
     while (_b != 0) {
         int temp = _b;
         _b = _a % _b;
@@ -53,11 +51,6 @@ int Fraction::computeGCD(int _a, int _b) const {
 
 Fraction operator*(const Fraction &obj1, const Fraction &obj2) {
     return Fraction(obj1.a * obj2.a, obj1.b * obj2.b, true);
-}
-
-void Fraction::getValues(int &_a, int &_b) const {
-    _a = this->a;
-    _b = this->b;
 }
 
 std::ostream &operator<<(std::ostream &os, const Fraction &obj) {

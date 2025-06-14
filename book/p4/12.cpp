@@ -7,14 +7,13 @@ struct fraction {
 };
 
 void reduction(int &x, int &y) {
-    int minNum;
     int j;
     do {
         if (x == 0) {
             y = 0;
             break;
         }
-        minNum = (x < y) ? x : y;
+        int minNum = (x < y) ? x : y;
         for (j = minNum; j > 0; j--) {
             if (!(x % j) && !(y % j)) {
                 x /= j;

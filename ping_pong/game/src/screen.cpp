@@ -2,7 +2,6 @@
 #include <ncurses.h>
 #include <string>
 #include <vector>
-#include <string>
 
 const size_t Screen::offsetTop = 1;
 const size_t Screen::offsetBottom = 1;
@@ -110,7 +109,7 @@ void Screen::addToBuff(size_t posY, size_t posX,
 }
 
 void Screen::addMatrix(int posY, int posX,
-                 const std::vector<std::vector<char>> &vec) {
+                       const std::vector<std::vector<char>> &vec) {
     if (vec.empty() || vec[0].empty())
         return;
 

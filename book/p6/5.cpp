@@ -17,9 +17,9 @@ class date {
 
   private:
     static int getDaysCount(int month, int year);
-    static bool checkDate(const std::vector<int>&);
+    static bool checkDate(const std::vector<int> &);
     static std::vector<std::string> splitDate(const std::string &,
-                                       char sep = '/');
+                                              char sep = '/');
 
     int _month = 0;
     int _day = 0;
@@ -29,8 +29,7 @@ class date {
 date::date(int month, int day, int year)
     : _month(month), _day(day), _year(year) {}
 
-std::vector<std::string> date::splitDate(const std::string &str,
-                                         char sep) {
+std::vector<std::string> date::splitDate(const std::string &str, char sep) {
     std::vector<std::string> result;
 
     std::stringstream ss(str);
@@ -52,7 +51,7 @@ int date::getDaysCount(int month, int year) {
     return daysInMonth[month];
 }
 
-bool date::checkDate(const std::vector<int>& input) {
+bool date::checkDate(const std::vector<int> &input) {
     int day;
     int month;
     int year;

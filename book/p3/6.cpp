@@ -8,7 +8,7 @@
 #include <iostream>
 
 int main() {
-        while (true) {
+    while (true) {
 
         unsigned int num;
         unsigned long fact = 1;

@@ -5,8 +5,6 @@ class ship {
   public:
     ship();
     int answerData();
-    void getValues(int &num, int &dec, float &min, char &orientation) const;
-
     friend std::ostream &operator<<(std::ostream &os, const ship &obj);
 
   private:
@@ -39,13 +37,6 @@ int ship::answerData() {
         return 1;
 
     return 0;
-}
-
-void ship::getValues(int &num, int &dec, float &min, char &orientation) const {
-    num = this->_num;
-    dec = this->_dec;
-    min = this->_min;
-    orientation = this->_orientation;
 }
 
 std::ostream &operator<<(std::ostream &os, const ship &obj) {

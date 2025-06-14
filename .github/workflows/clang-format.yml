@@ -28,6 +28,10 @@ jobs:
       - name: Set up clang-format
         run: sudo apt-get install -y clang-format
 
+      - name: Run clang-format
+        run: |
+          find . -regex '.*\.\(cpp\|hpp\|cc\|cxx\|c\|h\)' -exec clang-format -style=file -i {} \;
+
       - name: Get diff
         id: diff
         run: |
@@ -38,10 +42,6 @@ jobs:
           echo "ADDED=$ADDED" >> $GITHUB_OUTPUT
           echo "DELETED=$DELETED" >> $GITHUB_OUTPUT
           echo "FILES=$FILES" >> $GITHUB_OUTPUT
-
-      - name: Run clang-format
-        run: |
-          find . -regex '.*\.\(cpp\|hpp\|cc\|cxx\|c\|h\)' -exec clang-format -style=file -i {} \;
 
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403

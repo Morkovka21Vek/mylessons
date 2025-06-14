@@ -3,10 +3,10 @@
 int main() {
 
     // Обучающие данные
-    int celsius[] = {-40, -10, 15, 38}; // Градусы по цельсию
-    int fahrenheit[] = {-40, 14, 59, 100}; // Градусы по фаренгейту
+    const int celsius[] = {-40, -10, 15, 38}; // Градусы по цельсию
+    const int fahrenheit[] = {-40, 14, 59, 100}; // Градусы по фаренгейту
 
-    float learning_rate = -0.001F; // Скорось обучения(+инвертирование ошибки)
+    const float learning_rate = -0.001F; // Скорось обучения(+инвертирование ошибки)
     float weight = 1;
     float bias = 1;
     float forward;

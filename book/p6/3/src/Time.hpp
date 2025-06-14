@@ -7,9 +7,6 @@ class Time {
     Time();
     Time(unsigned int hours, unsigned int min, unsigned int sec);
 
-    void getValues(unsigned int &hours, unsigned int &min,
-                   unsigned int &sec) const;
-
     friend Time operator+(const Time &, const Time &);
     friend std::ostream &operator<<(std::ostream &, const Time &);
 

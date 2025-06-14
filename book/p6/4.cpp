@@ -6,8 +6,6 @@ class employee {
     explicit employee(int num);
 
     void answerData();
-    void getValues(int &num, int &id, float &salary) const;
-
     friend std::ostream &operator<<(std::ostream &os, const employee &obj);
 
   private:
@@ -17,12 +15,6 @@ class employee {
 };
 
 employee::employee(int num) : _num(num) {}
-
-void employee::getValues(int &num, int &id, float &salary) const {
-    num = this->_num;
-    id = this->_id;
-    salary = this->_salary;
-}
 
 void employee::answerData() {
     std::cout << "Сотрудник " << this->_num << ':' << std::endl << "\tID: >>> ";

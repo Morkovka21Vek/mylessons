@@ -1,8 +1,7 @@
 #pragma once
-#include <string>
-#include <vector>
 #include <cstddef>
 #include <string>
+#include <vector>
 
 struct scrsize {
     size_t height;

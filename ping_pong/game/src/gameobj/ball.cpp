@@ -1,6 +1,6 @@
 #include "gameobj/ball.hpp"
-#include <vector>
 #include "screen.hpp"
+#include <vector>
 
 Ball::Ball(float _speedX, float _speedY, int _width, int _height)
     : width(_width), height(_height), defaultSpeedX(_speedX),

@@ -27,7 +27,7 @@ static const httpd_uri_t get_buttons_status_uri = {
 static esp_err_t get_buttons_count_handler(httpd_req_t *req) {
     char response[BUF_SIZE];
 
-    snprintf(response, BUF_SIZE, "%d;%d", getButton_count(0),
+    snprintf(response, BUF_SIZE, "%zu;%zu", getButton_count(0),
              getButton_count(1));
 
     httpd_resp_set_type(req, HTTPD_TYPE_TEXT);

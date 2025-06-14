@@ -22,7 +22,7 @@ struct employee {
     etype type;
 };
 
-void printEmp(employee emp, int number) {
+void printEmp(const employee &emp, int number) {
     std::cout << "ID сотрудника " << number << " - " << emp.id << std::endl
               << "Его зарплата составляет " << emp.salary << '$' << std::endl
               << "Его должность: ";

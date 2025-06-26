@@ -16,8 +16,8 @@ class Game {
     Screen screen;
     ScoreBoard scboard;
     Ball ball = Ball(0.05, 0.025, 6, 3);
-    Player leftPl = Player(3, 7, Playermode::keyboard, Playerpos::left);
-    Player rightPl = Player(3, 7, Playermode::bot, Playerpos::right);
+    Player leftPl = Player(3, 7, Playermode::keyboard, PlayerSide::left);
+    Player rightPl = Player(3, 7, Playermode::bot, PlayerSide::right);
 
     static void fpsLock(std::chrono::milliseconds frameTimeMs, size_t fpscount);
 

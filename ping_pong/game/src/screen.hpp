@@ -1,9 +1,8 @@
 #pragma once
-#include <string>
-#include <vector>
 #include <cstddef>
 #include <string>
 #include "assets.hpp"
+#include <vector>
 
 class Screen {
   public:

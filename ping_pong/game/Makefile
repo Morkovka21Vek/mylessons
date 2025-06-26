@@ -25,7 +25,8 @@ TEST_DEPS_FILES := $(patsubst $(TEST_DIR)/%.cpp, $(TEST_BUILD_DIR)/$(BUILD_DEPS_
 CXXFLAGS := -Wall -pedantic -Wextra -std=c++20 -g -I./src -I./test -MMD
 APP_DEP_FLAGS := -MT $@ -MMD -MP -MF $(APP_BUILD_DIR)/$(BUILD_DEPS_SUBDIR)/$*.d
 TEST_DEP_FLAGS := -MT $@ -MMD -MP -MF $(TEST_BUILD_DIR)/$(BUILD_DEPS_SUBDIR)/$*.d
-LDFLAGS := -lncurses -lCatch2Main -lCatch2
+APP_LDFLAGS := -lncurses
+TEST_LDFLAGS := -lncurses -lCatch2Main -lCatch2
 
 all: app test
 app: $(APP_TARGET)
@@ -36,13 +37,13 @@ rebuild: clean all
 test: $(TEST_TARGET)
 	./$(TEST_TARGET) -v high -s
 
-$(APP_TARGET): $(APP_OBJ_FILES) $(LDFLAGS)
+$(APP_TARGET): $(APP_OBJ_FILES)
 	@mkdir -p $(@D)
-	$(CXX) $^ -o $@ $(LDFLAGS)
+	$(CXX) $^ -o $@ $(APP_LDFLAGS)
 
-$(TEST_TARGET): $(TEST_OBJ_FILES) $(LDFLAGS)
+$(TEST_TARGET): $(TEST_OBJ_FILES)
 	@mkdir -p $(@D)
-	$(CXX) $^ -o $@ $(LDFLAGS)
+	$(CXX) $^ -o $@ $(TEST_LDFLAGS)
 	@echo "Tests built at $@"
 
 $(APP_BUILD_DIR)/$(BUILD_OBJ_SUBDIR)/%.o: $(SRC_DIR)/%.cpp
@@ -74,7 +75,8 @@ debug:
 	$(info CXXFLAGS = $(CXXFLAGS))
 	$(info APP_DEP_FLAGS = $(APP_DEP_FLAGS))
 	$(info TEST_DEP_FLAGS = $(TEST_DEP_FLAGS))
-	$(info LDFLAGS = $(LDFLAGS))
+	$(info APP_LDFLAGS = $(APP_LDFLAGS))
+	$(info TEST_LDFLAGS = $(TEST_LDFLAGS))
 	$(info )
 
 check:

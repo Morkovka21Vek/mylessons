@@ -1,7 +1,7 @@
 #include "game.hpp"
 #include "gameobj/collision.hpp"
-#include <thread>
 #include <format>
+#include <thread>
 
 const size_t Game::MAXFPS = 60;
 
@@ -11,21 +11,24 @@ void Game::loop() {
     do {
         auto timeStart = std::chrono::high_resolution_clock::now();
 
-        leftPl.tick(screen.getGameSize(), ball.getY());
-        rightPl.tick(screen.getGameSize(), ball.getY());
-        ball.tick(screen.getGameSize(), frameTimeMs);
+        leftPl.tick(screen.getGameSize(), ball.getPos().y);
+        rightPl.tick(screen.getGameSize(), ball.getPos().y);
+        ball.tick(frameTimeMs);
 
-        CollisionSystem::handleAllCollisions(ball, leftPl, rightPl,
-                                             screen.getGameSize(), scboard);
+        //CollisionSystem::handleAllCollisions(ball, leftPl, rightPl,
+        //                                     screen.getGameSize(), scboard);
 
         screen.reset('-');
-        screen.addMatrix(0, scboard.calcX(screen.getGameSize()), scboard.getMatrix());
-        screen.addMatrix(leftPl.getPos(), leftPl.calcX(screen.getGameSize()),
-                   leftPl.getMatrix());
-        screen.addMatrix(rightPl.getPos(), rightPl.calcX(screen.getGameSize()),
-                   rightPl.getMatrix());
-        screen.addMatrix(ball.getY(), ball.getX(), ball.getMatrix());
-        screen.addText(0, 0, std::format("{}fps", (frameTimeMs > 0) ? 1000 / frameTimeMs : 0));
+        screen.addMatrix(Vector2D(scboard.calcX(screen.getGameSize()), 0),
+                         scboard.getMatrix());
+        screen.addMatrix(Vector2D(leftPl.calcX(screen.getGameSize()), leftPl.getPos()),
+                         leftPl.getMatrix());
+        screen.addMatrix(Vector2D(rightPl.calcX(screen.getGameSize()), rightPl.getPos()),
+                         rightPl.getMatrix());
+        screen.addMatrix(ball.getPos(), ball.getMatrix());
+        screen.addText(
+            Vector2D(0, 0),
+            std::format("{}fps", (frameTimeMs > 0) ? 1000 / frameTimeMs : 0));
         screen.draw();
 
         auto timeMiddle = std::chrono::high_resolution_clock::now();

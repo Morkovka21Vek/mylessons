@@ -54,7 +54,7 @@ int main() {
 		if(std::cin >> dist[buff_pos++])
 			continue;
 
-		dist[buff_pos--] = Distance();
+		buff_pos--;
 		break;
 	} while(buff_pos < BUFFSIZE);
 
@@ -64,5 +64,5 @@ int main() {
 	}
 	sum /= buff_pos;
 
-	std::cout << "Среднее значение: " << sum << std::endl;
+	std::cout << "\nСреднее значение: " << sum << std::endl;
 }

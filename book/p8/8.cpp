@@ -15,7 +15,7 @@ class bMoney {
     bMoney operator+(const bMoney &);
     bMoney operator-(const bMoney &);
     bMoney operator*(long double);
-    bMoney operator/(const bMoney &);
+    double operator/(const bMoney &);
     bMoney operator/(long double);
 
   private:
@@ -36,8 +36,8 @@ bMoney bMoney::operator-(const bMoney &obj) {
 bMoney bMoney::operator*(long double mul) {
   return bMoney(this->sum * mul);
 }
-bMoney bMoney::operator/(const bMoney &obj) {
-  return bMoney(this->sum / obj.sum);
+double bMoney::operator/(const bMoney &obj) {
+  return this->sum / obj.sum;
 }
 bMoney bMoney::operator/(long double div) {
   return bMoney(this->sum / div);

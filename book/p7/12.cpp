@@ -4,51 +4,60 @@
 #include <ostream>
 #include <iomanip>
 
-class dollar {
+class bMoney {
     public:
-		dollar();
-		dollar(std::string);
+		bMoney();
+		bMoney(long double);
+		bMoney(std::string);
     	long double mstold(std::string);
-		std::string ldtoms(long double sum);
-		std::string ldtoms();
-		friend std::ostream &operator<<(std::ostream &os, const dollar &obj);
+		std::string ldtoms(long double sum) const;
+		std::string ldtoms() const;
+		friend std::ostream &operator<<(std::ostream &os, const bMoney &obj);
 		operator long double();
+		bMoney operator+(bMoney&);
     private:
     	long double sum;
 };
 
-dollar::dollar(std::string str) {
+bMoney::bMoney(long double sum):sum(sum) {}
+
+bMoney bMoney::operator+(bMoney& obj) {
+	return bMoney(this->sum + obj.sum);
+}
+
+bMoney::bMoney(std::string str) {
 	this->mstold(str);
 }
 
-std::ostream &operator<<(std::ostream &os, dollar &obj) {
+std::ostream &operator<<(std::ostream &os, const bMoney &obj) {
 	os << obj.ldtoms();
     return os;
 }
 
-dollar::operator long double() {
+bMoney::operator long double() {
 	return sum;
 }
 
 int main()
 {
-	while(true) {
-        std::cout << "Введите сумму: " << std::flush;
+    std::string str;
 
-        std::string str;
-		std::getline(std::cin, str);
+    std::cout << "Введите сумму 1: " << std::flush;
 
-		dollar dl = str;
+	std::getline(std::cin, str);
+	bMoney bm1(str);
 
-		std::cout << "Long double: " << std::fixed << std::setprecision(2) << static_cast<long double>(dl) << std::endl;
+    std::cout << "Введите сумму 2: " << std::flush;
 
-		std::cout << "Pretty: " << dl << std::endl;
-	}
+	std::getline(std::cin, str);
+	bMoney bm2(str);
+
+	std::cout << "Сумма: " << bm1 + bm2 << std::endl;
 
 	return 0;
 }
 
-long double dollar::mstold(std::string str)
+long double bMoney::mstold(std::string str)
 {
 	for (size_t i = 0; i < str.length();) {
 		char ch = str[i];
@@ -64,7 +73,7 @@ long double dollar::mstold(std::string str)
 	return this->sum;
 }
 
-std::string dollar::ldtoms()
+std::string bMoney::ldtoms() const
 {
 	std::ostringstream oss;
 	oss << std::fixed << std::setprecision(2) << sum;
@@ -77,7 +86,7 @@ std::string dollar::ldtoms()
 	return str;
 }
 
-std::string dollar::ldtoms(long double sum)
+std::string bMoney::ldtoms(long double sum) const
 {
 	std::ostringstream oss;
 	oss << std::fixed << std::setprecision(2) << sum;

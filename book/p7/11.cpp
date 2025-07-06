@@ -6,17 +6,18 @@
 class dollar {
   public:
     dollar();
-    dollar(const std::string&);
+    dollar(const std::string &);
     long double mstold(std::string);
     std::string ldtoms(long double sum);
     std::string ldtoms();
     explicit operator long double();
+
   private:
     long double sum;
     friend std::ostream &operator<<(std::ostream &os, const dollar &obj);
 };
 
-dollar::dollar(const std::string& str) { this->mstold(str); }
+dollar::dollar(const std::string &str) { this->mstold(str); }
 
 std::ostream &operator<<(std::ostream &os, dollar &obj) {
     os << obj.ldtoms();

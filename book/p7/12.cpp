@@ -7,7 +7,7 @@ class bMoney {
   public:
     bMoney();
     bMoney(long double);
-    bMoney(const std::string&);
+    bMoney(const std::string &);
     long double mstold(std::string);
     std::string ldtoms(long double sum) const;
     std::string ldtoms() const;
@@ -21,9 +21,11 @@ class bMoney {
 
 bMoney::bMoney(long double sum) : sum(sum) {}
 
-bMoney bMoney::operator+(const bMoney &obj) { return bMoney(this->sum + obj.sum); }
+bMoney bMoney::operator+(const bMoney &obj) {
+    return bMoney(this->sum + obj.sum);
+}
 
-bMoney::bMoney(const std::string& str) { this->mstold(str); }
+bMoney::bMoney(const std::string &str) { this->mstold(str); }
 
 std::ostream &operator<<(std::ostream &os, const bMoney &obj) {
     os << obj.ldtoms();

@@ -11,7 +11,7 @@ class dollar {
 
 int main()
 {
-	dollar ms;
+	dollar dl;
 
 	while(true) {
         std::cout << "Введите сумму: " << std::flush;
@@ -19,7 +19,7 @@ int main()
         std::string str;
 		std::getline(std::cin, str);
 
-		long double ldsum = ms.mstold(str);
+		long double ldsum = dl.mstold(str);
 
 		std::cout << "Long double: " << std::fixed << std::setprecision(2) << ldsum << std::endl;
 	}

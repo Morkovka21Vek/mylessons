@@ -1,0 +1,70 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Wall",
+      "-Wextra",
+      "-I./src",
+      "-I./test",
+      "-c",
+      "-o",
+      "build/obj/app/Int.o",
+      "src/Int.cpp"
+    ],
+    "directory": "/home/morkovka21vek/lessons/book/p8/4",
+    "file": "/home/morkovka21vek/lessons/book/p8/4/src/Int.cpp",
+    "output": "/home/morkovka21vek/lessons/book/p8/4/build/obj/app/Int.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Wall",
+      "-Wextra",
+      "-I./src",
+      "-I./test",
+      "-c",
+      "-o",
+      "build/obj/app/main.o",
+      "src/main.cpp"
+    ],
+    "directory": "/home/morkovka21vek/lessons/book/p8/4",
+    "file": "/home/morkovka21vek/lessons/book/p8/4/src/main.cpp",
+    "output": "/home/morkovka21vek/lessons/book/p8/4/build/obj/app/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Wall",
+      "-Wextra",
+      "-I./src",
+      "-I./test",
+      "-c",
+      "-o",
+      "build/obj/tests/Int.o",
+      "src/Int.cpp"
+    ],
+    "directory": "/home/morkovka21vek/lessons/book/p8/4",
+    "file": "/home/morkovka21vek/lessons/book/p8/4/src/Int.cpp",
+    "output": "/home/morkovka21vek/lessons/book/p8/4/build/obj/tests/Int.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++20",
+      "-Wall",
+      "-Wextra",
+      "-I./src",
+      "-I./test",
+      "-c",
+      "-o",
+      "build/obj/tests/test_Int.o",
+      "tests/test_Int.cpp"
+    ],
+    "directory": "/home/morkovka21vek/lessons/book/p8/4",
+    "file": "/home/morkovka21vek/lessons/book/p8/4/tests/test_Int.cpp",
+    "output": "/home/morkovka21vek/lessons/book/p8/4/build/obj/tests/test_Int.o"
+  }
+]

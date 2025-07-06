@@ -1,5 +1,8 @@
-#include <locale>
-#include <wchar.h>
+#include <clocale>
+#include <cstdlib>
+#include <cwchar>
+#include <iostream>
+#include <ostream>
 
 void reverseit(wchar_t *str, const size_t BUFFSIZE) {
     size_t len = wcsnlen(str, BUFFSIZE);
@@ -12,18 +15,23 @@ void reverseit(wchar_t *str, const size_t BUFFSIZE) {
 }
 
 int main() {
-    std::setlocale(LC_ALL, "");
 
-    wprintf(L"Введите строку: ");
+    std::setlocale(LC_ALL, "");
+    std::cout << "Введите строку: " << std::flush;
 
     const size_t BUFFSIZE = 100;
     wchar_t buff[BUFFSIZE]; // С char не работает кириллица
 
+    char chbuff[BUFFSIZE * 2] = {0};
+
     fgetws(buff, BUFFSIZE, stdin);
+
+    std::cout << wcslen(buff) << std::endl;
 
     reverseit(buff, BUFFSIZE);
 
-    wprintf(L"Перевёрнутая строка: %ls\n", buff);
+    std::wcstombs(chbuff, buff, sizeof(chbuff));
+    std::cout << "Перевёрнутая строка: " << std::flush << chbuff << std::endl;
 
     return 0;
 }

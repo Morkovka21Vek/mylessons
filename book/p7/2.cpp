@@ -7,6 +7,7 @@ class employee {
     friend std::ostream &operator<<(std::ostream &os, const employee &obj);
     bool getName();
     void getNum();
+
   private:
     std::string name;
     long num;
@@ -17,13 +18,13 @@ std::ostream &operator<<(std::ostream &os, const employee &obj) {
 }
 
 bool employee::getName() {
-  getline(std::cin, name);
-  return name.length() > 0;
+    getline(std::cin, name);
+    return name.length() > 0;
 }
 
 void employee::getNum() {
-  std::cin >> num;
-  std::cin.ignore();
+    std::cin >> num;
+    std::cin.ignore();
 }
 
 int main() {
@@ -34,21 +35,21 @@ int main() {
     size_t empNum = 0;
 
     do {
-      std::cout << "Введите данные сотрудника " << empNum << ": " << std::endl
-        << "Имя(для прекращения нажмите Enter): " << std::flush;
+        std::cout << "Введите данные сотрудника " << empNum << ": " << std::endl
+                  << "Имя(для прекращения нажмите Enter): " << std::flush;
 
-      if (!emps[empNum].getName())
-        break;
+        if (!emps[empNum].getName())
+            break;
 
-      std::cout << "Номер: " << std::flush;
+        std::cout << "Номер: " << std::flush;
 
-      emps[empNum].getNum();
+        emps[empNum].getNum();
 
-      empNum++;
-    } while(empNum < BUFFSIZE);
+        empNum++;
+    } while (empNum < BUFFSIZE);
 
-    for(size_t i = 0; i < empNum; i++) {
-      std::cout << "Позиция " << i << ": " << emps[i] << std::endl;
+    for (size_t i = 0; i < empNum; i++) {
+        std::cout << "Позиция " << i << ": " << emps[i] << std::endl;
     }
 
     return 0;

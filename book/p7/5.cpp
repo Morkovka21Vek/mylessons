@@ -6,11 +6,11 @@ class fraction {
     fraction() = default;
     fraction(int a, int b);
 
-    fraction& operator+=(fraction obj);
-    fraction& operator/=(int div);
+    fraction &operator+=(fraction obj);
+    fraction &operator/=(int div);
 
     friend std::ostream &operator<<(std::ostream &os, const fraction &obj);
-    friend std::istream& operator>>(std::istream& in, fraction& d);
+    friend std::istream &operator>>(std::istream &in, fraction &d);
 
   private:
     void reduce();
@@ -45,14 +45,14 @@ int fraction::computeGCD(int _a, int _b) {
     return (_a == 0) ? 1 : _a;
 }
 
-fraction& fraction::operator+=(fraction obj) {
+fraction &fraction::operator+=(fraction obj) {
     this->a = this->a * obj.b + this->b * obj.a;
     this->b = this->b * obj.b;
     reduce();
     return *this;
 }
 
-fraction& fraction::operator/=(int dev) {
+fraction &fraction::operator/=(int dev) {
     this->b *= dev;
     reduce();
     return *this;
@@ -66,7 +66,7 @@ std::ostream &operator<<(std::ostream &os, const fraction &obj) {
     return os;
 }
 
-std::istream& operator>>(std::istream& in, fraction& obj) {
+std::istream &operator>>(std::istream &in, fraction &obj) {
     char temp;
     in >> obj.a >> temp >> obj.b;
     obj.reduce();
@@ -75,28 +75,29 @@ std::istream& operator>>(std::istream& in, fraction& obj) {
 }
 
 int main() {
-	const size_t BUFFSIZE = 100;
-	fraction frac[BUFFSIZE];
+    const size_t BUFFSIZE = 100;
+    fraction frac[BUFFSIZE];
 
-	size_t buff_pos = 0;
+    size_t buff_pos = 0;
 
-	std::cout << "Вводите дроби в формате \"a/b\". Для выхода нажмите Ctrl+D" << std::endl;
-	do {
-		std::cout << ">> " << std::flush;
-		if(std::cin >> frac[buff_pos++])
-			continue;
+    std::cout << "Вводите дроби в формате \"a/b\". Для выхода нажмите Ctrl+D"
+              << std::endl;
+    do {
+        std::cout << ">> " << std::flush;
+        if (std::cin >> frac[buff_pos++])
+            continue;
 
-		buff_pos--;
-		break;
-	} while(buff_pos < BUFFSIZE);
+        buff_pos--;
+        break;
+    } while (buff_pos < BUFFSIZE);
 
-	fraction sum(0,1);
-	for (size_t i = 0; i < buff_pos; i++) {
-		sum += frac[i];
-	}
-	sum /= buff_pos;
+    fraction sum(0, 1);
+    for (size_t i = 0; i < buff_pos; i++) {
+        sum += frac[i];
+    }
+    sum /= buff_pos;
 
-	std::cout << "\nСреднее значение: " << sum << std::endl;
+    std::cout << "\nСреднее значение: " << sum << std::endl;
 
     return 0;
 }

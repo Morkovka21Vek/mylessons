@@ -1,7 +1,7 @@
-#include <wchar.h>
 #include <locale>
+#include <wchar.h>
 
-void reverseit(wchar_t* str) {
+void reverseit(wchar_t *str) {
     size_t len = wcslen(str);
 
     for (size_t i = 0; i < len / 2; i++) {
@@ -17,7 +17,7 @@ int main() {
     wprintf(L"Введите строку: ");
 
     const size_t BUFFSIZE = 100;
-    wchar_t buff[BUFFSIZE];      // С char не работает кириллица
+    wchar_t buff[BUFFSIZE]; // С char не работает кириллица
 
     fgetws(buff, BUFFSIZE, stdin);
 

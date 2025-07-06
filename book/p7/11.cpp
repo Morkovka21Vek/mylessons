@@ -6,29 +6,43 @@
 
 class dollar {
     public:
+		dollar();
+		dollar(std::string);
     	long double mstold(std::string);
 		std::string ldtoms(long double sum);
 		std::string ldtoms();
+		friend std::ostream &operator<<(std::ostream &os, const dollar &obj);
+		operator long double();
     private:
     	long double sum;
 };
 
+dollar::dollar(std::string str) {
+	this->mstold(str);
+}
+
+std::ostream &operator<<(std::ostream &os, dollar &obj) {
+	os << obj.ldtoms();
+    return os;
+}
+
+dollar::operator long double() {
+	return sum;
+}
+
 int main()
 {
-	dollar dl;
-
 	while(true) {
         std::cout << "Введите сумму: " << std::flush;
 
         std::string str;
 		std::getline(std::cin, str);
 
-		long double ldsum = dl.mstold(str);
+		dollar dl = str;
 
-		std::cout << "Long double: " << std::fixed << std::setprecision(2) << ldsum << std::endl;
+		std::cout << "Long double: " << std::fixed << std::setprecision(2) << static_cast<long double>(dl) << std::endl;
 
-		std::string prettystr = dl.ldtoms();
-		std::cout << "Pretty: " << prettystr << std::endl;
+		std::cout << "Pretty: " << dl << std::endl;
 	}
 
 	return 0;

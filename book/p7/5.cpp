@@ -52,8 +52,8 @@ fraction &fraction::operator+=(fraction obj) {
     return *this;
 }
 
-fraction &fraction::operator/=(int dev) {
-    this->b *= dev;
+fraction &fraction::operator/=(int div) {
+    this->b *= div;
     reduce();
     return *this;
 }

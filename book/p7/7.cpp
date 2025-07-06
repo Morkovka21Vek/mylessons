@@ -5,7 +5,7 @@
 class dollar {
   public:
     dollar();
-    dollar(std::string&);
+    dollar(const std::string&);
     long double mstold(std::string);
 
   private:
@@ -14,7 +14,7 @@ class dollar {
     long double sum;
 };
 
-dollar::dollar(std::string& str) { this->mstold(str); }
+dollar::dollar(const std::string& str) { this->mstold(str); }
 
 std::ostream &operator<<(std::ostream &os, const dollar &obj) {
     os << obj.sum;

@@ -1,8 +1,8 @@
 #include <locale>
 #include <wchar.h>
 
-void reverseit(wchar_t *str) {
-    size_t len = wcslen(str);
+void reverseit(wchar_t *str, const size_t BUFFSIZE) {
+    size_t len = wcsnlen(str, BUFFSIZE);
 
     for (size_t i = 0; i < len / 2; i++) {
         wchar_t temp = str[i];
@@ -21,7 +21,7 @@ int main() {
 
     fgetws(buff, BUFFSIZE, stdin);
 
-    reverseit(buff);
+    reverseit(buff, BUFFSIZE);
 
     wprintf(L"Перевёрнутая строка: %ls\n", buff);
 

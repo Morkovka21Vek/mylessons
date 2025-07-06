@@ -9,10 +9,10 @@ class fraction {
     fraction &operator+=(fraction obj);
     fraction &operator/=(int div);
 
+  private:
     friend std::ostream &operator<<(std::ostream &os, const fraction &obj);
     friend std::istream &operator>>(std::istream &in, fraction &d);
 
-  private:
     void reduce();
     static int computeGCD(int, int);
     int a = 0;

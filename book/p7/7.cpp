@@ -5,15 +5,16 @@
 class dollar {
   public:
     dollar();
-    dollar(std::string);
+    dollar(std::string&);
     long double mstold(std::string);
-    friend std::ostream &operator<<(std::ostream &os, const dollar &obj);
 
   private:
+    friend std::ostream &operator<<(std::ostream &os, const dollar &obj);
+
     long double sum;
 };
 
-dollar::dollar(std::string str) { this->mstold(str); }
+dollar::dollar(std::string& str) { this->mstold(str); }
 
 std::ostream &operator<<(std::ostream &os, const dollar &obj) {
     os << obj.sum;
@@ -32,8 +33,6 @@ int main() {
         std::cout << "Long double: " << std::fixed << std::setprecision(2) << dl
                   << std::endl;
     }
-
-    return 0;
 }
 
 long double dollar::mstold(std::string str) {

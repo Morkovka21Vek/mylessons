@@ -1,7 +1,7 @@
 #include <ctime>
 #include <iostream>
 
-enum Suit { clubs, diamonds, hearts, spades };
+enum class Suit { clubs, diamonds, hearts, spades };
 
 const int jack = 11;
 const int queen = 12;
@@ -12,10 +12,11 @@ class card {
   private:
     int number;
     Suit suit;
-    friend std::ostream &operator<<(std::ostream &os, const card &obj);
 
   public:
-    card() {}
+    friend std::ostream &operator<<(std::ostream &os, const card &obj);
+
+    card() = default;
     void set(int n, Suit s) {
         number = n;
         suit = s;
@@ -43,16 +44,16 @@ std::ostream &operator<<(std::ostream &os, const card &obj) {
 
     switch (obj.suit) {
 
-    case clubs:
+    case Suit::clubs:
         os << "♣";
         break;
-    case diamonds:
+    case Suit::diamonds:
         os << "♦";
         break;
-    case hearts:
+    case Suit::hearts:
         os << "♥";
         break;
-    case spades:
+    case Suit::spades:
         os << "♠";
         break;
     }

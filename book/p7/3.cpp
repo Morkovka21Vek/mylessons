@@ -7,10 +7,11 @@ class Distance {
     Distance(int feet, float inches);
     Distance &operator+=(Distance d);
     Distance &operator/=(int divisor);
+
+  private:
     friend std::ostream &operator<<(std::ostream &os, const Distance &obj);
     friend std::istream &operator>>(std::istream &in, Distance &d);
 
-  private:
     int feet;
     float inches;
 };
@@ -48,7 +49,7 @@ int main() {
 
     size_t buff_pos = 0;
 
-    std::cout << "Вводите расстояния в формате \"feets inches\". Для выхода "
+    std::cout << "Вводите расстояния в формате \"feet inches\". Для выхода "
                  "нажмите Ctrl+D"
               << std::endl;
     do {

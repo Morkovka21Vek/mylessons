@@ -4,7 +4,7 @@ class matrix {
   public:
     matrix(size_t uwidth, size_t uheight);
     void putel(size_t x, size_t y, int val);
-    int getel(size_t x, size_t y);
+    int getel(size_t x, size_t y) const;
 
   private:
     static const size_t WIDTH = 10;
@@ -33,14 +33,14 @@ int main() {
 }
 
 void matrix::putel(size_t x, size_t y, int val) {
-    if (x >= 0 && x < UWIDTH && y >= 0 && y < UHEIGHT)
+    if (x < UWIDTH && y < UHEIGHT)
         arr[x][y] = val;
     else
         throw std::out_of_range("Index out of range");
 }
 
-int matrix::getel(size_t x, size_t y) {
-    if (x >= 0 && x < UWIDTH && y >= 0 && y < UHEIGHT)
+int matrix::getel(size_t x, size_t y) const {
+    if (x < UWIDTH && y < UHEIGHT)
         return arr[x][y];
     else
         throw std::out_of_range("Index out of range");

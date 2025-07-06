@@ -4,13 +4,13 @@
 
 class employee {
   public:
-    friend std::ostream &operator<<(std::ostream &os, const employee &obj);
     bool getName();
     void getNum();
 
   private:
     std::string name;
     long num;
+    friend std::ostream &operator<<(std::ostream &os, const employee &obj);
 };
 
 std::ostream &operator<<(std::ostream &os, const employee &obj) {

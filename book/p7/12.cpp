@@ -7,23 +7,23 @@ class bMoney {
   public:
     bMoney();
     bMoney(long double);
-    bMoney(std::string);
+    bMoney(std::string&);
     long double mstold(std::string);
     std::string ldtoms(long double sum) const;
     std::string ldtoms() const;
-    friend std::ostream &operator<<(std::ostream &os, const bMoney &obj);
-    operator long double();
-    bMoney operator+(bMoney &);
+    explicit operator long double();
+    bMoney operator+(const bMoney &);
 
   private:
     long double sum;
+    friend std::ostream &operator<<(std::ostream &os, const bMoney &obj);
 };
 
 bMoney::bMoney(long double sum) : sum(sum) {}
 
-bMoney bMoney::operator+(bMoney &obj) { return bMoney(this->sum + obj.sum); }
+bMoney bMoney::operator+(const bMoney &obj) { return bMoney(this->sum + obj.sum); }
 
-bMoney::bMoney(std::string str) { this->mstold(str); }
+bMoney::bMoney(std::string& str) { this->mstold(str); }
 
 std::ostream &operator<<(std::ostream &os, const bMoney &obj) {
     os << obj.ldtoms();

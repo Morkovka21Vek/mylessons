@@ -11,7 +11,7 @@ class safearay {
 };
 
 int &safearay::operator[](size_t index) {
-    if (index < 0 || index >= LIMIT)
+    if (index >= LIMIT)
         throw std::out_of_range("Index out of range");
     return arr[index];
 }

@@ -1,6 +1,6 @@
 #include <iostream>
 
-size_t maxint(int buff[], size_t buffsize) {
+size_t maxint(const int* buff, size_t buffsize) {
     size_t maxIndex = 0;
     for (size_t i = 1; i < buffsize; i++)
         if (buff[maxIndex] < buff[i])

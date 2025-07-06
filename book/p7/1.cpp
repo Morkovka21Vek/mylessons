@@ -16,11 +16,18 @@ void reverseit(wchar_t *str, const size_t BUFFSIZE) {
 
 int main() {
 
-    std::setlocale(LC_ALL, "");
+    std::setlocale(LC_ALL, ""); //init()
+    //line = getUserLine():
+    //  printPrompt(prompt)
+    //  line = getLine()
+    //      getStr()
+    //printUsetLine():
+    //  Convert
+    //  Print
     std::cout << "Введите строку: " << std::flush;
 
     const size_t BUFFSIZE = 100;
-    wchar_t buff[BUFFSIZE]; // С char не работает кириллица
+    wchar_t buff[BUFFSIZE];
 
     char chbuff[BUFFSIZE * 2] = {0};
 

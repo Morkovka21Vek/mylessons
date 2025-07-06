@@ -1,0 +1,21 @@
+#pragma once
+
+#include <ostream>
+
+class Time {
+  public:
+    Time();
+    Time(unsigned int hours, unsigned int min, unsigned int sec);
+
+    friend Time operator+(const Time &, const Time &);
+    Time& operator++();
+    Time& operator--();
+    Time& operator++(int);
+    Time& operator--(int);
+    friend std::ostream &operator<<(std::ostream &, const Time &);
+
+  private:
+    unsigned int _hours;
+    unsigned int _min;
+    unsigned int _sec;
+};

@@ -1,8 +1,5 @@
 #include <clocale>
-#include <cstdlib>
-#include <cwchar>
 #include <iostream>
-#include <ostream>
 
 void reverseit(wchar_t *str, const size_t BUFFSIZE) {
     size_t len = wcsnlen(str, BUFFSIZE);
@@ -14,31 +11,48 @@ void reverseit(wchar_t *str, const size_t BUFFSIZE) {
     }
 }
 
+void printPrompt(const char *str) {
+    std::cout << str << std::flush;
+}
+
+void getLine(wchar_t *buff, size_t BUFFSIZE) {
+    fgetws(buff, BUFFSIZE, stdin);
+}
+
+void getUserLine(wchar_t *buff, size_t BUFFSIZE) {
+    printPrompt("Введите строку: ");
+    getLine(buff, BUFFSIZE);
+}
+
+void init() {
+    std::setlocale(LC_ALL, "");
+}
+
+void printLine(const char *str) {
+    std::cout << "Перевёрнутая строка: " << str << std::endl;
+}
+
+void convertToChar(char *chbuff, wchar_t *buff, size_t BUFFSIZE) {
+    std::wcstombs(chbuff, buff, BUFFSIZE*2);
+}
+
+void printUserLine(wchar_t *buff, size_t BUFFSIZE) {
+    char *chbuff = new char[BUFFSIZE * 2];
+    convertToChar(chbuff, buff, BUFFSIZE);
+    printLine(chbuff);
+}
+
 int main() {
-
-    std::setlocale(LC_ALL, ""); //init()
-    //line = getUserLine():
-    //  printPrompt(prompt)
-    //  line = getLine()
-    //      getStr()
-    //printUsetLine():
-    //  Convert
-    //  Print
-    std::cout << "Введите строку: " << std::flush;
-
     const size_t BUFFSIZE = 100;
     wchar_t buff[BUFFSIZE];
 
-    char chbuff[BUFFSIZE * 2] = {0};
-
-    fgetws(buff, BUFFSIZE, stdin);
-
-    std::cout << wcslen(buff) << std::endl;
+    init();
+    getUserLine(buff, BUFFSIZE);
 
     reverseit(buff, BUFFSIZE);
 
-    std::wcstombs(chbuff, buff, sizeof(chbuff));
-    std::cout << "Перевёрнутая строка: " << std::flush << chbuff << std::endl;
+    printUserLine(buff, BUFFSIZE);
+
 
     return 0;
 }

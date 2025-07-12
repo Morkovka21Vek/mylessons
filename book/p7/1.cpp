@@ -32,14 +32,15 @@ void printLine(const char *str) {
     std::cout << "Перевёрнутая строка: " << str << std::endl;
 }
 
-void convertToChar(char *chbuff, wchar_t *buff, size_t BUFFSIZE) {
+void convertToChar(char *chbuff, const wchar_t *buff, size_t BUFFSIZE) {
     std::wcstombs(chbuff, buff, BUFFSIZE*2);
 }
 
-void printUserLine(wchar_t *buff, size_t BUFFSIZE) {
+void printUserLine(const wchar_t *buff, size_t BUFFSIZE) {
     char *chbuff = new char[BUFFSIZE * 2];
     convertToChar(chbuff, buff, BUFFSIZE);
     printLine(chbuff);
+    delete[] chbuff;
 }
 
 int main() {

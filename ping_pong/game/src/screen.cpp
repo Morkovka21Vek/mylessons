@@ -31,7 +31,9 @@ Screen::Screen() {
                                  std::vector<char>(this->ws.width, 0));
 }
 
-Screen::~Screen() { endwin(); }
+Screen::~Screen() {
+    endwin();
+}
 
 Screen::Screen(Screen &&other) noexcept
     : ScreenVector(std::move(other.ScreenVector)),

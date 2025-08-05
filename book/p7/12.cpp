@@ -25,14 +25,18 @@ bMoney bMoney::operator+(const bMoney &obj) {
     return bMoney(this->sum + obj.sum);
 }
 
-bMoney::bMoney(const std::string &str) { this->mstold(str); }
+bMoney::bMoney(const std::string &str) {
+    this->mstold(str);
+}
 
 std::ostream &operator<<(std::ostream &os, const bMoney &obj) {
     os << obj.ldtoms();
     return os;
 }
 
-bMoney::operator long double() { return sum; }
+bMoney::operator long double() {
+    return sum;
+}
 
 int main() {
     std::string str;

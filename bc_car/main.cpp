@@ -40,7 +40,9 @@ class MainWindow : public QMainWindow {
     Ui::MainWindow *ui;
 };
 
-MainWindow::~MainWindow() { delete ui; }
+MainWindow::~MainWindow() {
+    delete ui;
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {

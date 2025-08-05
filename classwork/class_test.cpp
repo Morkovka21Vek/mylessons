@@ -2,13 +2,17 @@
 
 class smallobj {
   public:
-    explicit smallobj(int a) : a(a) { std::cout << __LINE__ << std::endl; }
+    explicit smallobj(int a) : a(a) {
+        std::cout << __LINE__ << std::endl;
+    }
 
     ~smallobj() = default;
 
     smallobj(const smallobj &o) : a(o.a + 2) {}
 
-    void print_a() const { std::cout << this->a << std::endl; }
+    void print_a() const {
+        std::cout << this->a << std::endl;
+    }
 
     smallobj &operator=(const smallobj &o) {
         a = o.a + 10;

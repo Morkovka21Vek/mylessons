@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout PR branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
@@ -44,13 +44,13 @@ jobs:
           echo "FILES=$FILES" >> $GITHUB_OUTPUT
 
       - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "style: apply clang-format [bot]"
           add_options: '-u'
 
       - name: Print result
-        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043
+        uses: peter-evans/create-or-update-comment@v5
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |

@@ -28,16 +28,24 @@ int Player::correctPos(int val, const scrsize ws) const {
     return (val + this->height > ws.height) ? ws.height - this->height : val;
 }
 
-int Player::getPos() const { return this->pos; }
+int Player::getPos() const {
+    return this->pos;
+}
 
 size_t Player::calcX(struct scrsize ws) const {
     return (this->posX == Playerpos::left) ? 0 : ws.width - this->width;
 }
 
-size_t Player::getWidth() const { return this->width; }
-size_t Player::getHeight() const { return this->height; }
+size_t Player::getWidth() const {
+    return this->width;
+}
+size_t Player::getHeight() const {
+    return this->height;
+}
 
-Playerpos Player::getPlayerposX() const { return this->posX; }
+Playerpos Player::getPlayerposX() const {
+    return this->posX;
+}
 
 void Player::reset(struct scrsize ws) {
     this->pos = (ws.height - this->height) / 2;

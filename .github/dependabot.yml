@@ -3,9 +3,9 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
-      day: "sunday"
-      time: "12:00"
+      interval: "monthly"
+      day: 1
+      time: "07:00"
     labels:
       - "Security"
       - "format"

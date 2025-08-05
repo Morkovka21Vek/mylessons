@@ -17,14 +17,18 @@ class dollar {
     friend std::ostream &operator<<(std::ostream &os, const dollar &obj);
 };
 
-dollar::dollar(const std::string &str) { this->mstold(str); }
+dollar::dollar(const std::string &str) {
+    this->mstold(str);
+}
 
 std::ostream &operator<<(std::ostream &os, dollar &obj) {
     os << obj.ldtoms();
     return os;
 }
 
-dollar::operator long double() { return sum; }
+dollar::operator long double() {
+    return sum;
+}
 
 int main() {
     while (true) {

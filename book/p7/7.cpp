@@ -14,7 +14,9 @@ class dollar {
     long double sum;
 };
 
-dollar::dollar(const std::string &str) { this->mstold(str); }
+dollar::dollar(const std::string &str) {
+    this->mstold(str);
+}
 
 std::ostream &operator<<(std::ostream &os, const dollar &obj) {
     os << obj.sum;

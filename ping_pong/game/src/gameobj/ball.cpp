@@ -23,13 +23,25 @@ void Ball::reset(struct scrsize ws) {
     this->speedY = this->defaultSpeedY;
 }
 
-float Ball::getX() const { return this->posX; }
-float Ball::getY() const { return this->posY; }
+float Ball::getX() const {
+    return this->posX;
+}
+float Ball::getY() const {
+    return this->posY;
+}
 
-void Ball::reverseX() { this->speedX = -this->speedX; }
-void Ball::reverseY() { this->speedY = -this->speedY; }
-void Ball::setX(float x) { this->posX = x; }
-void Ball::setY(float y) { this->posY = y; }
+void Ball::reverseX() {
+    this->speedX = -this->speedX;
+}
+void Ball::reverseY() {
+    this->speedY = -this->speedY;
+}
+void Ball::setX(float x) {
+    this->posX = x;
+}
+void Ball::setY(float y) {
+    this->posY = y;
+}
 
 void Ball::setPositiveX() {
     this->speedX = (this->speedX < 0) ? -this->speedX : this->speedX;
@@ -39,8 +51,12 @@ void Ball::setNegativeX() {
     this->speedX = (this->speedX > 0) ? -this->speedX : this->speedX;
 }
 
-size_t Ball::getWidth() const { return this->width; }
-size_t Ball::getHeight() const { return this->height; }
+size_t Ball::getWidth() const {
+    return this->width;
+}
+size_t Ball::getHeight() const {
+    return this->height;
+}
 
 std::vector<std::vector<char>> Ball::getMatrix() const {
     std::vector<std::vector<char>> matrix(this->height,

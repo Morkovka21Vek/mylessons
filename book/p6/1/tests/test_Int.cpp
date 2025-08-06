@@ -25,7 +25,9 @@ TEST_CASE("Create obj with number", "[base]") {
 TEST_CASE("Create obj with number and compare value", "[base]") {
     Int num(21);
 
-    SECTION("check num is equal 21") { REQUIRE(num == 21); }
+    SECTION("check num is equal 21") {
+        REQUIRE(num == 21);
+    }
     SECTION("check num is not equal 22") {
         REQUIRE(!(num == 22));
         REQUIRE(num != 22);

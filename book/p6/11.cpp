@@ -21,7 +21,9 @@ class fraction {
     int b = 0;
 };
 
-fraction::fraction(int a, int b) : a(a), b(b) { reduce(); }
+fraction::fraction(int a, int b) : a(a), b(b) {
+    reduce();
+}
 
 void fraction::getData() {
     char space;

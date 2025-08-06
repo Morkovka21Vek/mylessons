@@ -11,16 +11,22 @@ void reverseit(wchar_t *str, const size_t BUFFSIZE) {
     }
 }
 
-void printPrompt(const char *str) { std::cout << str << std::flush; }
+void printPrompt(const char *str) {
+    std::cout << str << std::flush;
+}
 
-void getLine(wchar_t *buff, size_t BUFFSIZE) { fgetws(buff, BUFFSIZE, stdin); }
+void getLine(wchar_t *buff, size_t BUFFSIZE) {
+    fgetws(buff, BUFFSIZE, stdin);
+}
 
 void getUserLine(wchar_t *buff, size_t BUFFSIZE) {
     printPrompt("Введите строку: ");
     getLine(buff, BUFFSIZE);
 }
 
-void init() { std::setlocale(LC_ALL, ""); }
+void init() {
+    std::setlocale(LC_ALL, "");
+}
 
 void printLine(const char *str) {
     std::cout << "Перевёрнутая строка: " << str << std::endl;

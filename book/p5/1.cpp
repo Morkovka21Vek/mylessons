@@ -1,7 +1,9 @@
 #include <iostream>
 #include <numbers>
 
-float circarea(float radius) { return std::numbers::pi * radius * radius; }
+float circarea(float radius) {
+    return std::numbers::pi * radius * radius;
+}
 
 int main() {
     float radius;

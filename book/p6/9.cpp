@@ -19,7 +19,9 @@ class fraction {
 };
 
 fraction::fraction() : a(0), b(0) {}
-fraction::fraction(int a, int b) : a(a), b(b) { reduce(); }
+fraction::fraction(int a, int b) : a(a), b(b) {
+    reduce();
+}
 
 void fraction::reduce() {
     int numerator = this->a;
